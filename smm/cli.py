@@ -17,6 +17,11 @@ from pathlib import Path
 
 from smm.generator import ContentGenerator, GeneratorConfig
 from smm.platforms import Platform
+from smm.post_generator import (
+    export_plan_json,
+    export_plan_markdown,
+    generate_week_plan,
+)
 from smm.referral import ReferralRegistry
 from smm.scheduler import ContentCalendar
 
@@ -116,6 +121,32 @@ def cmd_referral(args: argparse.Namespace) -> None:
             print(f"  {lnk.label}: {lnk.build_url()}")
 
 
+def cmd_generate(args: argparse.Namespace) -> None:
+    _ensure_data_dir()
+    plan = generate_week_plan(days=args.days, seed=args.seed)
+    json_path = DATA_DIR / "week_plan.json"
+    md_path = DATA_DIR / "week_plan.md"
+    export_plan_json(plan, json_path)
+    export_plan_markdown(plan, md_path)
+
+    by_pillar: dict[str, int] = {}
+    by_platform: dict[str, int] = {}
+    for s in plan:
+        by_pillar[s.pillar.name] = by_pillar.get(s.pillar.name, 0) + 1
+        by_platform[s.platform.value] = by_platform.get(s.platform.value, 0) + 1
+
+    print(f"Сгенерирован контент-план: {len(plan)} постов на {args.days} дней\n")
+    print("По направлениям:")
+    for name, count in sorted(by_pillar.items()):
+        print(f"  {name}: {count}")
+    print("\nПо платформам:")
+    for name, count in sorted(by_platform.items()):
+        print(f"  {name}: {count}")
+    print("\nФайлы:")
+    print(f"  JSON: {json_path}")
+    print(f"  Markdown: {md_path}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="smm", description="AI-powered SMM automation toolkit"
@@ -153,6 +184,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_ref.add_argument("--url", default="")
     p_ref.add_argument("--utm-source", default="")
     p_ref.add_argument("--utm-campaign", default="")
+
+    p_gen = sub.add_parser("generate", help="Generate full weekly content plan")
+    p_gen.add_argument("--days", type=int, default=7)
+    p_gen.add_argument("--seed", type=int, default=None)
 
     return parser
 

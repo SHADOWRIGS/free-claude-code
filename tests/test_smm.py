@@ -3,10 +3,16 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
+from smm.content_pillars import PILLARS, all_topics_flat, get_pillar_by_name
 from smm.platforms import PLATFORM_SPECS, Platform
+from smm.post_generator import (
+    export_plan_json,
+    export_plan_markdown,
+    generate_week_plan,
+)
 from smm.referral import ReferralLink, ReferralRegistry
 from smm.scheduler import ContentCalendar, ScheduledPost
 from smm.templates import ROLE_TEMPLATES
@@ -215,3 +221,100 @@ class TestTemplates:
     def test_templates_have_placeholders(self) -> None:
         for role, tmpl in ROLE_TEMPLATES.items():
             assert "{" in tmpl, f"{role} template has no placeholders"
+
+
+# --- Content Pillars tests ---
+
+
+class TestContentPillars:
+    def test_pillars_count(self) -> None:
+        assert len(PILLARS) == 5
+
+    def test_each_pillar_has_topics(self) -> None:
+        for p in PILLARS:
+            assert len(p.topics) >= 10, f"{p.name} has fewer than 10 topics"
+
+    def test_each_pillar_has_hashtags(self) -> None:
+        for p in PILLARS:
+            assert p.hashtags_ru, f"{p.name} missing RU hashtags"
+            assert p.hashtags_en, f"{p.name} missing EN hashtags"
+
+    def test_product_types(self) -> None:
+        products = {p.product for p in PILLARS}
+        assert products == {"course", "referral"}
+
+    def test_get_pillar_by_name_found(self) -> None:
+        p = get_pillar_by_name("cyber")
+        assert p is not None
+        assert "Cyber" in p.name
+
+    def test_get_pillar_by_name_not_found(self) -> None:
+        assert get_pillar_by_name("nonexistent") is None
+
+    def test_all_topics_flat(self) -> None:
+        flat = all_topics_flat()
+        total = sum(len(p.topics) for p in PILLARS)
+        assert len(flat) == total
+        assert all(len(t) == 3 for t in flat)
+
+
+# --- Post Generator tests ---
+
+
+class TestPostGenerator:
+    def test_generate_week_plan_count(self) -> None:
+        plan = generate_week_plan(days=7, seed=42)
+        assert len(plan) == 63  # 3 platforms * 3 slots * 7 days
+
+    def test_generate_week_plan_deterministic(self) -> None:
+        a = generate_week_plan(days=1, seed=99)
+        b = generate_week_plan(days=1, seed=99)
+        assert len(a) == len(b)
+        for sa, sb in zip(a, b, strict=True):
+            assert sa.topic == sb.topic
+            assert sa.platform == sb.platform
+
+    def test_slots_cover_all_platforms(self) -> None:
+        plan = generate_week_plan(days=1, seed=42)
+        platforms = {s.platform for s in plan}
+        assert platforms == {Platform.INSTAGRAM, Platform.TIKTOK, Platform.YOUTUBE}
+
+    def test_each_slot_has_required_fields(self) -> None:
+        plan = generate_week_plan(days=1, seed=42)
+        for s in plan:
+            assert s.topic
+            assert s.hook
+            assert s.cta
+            assert s.hashtags
+            assert s.format
+
+    def test_referral_urls_have_utm(self) -> None:
+        plan = generate_week_plan(days=1, seed=42)
+        with_url = [s for s in plan if s.referral_url]
+        assert len(with_url) > 0
+        for s in with_url:
+            assert "utm_source=" in s.referral_url
+            assert "utm_medium=social" in s.referral_url
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        plan = generate_week_plan(days=1, seed=42)
+        out = tmp_path / "plan.json"
+        export_plan_json(plan, out)
+        data = json.loads(out.read_text())
+        assert len(data) == len(plan)
+        assert all("topic" in d for d in data)
+
+    def test_export_markdown(self, tmp_path: Path) -> None:
+        plan = generate_week_plan(days=1, seed=42)
+        out = tmp_path / "plan.md"
+        export_plan_markdown(plan, out)
+        content = out.read_text()
+        assert "# Контент-план SMM" in content
+        assert "##" in content
+
+    def test_custom_start_date(self) -> None:
+        start = date(2025, 6, 1)
+        plan = generate_week_plan(start=start, days=3, seed=42)
+        days = {s.day for s in plan}
+        assert start in days
+        assert len(days) == 3
