@@ -452,3 +452,58 @@ class TestServiceSpec:
         from smm.service_spec import DELIVERABLES
 
         assert len(DELIVERABLES) >= 5
+
+
+# --- Preview tests ---
+
+
+class TestPreview:
+    def test_render_preview_returns_html(self) -> None:
+        from smm.preview import render_preview
+
+        plan = generate_week_plan(days=1, seed=42)
+        html_content = render_preview(plan)
+        assert "<!DOCTYPE html>" in html_content
+        assert "Instagram" in html_content
+        assert "TikTok" in html_content
+        assert "YouTube" in html_content
+
+    def test_render_preview_contains_all_posts(self) -> None:
+        from smm.preview import render_preview
+
+        plan = generate_week_plan(days=1, seed=42)
+        html_content = render_preview(plan)
+        for slot in plan:
+            assert slot.topic in html_content
+
+    def test_render_preview_file_creates_file(self, tmp_path: Path) -> None:
+        from smm.preview import render_preview_file
+
+        out = tmp_path / "test_preview.html"
+        result = render_preview_file(days=1, seed=42, output=out)
+        assert result.exists()
+        content = result.read_text()
+        assert len(content) > 1000
+        assert "card" in content
+
+    def test_render_preview_custom_title(self) -> None:
+        from smm.preview import render_preview
+
+        plan = generate_week_plan(days=1, seed=42)
+        html_content = render_preview(plan, title="Test Preview")
+        assert "Test Preview" in html_content
+
+    def test_render_preview_stats(self) -> None:
+        from smm.preview import render_preview
+
+        plan = generate_week_plan(days=1, seed=42)
+        html_content = render_preview(plan)
+        assert "3</strong> Instagram" in html_content
+        assert "3</strong> TikTok" in html_content
+        assert "3</strong> YouTube" in html_content
+
+    def test_render_preview_escapes_html(self) -> None:
+        from smm.preview import _escape
+
+        assert _escape("<script>") == "&lt;script&gt;"
+        assert _escape('"test"') == "&quot;test&quot;"

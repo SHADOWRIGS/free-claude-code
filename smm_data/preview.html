@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMM Content Preview</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --border: #30363d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.header {
+  text-align: center;
+  padding: 24px 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+.stats {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+.stat strong { color: #58a6ff; }
+.day-section { margin-bottom: 32px; }
+.day-title {
+  font-size: 1.2rem;
+  color: #58a6ff;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.day-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  border-top: 3px solid var(--accent);
+  transition: transform 0.15s;
+}
+.card:hover { transform: translateY(-2px); }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: #fff;
+}
+.platform-name { font-weight: 600; font-size: 0.9rem; }
+.card-date { color: var(--text-muted); font-size: 0.8rem; margin-left: auto; }
+.card-format {
+  background: rgba(88, 166, 255, 0.15);
+  color: #58a6ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+.card-pillar {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.card-topic {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.card-hook {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--accent);
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  font-style: italic;
+  font-size: 0.9rem;
+  border-radius: 0 6px 6px 0;
+}
+.card-body {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.card-cta {
+  background: linear-gradient(135deg, var(--accent), rgba(88, 166, 255, 0.3));
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.card-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.tag {
+  background: rgba(88, 166, 255, 0.1);
+  color: #58a6ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+.ref-link {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ref-icon { font-size: 0.85rem; }
+@media (max-width: 600px) {
+  .day-cards { grid-template-columns: 1fr; }
+  body { padding: 8px; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>SMM Content Preview</h1>
+  <p style="color: var(--text-muted)">
+    63 постов на 7 дней
+  </p>
+  <div class="stats">
+    <div class="stat"><strong>21</strong> Instagram</div>
+    <div class="stat"><strong>21</strong> TikTok</div>
+    <div class="stat"><strong>21</strong> YouTube</div>
+  </div>
+  <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 8px">
+    AliExpress - Гаджеты: 8 | Blue Team / Defensive Security: 10 | Cyber Security &amp; Ethical Hacking: 15 | Machine Learning &amp; AI: 17 | Red Team / Offensive Security: 13
+  </p>
+</div>
+<div class="day-section"><h2 class="day-title">2026-11-11 (Ср)</h2><div class="day-cards"><div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-11 09:00</span>
+    <span class="card-format">reels</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Нейросети за 10 минут: как это работает</div>
+  <div class="card-hook">Тебя могут взломать за 5 минут. Вот как.</div>
+  <div class="card-body">Нейросети за 10 минут: как это работает
+
+В этом посте разбираем нейросети за 10 минут: как это работает.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#deeplearning</span> <span class="tag">#chatgpt</span> <span class="tag">#python</span> <span class="tag">#llm</span> <span class="tag">#нейросети</span> <span class="tag">#машинноеобучение</span> <span class="tag">#artificialintelligence</span> <span class="tag">#ии</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=i...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-11 14:00</span>
+    <span class="card-format">carousel</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">AutoML: машинное обучение без кода</div>
+  <div class="card-hook">Стоп. Если ты не знаешь Machine Learning — смотри до конца.</div>
+  <div class="card-body">AutoML: машинное обучение без кода
+
+В этом посте разбираем automl: машинное обучение без кода.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подробнее в нашем курсе — ссылка в био</div>
+  <div class="card-hashtags"><span class="tag">#машинноеобучение</span> <span class="tag">#datascience</span> <span class="tag">#artificialintelligence</span> <span class="tag">#python</span> <span class="tag">#ai</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#нейросети</span> <span class="tag">#llm</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=i...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-11 20:00</span>
+    <span class="card-format">stories</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">Incident Response: как реагировать на инцидент за 60 минут</div>
+  <div class="card-hook">Ты точно не знал, что Blue Team умеет это.</div>
+  <div class="card-body">Incident Response: как реагировать на инцидент за 60 минут
+
+В этом посте разбираем incident response: как реагировать на инцидент за 60 минут.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#soc</span> <span class="tag">#dfir</span> <span class="tag">#malwareanalysis</span> <span class="tag">#incidentresponse</span> <span class="tag">#blueteam</span> <span class="tag">#threatintel</span> <span class="tag">#инцидентыбезопасности</span> <span class="tag">#защитаинформации</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=instagra...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-11 10:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Python для ML: с чего начать в 2024</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">Python для ML: с чего начать в 2024
+
+В этом посте разбираем python для ml: с чего начать в 2024.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Полный гайд в курсе. Переходи по ссылке в описании</div>
+  <div class="card-hashtags"><span class="tag">#llm</span> <span class="tag">#datascience</span> <span class="tag">#ии</span> <span class="tag">#машинноеобучение</span> <span class="tag">#ai</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#python</span> <span class="tag">#machinelearning</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=t...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-11 15:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">Windows Event Logs: что нужно мониторить</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">Windows Event Logs: что нужно мониторить
+
+В этом посте разбираем windows event logs: что нужно мониторить.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#dfir</span> <span class="tag">#soc</span> <span class="tag">#защитаинформации</span> <span class="tag">#blueteam</span> <span class="tag">#blueteam</span> <span class="tag">#threatintel</span> <span class="tag">#мониторинг</span> <span class="tag">#malwareanalysis</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=tiktok&amp;u...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-11 21:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Computer Vision: распознавание объектов для новичков</div>
+  <div class="card-hook">Тебя могут взломать за 5 минут. Вот как.</div>
+  <div class="card-body">Computer Vision: распознавание объектов для новичков
+
+В этом посте разбираем computer vision: распознавание объектов для новичков.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Полный гайд в курсе. Переходи по ссылке в описании</div>
+  <div class="card-hashtags"><span class="tag">#deeplearning</span> <span class="tag">#ии</span> <span class="tag">#deeplearning</span> <span class="tag">#машинноеобучение</span> <span class="tag">#python</span> <span class="tag">#llm</span> <span class="tag">#machinelearning</span> <span class="tag">#искусственныйинтеллект</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=t...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-11 11:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Как пройти сертификацию CEH — мой опыт</div>
+  <div class="card-hook">3 ошибки новичка в Cyber Security, которые стоят карьеры</div>
+  <div class="card-body">Как пройти сертификацию CEH — мой опыт
+
+В этом посте разбираем как пройти сертификацию ceh — мой опыт.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#кибербезопасность</span> <span class="tag">#cybersecurity</span> <span class="tag">#информационнаябезопасность</span> <span class="tag">#безопасность</span> <span class="tag">#infosec</span> <span class="tag">#взлом</span> <span class="tag">#pentest</span> <span class="tag">#пентест</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=yout...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-11 16:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Bloodhound: визуализация Active Directory</div>
+  <div class="card-hook">Я потратил 100 часов, чтобы ты не тратил ни одного.</div>
+  <div class="card-body">Bloodhound: визуализация Active Directory
+
+В этом посте разбираем bloodhound: визуализация active directory.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#пентест</span> <span class="tag">#взлом</span> <span class="tag">#pentesting</span> <span class="tag">#redteam</span> <span class="tag">#oscp</span> <span class="tag">#offsec</span> <span class="tag">#activedirectory</span> <span class="tag">#activedirectory</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=youtube&amp;u...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-11 22:00</span>
+    <span class="card-format">full_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">AI-агенты: как они работают и зачем нужны</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">AI-агенты: как они работают и зачем нужны
+
+В этом посте разбираем ai-агенты: как они работают и зачем нужны.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Сохрани, чтобы не потерять! Ставь лайк</div>
+  <div class="card-hashtags"><span class="tag">#datascience</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#python</span> <span class="tag">#machinelearning</span> <span class="tag">#artificialintelligence</span> <span class="tag">#deeplearning</span> <span class="tag">#ии</span> <span class="tag">#нейросети</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=y...</div>
+</div></div></div>
+<div class="day-section"><h2 class="day-title">2026-11-12 (Чт)</h2><div class="day-cards"><div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-12 09:00</span>
+    <span class="card-format">reels</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Privilege Escalation в Windows: топ-5 техник</div>
+  <div class="card-hook">Топ-инструмент для Red Team в 2024 году</div>
+  <div class="card-body">Privilege Escalation в Windows: топ-5 техник
+
+В этом посте разбираем privilege escalation в windows: топ-5 техник.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Сохрани, чтобы не потерять! Ставь лайк</div>
+  <div class="card-hashtags"><span class="tag">#взлом</span> <span class="tag">#activedirectory</span> <span class="tag">#redteam</span> <span class="tag">#privesc</span> <span class="tag">#redteam</span> <span class="tag">#lateralmovement</span> <span class="tag">#offsec</span> <span class="tag">#activedirectory</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-12 14:00</span>
+    <span class="card-format">carousel</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Reverse Engineering: с чего начать</div>
+  <div class="card-hook">Бесплатно vs Платно: что реально работает в Cyber Security</div>
+  <div class="card-body">Reverse Engineering: с чего начать
+
+В этом посте разбираем reverse engineering: с чего начать.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Поделись с другом, которому это нужно</div>
+  <div class="card-hashtags"><span class="tag">#hackerlife</span> <span class="tag">#ethicalhacking</span> <span class="tag">#информационнаябезопасность</span> <span class="tag">#защитаданных</span> <span class="tag">#кибератака</span> <span class="tag">#пентест</span> <span class="tag">#взлом</span> <span class="tag">#ctf</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=inst...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-12 20:00</span>
+    <span class="card-format">stories</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">WiFi Pineapple с AliExpress: стоит ли?</div>
+  <div class="card-hook">Тебя могут взломать за 5 минут. Вот как.</div>
+  <div class="card-body">WiFi Pineapple с AliExpress: стоит ли?
+
+В этом посте разбираем wifi pineapple с aliexpress: стоит ли?.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#unboxing</span> <span class="tag">#gadgets</span> <span class="tag">#techreview</span> <span class="tag">#техника</span> <span class="tag">#обзор</span> <span class="tag">#aliexpress</span> <span class="tag">#гаджеты</span> <span class="tag">#hackergadgets</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-12 10:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">LangChain: создание AI-приложений</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">LangChain: создание AI-приложений
+
+В этом посте разбираем langchain: создание ai-приложений.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#ии</span> <span class="tag">#python</span> <span class="tag">#нейросети</span> <span class="tag">#python</span> <span class="tag">#deeplearning</span> <span class="tag">#ai</span> <span class="tag">#datascience</span> <span class="tag">#chatgpt</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=t...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-12 15:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Lateral Movement: как хакеры перемещаются по сети</div>
+  <div class="card-hook">POV: ты впервые открываешь Red Team</div>
+  <div class="card-body">Lateral Movement: как хакеры перемещаются по сети
+
+В этом посте разбираем lateral movement: как хакеры перемещаются по сети.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#oscp</span> <span class="tag">#redteam</span> <span class="tag">#offsec</span> <span class="tag">#activedirectory</span> <span class="tag">#lateralmovement</span> <span class="tag">#redteam</span> <span class="tag">#пентест</span> <span class="tag">#хакинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=tiktok&amp;ut...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-12 21:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Как получить OSCP — подготовка и советы</div>
+  <div class="card-hook">Это должен знать каждый, кто работает в IT...</div>
+  <div class="card-body">Как получить OSCP — подготовка и советы
+
+В этом посте разбираем как получить oscp — подготовка и советы.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#redteam</span> <span class="tag">#наступательнаябезопасность</span> <span class="tag">#lateralmovement</span> <span class="tag">#activedirectory</span> <span class="tag">#пентест</span> <span class="tag">#privesc</span> <span class="tag">#хакинг</span> <span class="tag">#redteam</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=tiktok&amp;ut...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-12 11:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Data Science: roadmap для карьеры</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">Data Science: roadmap для карьеры
+
+В этом посте разбираем data science: roadmap для карьеры.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#chatgpt</span> <span class="tag">#ai</span> <span class="tag">#machinelearning</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#python</span> <span class="tag">#ии</span> <span class="tag">#python</span> <span class="tag">#llm</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=y...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-12 16:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">Как настроить мониторинг безопасности с нуля</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">Как настроить мониторинг безопасности с нуля
+
+В этом посте разбираем как настроить мониторинг безопасности с нуля.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Сохрани, чтобы не потерять! Ставь лайк</div>
+  <div class="card-hashtags"><span class="tag">#soc</span> <span class="tag">#threatintel</span> <span class="tag">#incidentresponse</span> <span class="tag">#threathunting</span> <span class="tag">#форензика</span> <span class="tag">#blueteam</span> <span class="tag">#soc</span> <span class="tag">#dfir</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=youtube&amp;...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-12 22:00</span>
+    <span class="card-format">full_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">NLP: обработка естественного языка на пальцах</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">NLP: обработка естественного языка на пальцах
+
+В этом посте разбираем nlp: обработка естественного языка на пальцах.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#machinelearning</span> <span class="tag">#машинноеобучение</span> <span class="tag">#artificialintelligence</span> <span class="tag">#deeplearning</span> <span class="tag">#llm</span> <span class="tag">#deeplearning</span> <span class="tag">#python</span> <span class="tag">#datascience</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=y...</div>
+</div></div></div>
+<div class="day-section"><h2 class="day-title">2026-11-13 (Пт)</h2><div class="day-cards"><div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-13 09:00</span>
+    <span class="card-format">reels</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">ESP32: хакерские проекты для начинающих</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">ESP32: хакерские проекты для начинающих
+
+В этом посте разбираем esp32: хакерские проекты для начинающих.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#техника</span> <span class="tag">#techreview</span> <span class="tag">#обзор</span> <span class="tag">#gadgets</span> <span class="tag">#hackergadgets</span> <span class="tag">#aliexpress</span> <span class="tag">#aliexpress</span> <span class="tag">#securitytools</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-13 14:00</span>
+    <span class="card-format">carousel</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Как хакеры взламывают Wi-Fi за 5 минут (и как защититься)</div>
+  <div class="card-hook">Как зарабатывать на Cyber Security? Рассказываю.</div>
+  <div class="card-body">Как хакеры взламывают Wi-Fi за 5 минут (и как защититься)
+
+В этом посте разбираем как хакеры взламывают wi-fi за 5 минут (и как защититься).
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#этичныйхакинг</span> <span class="tag">#hackerlife</span> <span class="tag">#защитаданных</span> <span class="tag">#взлом</span> <span class="tag">#hacking</span> <span class="tag">#пентест</span> <span class="tag">#хакер</span> <span class="tag">#ethicalhacking</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=inst...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-13 20:00</span>
+    <span class="card-format">stories</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">Flipper Zero vs дешевые аналоги с AliExpress</div>
+  <div class="card-hook">Тебя могут взломать за 5 минут. Вот как.</div>
+  <div class="card-body">Flipper Zero vs дешевые аналоги с AliExpress
+
+В этом посте разбираем flipper zero vs дешевые аналоги с aliexpress.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#aliexpress</span> <span class="tag">#техника</span> <span class="tag">#обзор</span> <span class="tag">#securitytools</span> <span class="tag">#hackergadgets</span> <span class="tag">#unboxing</span> <span class="tag">#распаковка</span> <span class="tag">#хакерскиегаджеты</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-13 10:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">RAG: как сделать AI который знает ваши документы</div>
+  <div class="card-hook">Это должен знать каждый, кто работает в IT...</div>
+  <div class="card-body">RAG: как сделать AI который знает ваши документы
+
+В этом посте разбираем rag: как сделать ai который знает ваши документы.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хватит смотреть, пора действовать. Курс в шапке</div>
+  <div class="card-hashtags"><span class="tag">#machinelearning</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#llm</span> <span class="tag">#ai</span> <span class="tag">#deeplearning</span> <span class="tag">#python</span> <span class="tag">#deeplearning</span> <span class="tag">#python</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=t...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-13 15:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Фишинг: как распознать и не попасться</div>
+  <div class="card-hook">Бесплатно vs Платно: что реально работает в Cyber Security</div>
+  <div class="card-body">Фишинг: как распознать и не попасться
+
+В этом посте разбираем фишинг: как распознать и не попасться.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Полный гайд в курсе. Переходи по ссылке в описании</div>
+  <div class="card-hashtags"><span class="tag">#защитаданных</span> <span class="tag">#bugbounty</span> <span class="tag">#hackerlife</span> <span class="tag">#кибератака</span> <span class="tag">#infosec</span> <span class="tag">#cybersec</span> <span class="tag">#хакер</span> <span class="tag">#безопасность</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=tikt...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-13 21:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Reinforcement Learning: обучение с подкреплением</div>
+  <div class="card-hook">Этот инструмент изменил мою карьеру навсегда.</div>
+  <div class="card-body">Reinforcement Learning: обучение с подкреплением
+
+В этом посте разбираем reinforcement learning: обучение с подкреплением.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хватит смотреть, пора действовать. Курс в шапке</div>
+  <div class="card-hashtags"><span class="tag">#machinelearning</span> <span class="tag">#нейросети</span> <span class="tag">#deeplearning</span> <span class="tag">#python</span> <span class="tag">#ai</span> <span class="tag">#datascience</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#ии</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=t...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-13 11:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Криптография для хакеров: основы шифрования</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">Криптография для хакеров: основы шифрования
+
+В этом посте разбираем криптография для хакеров: основы шифрования.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#пентест</span> <span class="tag">#offsec</span> <span class="tag">#hacking</span> <span class="tag">#ethicalhacking</span> <span class="tag">#хакер</span> <span class="tag">#pentest</span> <span class="tag">#hackerlife</span> <span class="tag">#ctf</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=yout...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-13 16:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Как настроить безопасный VPN за 10 минут</div>
+  <div class="card-hook">Стоп. Если ты не знаешь Cyber Security — смотри до конца.</div>
+  <div class="card-body">Как настроить безопасный VPN за 10 минут
+
+В этом посте разбираем как настроить безопасный vpn за 10 минут.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#cybersec</span> <span class="tag">#infosec</span> <span class="tag">#кибератака</span> <span class="tag">#ethicalhacking</span> <span class="tag">#этичныйхакинг</span> <span class="tag">#пентест</span> <span class="tag">#хакер</span> <span class="tag">#информационнаябезопасность</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=yout...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-13 22:00</span>
+    <span class="card-format">full_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Пост-эксплуатация: что делать после взлома</div>
+  <div class="card-hook">Тебя могут взломать за 5 минут. Вот как.</div>
+  <div class="card-body">Пост-эксплуатация: что делать после взлома
+
+В этом посте разбираем пост-эксплуатация: что делать после взлома.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Полный гайд в курсе. Переходи по ссылке в описании</div>
+  <div class="card-hashtags"><span class="tag">#offsec</span> <span class="tag">#activedirectory</span> <span class="tag">#пентест</span> <span class="tag">#oscp</span> <span class="tag">#redteam</span> <span class="tag">#pentesting</span> <span class="tag">#lateralmovement</span> <span class="tag">#хакинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=youtube&amp;u...</div>
+</div></div></div>
+<div class="day-section"><h2 class="day-title">2026-11-14 (Сб)</h2><div class="day-cards"><div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-14 09:00</span>
+    <span class="card-format">reels</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Phishing-кампании: как строят Red Team</div>
+  <div class="card-hook">POV: ты впервые открываешь Red Team</div>
+  <div class="card-body">Phishing-кампании: как строят Red Team
+
+В этом посте разбираем phishing-кампании: как строят red team.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#redteam</span> <span class="tag">#redteam</span> <span class="tag">#взлом</span> <span class="tag">#наступательнаябезопасность</span> <span class="tag">#хакинг</span> <span class="tag">#пентест</span> <span class="tag">#privesc</span> <span class="tag">#oscp</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-14 14:00</span>
+    <span class="card-format">carousel</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">Базовые настройки безопасности Linux-сервера</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">Базовые настройки безопасности Linux-сервера
+
+В этом посте разбираем базовые настройки безопасности linux-сервера.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подробнее в нашем курсе — ссылка в био</div>
+  <div class="card-hashtags"><span class="tag">#мониторинг</span> <span class="tag">#threathunting</span> <span class="tag">#blueteam</span> <span class="tag">#malwareanalysis</span> <span class="tag">#защитаинформации</span> <span class="tag">#dfir</span> <span class="tag">#blueteam</span> <span class="tag">#soc</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=instagra...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-14 20:00</span>
+    <span class="card-format">stories</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">TensorFlow vs PyTorch: что выбрать в 2024</div>
+  <div class="card-hook">Это должен знать каждый, кто работает в IT...</div>
+  <div class="card-body">TensorFlow vs PyTorch: что выбрать в 2024
+
+В этом посте разбираем tensorflow vs pytorch: что выбрать в 2024.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#ии</span> <span class="tag">#машинноеобучение</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#python</span> <span class="tag">#python</span> <span class="tag">#datascience</span> <span class="tag">#ai</span> <span class="tag">#artificialintelligence</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=i...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-14 10:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">Threat Intelligence: источники и инструменты</div>
+  <div class="card-hook">Этот гаджет за $10 заменяет оборудование за $500</div>
+  <div class="card-body">Threat Intelligence: источники и инструменты
+
+В этом посте разбираем threat intelligence: источники и инструменты.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подробнее в нашем курсе — ссылка в био</div>
+  <div class="card-hashtags"><span class="tag">#soc</span> <span class="tag">#incidentresponse</span> <span class="tag">#форензика</span> <span class="tag">#malwareanalysis</span> <span class="tag">#soc</span> <span class="tag">#инцидентыбезопасности</span> <span class="tag">#blueteam</span> <span class="tag">#dfir</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=tiktok&amp;u...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-14 15:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Kali Linux: первые шаги для новичка</div>
+  <div class="card-hook">Бесплатно vs Платно: что реально работает в Cyber Security</div>
+  <div class="card-body">Kali Linux: первые шаги для новичка
+
+В этом посте разбираем kali linux: первые шаги для новичка.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#хакинг</span> <span class="tag">#кибербезопасность</span> <span class="tag">#offsec</span> <span class="tag">#защитаданных</span> <span class="tag">#hacking</span> <span class="tag">#взлом</span> <span class="tag">#безопасность</span> <span class="tag">#этичныйхакинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=tikt...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-14 21:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Топ-10 AI-инструментов для продуктивности</div>
+  <div class="card-hook">Стоп. Если ты не знаешь Machine Learning — смотри до конца.</div>
+  <div class="card-body">Топ-10 AI-инструментов для продуктивности
+
+В этом посте разбираем топ-10 ai-инструментов для продуктивности.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#datascience</span> <span class="tag">#машинноеобучение</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#llm</span> <span class="tag">#ai</span> <span class="tag">#deeplearning</span> <span class="tag">#machinelearning</span> <span class="tag">#chatgpt</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=t...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-14 11:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">OSINT: как найти информацию о любом человеке в интернете</div>
+  <div class="card-hook">Ты точно не знал, что Cyber Security умеет это.</div>
+  <div class="card-body">OSINT: как найти информацию о любом человеке в интернете
+
+В этом посте разбираем osint: как найти информацию о любом человеке в интернете.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#взлом</span> <span class="tag">#хакер</span> <span class="tag">#хакинг</span> <span class="tag">#информационнаябезопасность</span> <span class="tag">#offsec</span> <span class="tag">#кибератака</span> <span class="tag">#ethicalhacking</span> <span class="tag">#ctf</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=yout...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-14 16:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">CTF-соревнования: лучшие платформы для практики</div>
+  <div class="card-hook">Тебя могут взломать за 5 минут. Вот как.</div>
+  <div class="card-body">CTF-соревнования: лучшие платформы для практики
+
+В этом посте разбираем ctf-соревнования: лучшие платформы для практики.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#hackerlife</span> <span class="tag">#этичныйхакинг</span> <span class="tag">#защитаданных</span> <span class="tag">#ethicalhacking</span> <span class="tag">#cybersecurity</span> <span class="tag">#информационнаябезопасность</span> <span class="tag">#хакинг</span> <span class="tag">#pentest</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=yout...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-14 22:00</span>
+    <span class="card-format">full_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Active Directory: атаки и защита</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">Active Directory: атаки и защита
+
+В этом посте разбираем active directory: атаки и защита.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Поделись с другом, которому это нужно</div>
+  <div class="card-hashtags"><span class="tag">#offsec</span> <span class="tag">#oscp</span> <span class="tag">#activedirectory</span> <span class="tag">#privesc</span> <span class="tag">#наступательнаябезопасность</span> <span class="tag">#пентест</span> <span class="tag">#activedirectory</span> <span class="tag">#redteam</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=youtube&amp;u...</div>
+</div></div></div>
+<div class="day-section"><h2 class="day-title">2026-11-15 (Вс)</h2><div class="day-cards"><div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-15 09:00</span>
+    <span class="card-format">reels</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">SIEM-системы: Splunk vs ELK — что выбрать</div>
+  <div class="card-hook">Стоп. Если ты не знаешь Blue Team — смотри до конца.</div>
+  <div class="card-body">SIEM-системы: Splunk vs ELK — что выбрать
+
+В этом посте разбираем siem-системы: splunk vs elk — что выбрать.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Поделись с другом, которому это нужно</div>
+  <div class="card-hashtags"><span class="tag">#форензика</span> <span class="tag">#blueteam</span> <span class="tag">#мониторинг</span> <span class="tag">#threathunting</span> <span class="tag">#incidentresponse</span> <span class="tag">#malwareanalysis</span> <span class="tag">#защитаинформации</span> <span class="tag">#soc</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=instagra...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-15 14:00</span>
+    <span class="card-format">carousel</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Privilege Escalation в Linux: практический гайд</div>
+  <div class="card-hook">Я потратил 100 часов, чтобы ты не тратил ни одного.</div>
+  <div class="card-body">Privilege Escalation в Linux: практический гайд
+
+В этом посте разбираем privilege escalation в linux: практический гайд.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#redteam</span> <span class="tag">#redteam</span> <span class="tag">#activedirectory</span> <span class="tag">#lateralmovement</span> <span class="tag">#activedirectory</span> <span class="tag">#oscp</span> <span class="tag">#хакинг</span> <span class="tag">#пентест</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-15 20:00</span>
+    <span class="card-format">stories</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">Threat Hunting: как искать угрозы проактивно</div>
+  <div class="card-hook">Как зарабатывать на Blue Team? Рассказываю.</div>
+  <div class="card-body">Threat Hunting: как искать угрозы проактивно
+
+В этом посте разбираем threat hunting: как искать угрозы проактивно.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#blueteam</span> <span class="tag">#форензика</span> <span class="tag">#dfir</span> <span class="tag">#мониторинг</span> <span class="tag">#soc</span> <span class="tag">#blueteam</span> <span class="tag">#threatintel</span> <span class="tag">#incidentresponse</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=instagra...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-15 10:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Burp Suite: полный гайд для начинающих</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">Burp Suite: полный гайд для начинающих
+
+В этом посте разбираем burp suite: полный гайд для начинающих.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#информационнаябезопасность</span> <span class="tag">#пентест</span> <span class="tag">#hackerlife</span> <span class="tag">#ethicalhacking</span> <span class="tag">#offsec</span> <span class="tag">#ctf</span> <span class="tag">#кибербезопасность</span> <span class="tag">#hacking</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=tikt...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-15 15:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">SQL-инъекции: как это работает и как защититься</div>
+  <div class="card-hook">Секрет, который не расскажут на обычных курсах.</div>
+  <div class="card-body">SQL-инъекции: как это работает и как защититься
+
+В этом посте разбираем sql-инъекции: как это работает и как защититься.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#этичныйхакинг</span> <span class="tag">#cybersec</span> <span class="tag">#cybersecurity</span> <span class="tag">#пентест</span> <span class="tag">#кибербезопасность</span> <span class="tag">#хакинг</span> <span class="tag">#infosec</span> <span class="tag">#hackerlife</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=tikt...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-15 21:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Prompt Engineering: как правильно общаться с AI</div>
+  <div class="card-hook">Бесплатно vs Платно: что реально работает в Machine Learning</div>
+  <div class="card-body">Prompt Engineering: как правильно общаться с AI
+
+В этом посте разбираем prompt engineering: как правильно общаться с ai.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#llm</span> <span class="tag">#ai</span> <span class="tag">#python</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#python</span> <span class="tag">#datascience</span> <span class="tag">#нейросети</span> <span class="tag">#artificialintelligence</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=t...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-15 11:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">Сетевые анализаторы с AliExpress: топ-5</div>
+  <div class="card-hook">Стоп. Если ты не знаешь AliExpress - Гаджеты — смотри до конца.</div>
+  <div class="card-body">Сетевые анализаторы с AliExpress: топ-5
+
+В этом посте разбираем сетевые анализаторы с aliexpress: топ-5.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Сохрани, чтобы не потерять! Ставь лайк</div>
+  <div class="card-hashtags"><span class="tag">#aliexpress</span> <span class="tag">#unboxing</span> <span class="tag">#хакерскиегаджеты</span> <span class="tag">#распаковка</span> <span class="tag">#gadgets</span> <span class="tag">#техника</span> <span class="tag">#hackergadgets</span> <span class="tag">#гаджеты</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=youtube&amp;u...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-15 16:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Социальная инженерия: как хакеры обманывают людей</div>
+  <div class="card-hook">Ты точно не знал, что Cyber Security умеет это.</div>
+  <div class="card-body">Социальная инженерия: как хакеры обманывают людей
+
+В этом посте разбираем социальная инженерия: как хакеры обманывают людей.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#hackerlife</span> <span class="tag">#хакинг</span> <span class="tag">#кибератака</span> <span class="tag">#ethicalhacking</span> <span class="tag">#ctf</span> <span class="tag">#pentest</span> <span class="tag">#cybersecurity</span> <span class="tag">#хакер</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=yout...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-15 22:00</span>
+    <span class="card-format">full_video</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Как обучить свою нейросеть с нуля</div>
+  <div class="card-hook">Этот инструмент изменил мою карьеру навсегда.</div>
+  <div class="card-body">Как обучить свою нейросеть с нуля
+
+В этом посте разбираем как обучить свою нейросеть с нуля.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#искусственныйинтеллект</span> <span class="tag">#deeplearning</span> <span class="tag">#машинноеобучение</span> <span class="tag">#deeplearning</span> <span class="tag">#machinelearning</span> <span class="tag">#artificialintelligence</span> <span class="tag">#ai</span> <span class="tag">#datascience</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=y...</div>
+</div></div></div>
+<div class="day-section"><h2 class="day-title">2026-11-16 (Пн)</h2><div class="day-cards"><div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-16 09:00</span>
+    <span class="card-format">reels</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">SOC-аналитик: что делает и сколько зарабатывает</div>
+  <div class="card-hook">Стоп. Если ты не знаешь Blue Team — смотри до конца.</div>
+  <div class="card-body">SOC-аналитик: что делает и сколько зарабатывает
+
+В этом посте разбираем soc-аналитик: что делает и сколько зарабатывает.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#incidentresponse</span> <span class="tag">#blueteam</span> <span class="tag">#dfir</span> <span class="tag">#форензика</span> <span class="tag">#blueteam</span> <span class="tag">#malwareanalysis</span> <span class="tag">#защитаинформации</span> <span class="tag">#мониторинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=instagra...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-16 14:00</span>
+    <span class="card-format">carousel</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Как AI меняет кибербезопасность</div>
+  <div class="card-hook">Ты точно не знал, что Machine Learning умеет это.</div>
+  <div class="card-body">Как AI меняет кибербезопасность
+
+В этом посте разбираем как ai меняет кибербезопасность.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Подписывайся, чтобы не пропустить следующий разбор</div>
+  <div class="card-hashtags"><span class="tag">#ии</span> <span class="tag">#datascience</span> <span class="tag">#нейросети</span> <span class="tag">#datascience</span> <span class="tag">#deeplearning</span> <span class="tag">#deeplearning</span> <span class="tag">#python</span> <span class="tag">#machinelearning</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=i...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-16 20:00</span>
+    <span class="card-format">stories</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">Stable Diffusion: генерация изображений на своем GPU</div>
+  <div class="card-hook">3 ошибки новичка в Machine Learning, которые стоят карьеры</div>
+  <div class="card-body">Stable Diffusion: генерация изображений на своем GPU
+
+В этом посте разбираем stable diffusion: генерация изображений на своем gpu.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Сохрани, чтобы не потерять! Ставь лайк</div>
+  <div class="card-hashtags"><span class="tag">#chatgpt</span> <span class="tag">#datascience</span> <span class="tag">#ии</span> <span class="tag">#deeplearning</span> <span class="tag">#ai</span> <span class="tag">#artificialintelligence</span> <span class="tag">#llm</span> <span class="tag">#python</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=i...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-16 10:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">XSS-атаки: разбор реальных кейсов</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">XSS-атаки: разбор реальных кейсов
+
+В этом посте разбираем xss-атаки: разбор реальных кейсов.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#hacking</span> <span class="tag">#кибератака</span> <span class="tag">#offsec</span> <span class="tag">#пентест</span> <span class="tag">#взлом</span> <span class="tag">#cybersec</span> <span class="tag">#cybersecurity</span> <span class="tag">#хакинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=tikt...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-16 15:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Cloud Security: атаки на AWS/Azure</div>
+  <div class="card-hook">Хакеры используют это каждый день. А ты?</div>
+  <div class="card-body">Cloud Security: атаки на AWS/Azure
+
+В этом посте разбираем cloud security: атаки на aws/azure.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#offsec</span> <span class="tag">#privesc</span> <span class="tag">#activedirectory</span> <span class="tag">#pentesting</span> <span class="tag">#хакинг</span> <span class="tag">#activedirectory</span> <span class="tag">#наступательнаябезопасность</span> <span class="tag">#redteam</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=tiktok&amp;ut...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-16 21:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">5 инструментов для пентеста, которые должен знать каждый</div>
+  <div class="card-hook">Я потратил 100 часов, чтобы ты не тратил ни одного.</div>
+  <div class="card-body">5 инструментов для пентеста, которые должен знать каждый
+
+В этом посте разбираем 5 инструментов для пентеста, которые должен знать каждый.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хватит смотреть, пора действовать. Курс в шапке</div>
+  <div class="card-hashtags"><span class="tag">#bugbounty</span> <span class="tag">#hacking</span> <span class="tag">#кибербезопасность</span> <span class="tag">#hackerlife</span> <span class="tag">#взлом</span> <span class="tag">#ctf</span> <span class="tag">#информационнаябезопасность</span> <span class="tag">#хакинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=tikt...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-16 11:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Machine Learning &amp; AI</div>
+  <div class="card-topic">ChatGPT vs Claude vs Gemini: большое сравнение</div>
+  <div class="card-hook">Это должен знать каждый, кто работает в IT...</div>
+  <div class="card-body">ChatGPT vs Claude vs Gemini: большое сравнение
+
+В этом посте разбираем chatgpt vs claude vs gemini: большое сравнение.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Полный гайд в курсе. Переходи по ссылке в описании</div>
+  <div class="card-hashtags"><span class="tag">#машинноеобучение</span> <span class="tag">#datascience</span> <span class="tag">#ai</span> <span class="tag">#deeplearning</span> <span class="tag">#искусственныйинтеллект</span> <span class="tag">#ии</span> <span class="tag">#datascience</span> <span class="tag">#нейросети</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/machine-learning?utm_source=y...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-16 16:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">HackRF vs RTL-SDR: что купить начинающему</div>
+  <div class="card-hook">3 ошибки новичка в AliExpress - Гаджеты, которые стоят карьеры</div>
+  <div class="card-body">HackRF vs RTL-SDR: что купить начинающему
+
+В этом посте разбираем hackrf vs rtl-sdr: что купить начинающему.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Заказывал через нашу ссылку — все пришло. Ссылка в био</div>
+  <div class="card-hashtags"><span class="tag">#обзор</span> <span class="tag">#hackergadgets</span> <span class="tag">#хакерскиегаджеты</span> <span class="tag">#techreview</span> <span class="tag">#гаджеты</span> <span class="tag">#securitytools</span> <span class="tag">#unboxing</span> <span class="tag">#распаковка</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=youtube&amp;u...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-16 22:00</span>
+    <span class="card-format">full_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Cobalt Strike: что это и как работает</div>
+  <div class="card-hook">Как зарабатывать на Red Team? Рассказываю.</div>
+  <div class="card-body">Cobalt Strike: что это и как работает
+
+В этом посте разбираем cobalt strike: что это и как работает.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#privesc</span> <span class="tag">#redteam</span> <span class="tag">#redteam</span> <span class="tag">#activedirectory</span> <span class="tag">#наступательнаябезопасность</span> <span class="tag">#offsec</span> <span class="tag">#пентест</span> <span class="tag">#хакинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=youtube&amp;u...</div>
+</div></div></div>
+<div class="day-section"><h2 class="day-title">2026-11-17 (Вт)</h2><div class="day-cards"><div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-17 09:00</span>
+    <span class="card-format">reels</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">Raspberry Pi для хакинга: лучшие проекты</div>
+  <div class="card-hook">Этот инструмент изменил мою карьеру навсегда.</div>
+  <div class="card-body">Raspberry Pi для хакинга: лучшие проекты
+
+В этом посте разбираем raspberry pi для хакинга: лучшие проекты.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#aliexpress</span> <span class="tag">#gadgets</span> <span class="tag">#распаковка</span> <span class="tag">#techreview</span> <span class="tag">#aliexpress</span> <span class="tag">#hackergadgets</span> <span class="tag">#обзор</span> <span class="tag">#unboxing</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-17 14:00</span>
+    <span class="card-format">carousel</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">Камеры безопасности: обзор и как их взламывают</div>
+  <div class="card-hook">Топ-инструмент для AliExpress - Гаджеты в 2024 году</div>
+  <div class="card-body">Камеры безопасности: обзор и как их взламывают
+
+В этом посте разбираем камеры безопасности: обзор и как их взламывают.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#unboxing</span> <span class="tag">#gadgets</span> <span class="tag">#aliexpress</span> <span class="tag">#techreview</span> <span class="tag">#обзор</span> <span class="tag">#securitytools</span> <span class="tag">#хакерскиегаджеты</span> <span class="tag">#распаковка</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=instagram...</div>
+</div>
+<div class="card" style="--accent: #E1306C; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #E1306C">IG</span>
+    <span class="platform-name">Instagram</span>
+    <span class="card-date">2026-11-17 20:00</span>
+    <span class="card-format">stories</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">Malware Analysis: разбор реального трояна</div>
+  <div class="card-hook">POV: ты впервые открываешь Blue Team</div>
+  <div class="card-body">Malware Analysis: разбор реального трояна
+
+В этом посте разбираем malware analysis: разбор реального трояна.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#инцидентыбезопасности</span> <span class="tag">#incidentresponse</span> <span class="tag">#threathunting</span> <span class="tag">#защитаинформации</span> <span class="tag">#soc</span> <span class="tag">#blueteam</span> <span class="tag">#blueteam</span> <span class="tag">#malwareanalysis</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=instagra...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-17 10:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Blue Team / Defensive Security</div>
+  <div class="card-topic">EDR-решения: как они ловят хакеров</div>
+  <div class="card-hook">Этот гаджет за $10 заменяет оборудование за $500</div>
+  <div class="card-body">EDR-решения: как они ловят хакеров
+
+В этом посте разбираем edr-решения: как они ловят хакеров.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хватит смотреть, пора действовать. Курс в шапке</div>
+  <div class="card-hashtags"><span class="tag">#incidentresponse</span> <span class="tag">#blueteam</span> <span class="tag">#инцидентыбезопасности</span> <span class="tag">#threatintel</span> <span class="tag">#защитаинформации</span> <span class="tag">#soc</span> <span class="tag">#форензика</span> <span class="tag">#мониторинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/blue-team?utm_source=tiktok&amp;u...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-17 15:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Physical Security: проникновение в здание</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">Physical Security: проникновение в здание
+
+В этом посте разбираем physical security: проникновение в здание.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Начни учиться уже сегодня — ссылка в профиле</div>
+  <div class="card-hashtags"><span class="tag">#redteam</span> <span class="tag">#redteam</span> <span class="tag">#activedirectory</span> <span class="tag">#наступательнаябезопасность</span> <span class="tag">#offsec</span> <span class="tag">#activedirectory</span> <span class="tag">#oscp</span> <span class="tag">#хакинг</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=tiktok&amp;ut...</div>
+</div>
+<div class="card" style="--accent: #00F2EA; --card-bg: #FF0050">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #00F2EA">TT</span>
+    <span class="platform-name">Tiktok</span>
+    <span class="card-date">2026-11-17 21:00</span>
+    <span class="card-format">short_video</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">Evasion Techniques: как обойти антивирус</div>
+  <div class="card-hook">Я потратил 100 часов, чтобы ты не тратил ни одного.</div>
+  <div class="card-body">Evasion Techniques: как обойти антивирус
+
+В этом посте разбираем evasion techniques: как обойти антивирус.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Напиши в комменты, какой инструмент используешь ты</div>
+  <div class="card-hashtags"><span class="tag">#activedirectory</span> <span class="tag">#хакинг</span> <span class="tag">#пентест</span> <span class="tag">#offsec</span> <span class="tag">#pentesting</span> <span class="tag">#redteam</span> <span class="tag">#activedirectory</span> <span class="tag">#privesc</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=tiktok&amp;ut...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-17 11:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Red Team / Offensive Security</div>
+  <div class="card-topic">C2-фреймворки: обзор для Red Team</div>
+  <div class="card-hook">Топ-инструмент для Red Team в 2024 году</div>
+  <div class="card-body">C2-фреймворки: обзор для Red Team
+
+В этом посте разбираем c2-фреймворки: обзор для red team.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Хочешь освоить это на практике? Ссылка на курс в шапке профиля</div>
+  <div class="card-hashtags"><span class="tag">#redteam</span> <span class="tag">#activedirectory</span> <span class="tag">#пентест</span> <span class="tag">#oscp</span> <span class="tag">#redteam</span> <span class="tag">#activedirectory</span> <span class="tag">#наступательнаябезопасность</span> <span class="tag">#взлом</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/red-team?utm_source=youtube&amp;u...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-17 16:00</span>
+    <span class="card-format">shorts</span>
+  </div>
+  <div class="card-pillar">Cyber Security &amp; Ethical Hacking</div>
+  <div class="card-topic">Bug Bounty: как заработать на поиске уязвимостей</div>
+  <div class="card-hook">3 ошибки новичка в Cyber Security, которые стоят карьеры</div>
+  <div class="card-body">Bug Bounty: как заработать на поиске уязвимостей
+
+В этом посте разбираем bug bounty: как заработать на поиске уязвимостей.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Сохрани, чтобы не потерять! Ставь лайк</div>
+  <div class="card-hashtags"><span class="tag">#этичныйхакинг</span> <span class="tag">#bugbounty</span> <span class="tag">#защитаданных</span> <span class="tag">#кибератака</span> <span class="tag">#информационнаябезопасность</span> <span class="tag">#хакинг</span> <span class="tag">#infosec</span> <span class="tag">#hackerlife</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://shadowrigs.com/courses/cybersecurity?utm_source=yout...</div>
+</div>
+<div class="card" style="--accent: #FF0000; --card-bg: #1a1a2e">
+  <div class="card-header">
+    <span class="platform-badge" style="background: #FF0000">YT</span>
+    <span class="platform-name">Youtube</span>
+    <span class="card-date">2026-11-17 22:00</span>
+    <span class="card-format">full_video</span>
+  </div>
+  <div class="card-pillar">AliExpress - Гаджеты</div>
+  <div class="card-topic">Лучшие powerbank для полевого хакинга</div>
+  <div class="card-hook">99% людей не знают об этом...</div>
+  <div class="card-body">Лучшие powerbank для полевого хакинга
+
+В этом посте разбираем лучшие powerbank для полевого хакинга.
+
+Что внутри:
+- Пошаговый разбор
+- Практические примеры
+- Инструменты и ресурсы
+</div>
+  <div class="card-cta">Какую тему разобрать следующей? Пиши в комменты</div>
+  <div class="card-hashtags"><span class="tag">#techreview</span> <span class="tag">#гаджеты</span> <span class="tag">#техника</span> <span class="tag">#распаковка</span> <span class="tag">#securitytools</span> <span class="tag">#обзор</span> <span class="tag">#unboxing</span> <span class="tag">#gadgets</span></div>
+  <div class="ref-link"><span class="ref-icon">&#128279;</span> https://aliexpress.com/store/shadowrigs?utm_source=youtube&amp;u...</div>
+</div></div></div>
+</body>
+</html>

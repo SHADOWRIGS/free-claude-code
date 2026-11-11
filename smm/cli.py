@@ -166,6 +166,15 @@ def cmd_distribute(args: argparse.Namespace) -> None:
         print(f"  {platform}: {path}")
 
 
+def cmd_preview(args: argparse.Namespace) -> None:
+    from smm.preview import render_preview_file
+
+    _ensure_data_dir()
+    out = DATA_DIR / "preview.html" if not args.output else Path(args.output)
+    path = render_preview_file(days=args.days, seed=args.seed, output=out)
+    print(f"Превью сгенерировано: {path}")
+
+
 def cmd_service(args: argparse.Namespace) -> None:
     from smm.service_spec import ServiceSpec
 
@@ -253,6 +262,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_dist.add_argument("--days", type=int, default=7)
     p_dist.add_argument("--seed", type=int, default=None)
+
+    p_prev = sub.add_parser("preview", help="Generate visual HTML preview of posts")
+    p_prev.add_argument("--days", type=int, default=7)
+    p_prev.add_argument("--seed", type=int, default=None)
+    p_prev.add_argument("--output", default="")
 
     p_svc = sub.add_parser("service", help="Show service specification")
     p_svc.add_argument(
