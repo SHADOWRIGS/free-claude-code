@@ -346,3 +346,109 @@ class TestAIWriter:
         assert "{platform}" in POST_PROMPT
         assert "{topic}" in POST_PROMPT
         assert "{hook}" in POST_PROMPT
+
+
+# --- Distributor tests ---
+
+
+class TestDistributor:
+    def test_build_distribution_counts(self) -> None:
+        from smm.distributor import build_distribution
+
+        dist = build_distribution(days=1, seed=42)
+        assert len(dist.instagram) == 3
+        assert len(dist.tiktok) == 3
+        assert len(dist.youtube) == 3
+
+    def test_instagram_package_fields(self) -> None:
+        from smm.distributor import build_distribution
+
+        dist = build_distribution(days=1, seed=42)
+        pkg = dist.instagram[0]
+        assert pkg.date
+        assert pkg.time
+        assert pkg.caption
+        assert pkg.hashtags
+        assert pkg.pillar
+
+    def test_tiktok_package_has_script(self) -> None:
+        from smm.distributor import build_distribution
+
+        dist = build_distribution(days=1, seed=42)
+        pkg = dist.tiktok[0]
+        assert pkg.script
+        assert pkg.hook
+        assert "Hook:" in pkg.script
+
+    def test_youtube_package_has_title(self) -> None:
+        from smm.distributor import build_distribution
+
+        dist = build_distribution(days=1, seed=42)
+        pkg = dist.youtube[0]
+        assert pkg.title
+        assert pkg.tags
+        assert pkg.description
+
+    def test_export_creates_files(self, tmp_path: Path) -> None:
+        from smm.distributor import build_distribution
+
+        dist = build_distribution(days=1, seed=42)
+        paths = dist.export_all(tmp_path / "packages")
+        assert len(paths) == 3
+        for p in paths.values():
+            assert p.exists()
+            data = json.loads(p.read_text())
+            assert isinstance(data, list)
+            assert len(data) == 3
+
+    def test_summary_output(self) -> None:
+        from smm.distributor import build_distribution
+
+        dist = build_distribution(days=1, seed=42)
+        s = dist.summary()
+        assert "Instagram: 3" in s
+        assert "TikTok: 3" in s
+        assert "YouTube: 3" in s
+        assert "Total: 9" in s
+
+
+# --- Service Spec tests ---
+
+
+class TestServiceSpec:
+    def test_tiers_count(self) -> None:
+        from smm.service_spec import TIERS
+
+        assert len(TIERS) == 3
+
+    def test_tier_prices_ascending(self) -> None:
+        from smm.service_spec import TIERS
+
+        prices = [t.price_monthly_usd for t in TIERS]
+        assert prices == sorted(prices)
+
+    def test_pricing_table(self) -> None:
+        from smm.service_spec import ServiceSpec
+
+        spec = ServiceSpec()
+        table = spec.pricing_table()
+        assert "Starter" in table
+        assert "Growth" in table
+        assert "Pro" in table
+        assert "$97" in table
+
+    def test_full_spec_sections(self) -> None:
+        from smm.service_spec import ServiceSpec
+
+        spec = ServiceSpec()
+        full = spec.full_spec()
+        assert "# SMM Automation Service" in full
+        assert "## Pricing" in full
+        assert "## Target Audience" in full
+        assert "## Deliverables" in full
+        assert "## Tech Stack" in full
+
+    def test_deliverables_count(self) -> None:
+        from smm.service_spec import DELIVERABLES
+
+        assert len(DELIVERABLES) >= 5

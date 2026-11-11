@@ -153,6 +153,29 @@ async def cmd_write(args: argparse.Namespace) -> None:
     print(f"Сохранено в {out_path}")
 
 
+def cmd_distribute(args: argparse.Namespace) -> None:
+    from smm.distributor import build_distribution
+
+    _ensure_data_dir()
+    dist = build_distribution(days=args.days, seed=args.seed)
+    out_dir = DATA_DIR / "packages"
+    paths = dist.export_all(out_dir)
+    print(dist.summary())
+    print("\nЭкспортированы пакеты:")
+    for platform, path in paths.items():
+        print(f"  {platform}: {path}")
+
+
+def cmd_service(args: argparse.Namespace) -> None:
+    from smm.service_spec import ServiceSpec
+
+    spec = ServiceSpec()
+    if args.action == "pricing":
+        print(spec.pricing_table())
+    elif args.action == "full":
+        print(spec.full_spec())
+
+
 def cmd_generate(args: argparse.Namespace) -> None:
     _ensure_data_dir()
     plan = generate_week_plan(days=args.days, seed=args.seed)
@@ -224,6 +247,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_write = sub.add_parser("write", help="AI-generate ready posts from plan")
     p_write.add_argument("--count", type=int, default=3)
     p_write.add_argument("--seed", type=int, default=None)
+
+    p_dist = sub.add_parser(
+        "distribute", help="Export platform-specific posting packages"
+    )
+    p_dist.add_argument("--days", type=int, default=7)
+    p_dist.add_argument("--seed", type=int, default=None)
+
+    p_svc = sub.add_parser("service", help="Show service specification")
+    p_svc.add_argument(
+        "action", choices=["pricing", "full"], default="pricing", nargs="?"
+    )
 
     return parser
 
