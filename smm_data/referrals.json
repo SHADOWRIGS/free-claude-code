@@ -1,0 +1,50 @@
+[
+  {
+    "label": "Курс Cyber Security & Ethical Hacking",
+    "url": "https://shadowrigs.com/courses/cybersecurity",
+    "utm_source": "",
+    "utm_medium": "social",
+    "utm_campaign": "cybersec-2024",
+    "platforms": ["instagram", "tiktok", "youtube"]
+  },
+  {
+    "label": "Курс Blue Team / Defensive Security",
+    "url": "https://shadowrigs.com/courses/blue-team",
+    "utm_source": "",
+    "utm_medium": "social",
+    "utm_campaign": "blueteam-2024",
+    "platforms": ["instagram", "tiktok", "youtube"]
+  },
+  {
+    "label": "Курс Red Team / Offensive Security",
+    "url": "https://shadowrigs.com/courses/red-team",
+    "utm_source": "",
+    "utm_medium": "social",
+    "utm_campaign": "redteam-2024",
+    "platforms": ["instagram", "tiktok", "youtube"]
+  },
+  {
+    "label": "Курс Machine Learning & AI",
+    "url": "https://shadowrigs.com/courses/machine-learning",
+    "utm_source": "",
+    "utm_medium": "social",
+    "utm_campaign": "ml-2024",
+    "platforms": ["instagram", "tiktok", "youtube"]
+  },
+  {
+    "label": "AliExpress - Гаджеты для хакеров",
+    "url": "https://aliexpress.com/store/shadowrigs",
+    "utm_source": "",
+    "utm_medium": "social",
+    "utm_campaign": "aliexpress-gadgets",
+    "platforms": ["instagram", "tiktok", "youtube"]
+  },
+  {
+    "label": "AliExpress - Сетевое оборудование",
+    "url": "https://aliexpress.com/store/shadowrigs-network",
+    "utm_source": "",
+    "utm_medium": "social",
+    "utm_campaign": "aliexpress-network",
+    "platforms": ["instagram", "tiktok", "youtube"]
+  }
+]
