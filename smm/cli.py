@@ -175,6 +175,21 @@ def cmd_preview(args: argparse.Namespace) -> None:
     print(f"Превью сгенерировано: {path}")
 
 
+def cmd_report(args: argparse.Namespace) -> None:
+    from smm.analytics import create_tracking_template
+
+    _ensure_data_dir()
+    report = create_tracking_template(days=args.days, seed=args.seed)
+    if args.format == "json":
+        out = DATA_DIR / "report.json"
+        report.export_json(out)
+    else:
+        out = DATA_DIR / "report.md"
+        report.export_markdown(out)
+    print(report.summary())
+    print(f"\nСохранено: {out}")
+
+
 def cmd_service(args: argparse.Namespace) -> None:
     from smm.service_spec import ServiceSpec
 
@@ -267,6 +282,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_prev.add_argument("--days", type=int, default=7)
     p_prev.add_argument("--seed", type=int, default=None)
     p_prev.add_argument("--output", default="")
+
+    p_report = sub.add_parser(
+        "report", help="Generate weekly analytics report template"
+    )
+    p_report.add_argument("--days", type=int, default=7)
+    p_report.add_argument("--seed", type=int, default=None)
+    p_report.add_argument("--format", choices=["json", "markdown"], default="markdown")
 
     p_svc = sub.add_parser("service", help="Show service specification")
     p_svc.add_argument(

@@ -507,3 +507,127 @@ class TestPreview:
 
         assert _escape("<script>") == "&lt;script&gt;"
         assert _escape('"test"') == "&quot;test&quot;"
+
+
+# --- Analytics tests ---
+
+
+class TestAnalytics:
+    def test_post_metrics_defaults(self) -> None:
+        from smm.analytics import PostMetrics
+
+        pm = PostMetrics(
+            date="2025-01-01",
+            platform="instagram",
+            topic="Test",
+            pillar="Cyber",
+            format="reels",
+        )
+        assert pm.impressions == 0
+        assert pm.engagement_rate == 0.0
+        assert pm.click_through_rate == 0.0
+
+    def test_engagement_rate_calculation(self) -> None:
+        from smm.analytics import PostMetrics
+
+        pm = PostMetrics(
+            date="2025-01-01",
+            platform="instagram",
+            topic="Test",
+            pillar="Cyber",
+            format="reels",
+            impressions=1000,
+            likes=50,
+            comments=10,
+            shares=5,
+            saves=15,
+        )
+        assert pm.engagement_rate == 8.0
+
+    def test_click_through_rate(self) -> None:
+        from smm.analytics import PostMetrics
+
+        pm = PostMetrics(
+            date="2025-01-01",
+            platform="tiktok",
+            topic="Test",
+            pillar="ML",
+            format="short_video",
+            impressions=2000,
+            link_clicks=40,
+        )
+        assert pm.click_through_rate == 2.0
+
+    def test_create_tracking_template(self) -> None:
+        from smm.analytics import create_tracking_template
+
+        report = create_tracking_template(days=1, seed=42)
+        assert report.total_posts == 9
+        assert all(p.impressions == 0 for p in report.posts)
+
+    def test_weekly_report_summary(self) -> None:
+        from smm.analytics import create_tracking_template
+
+        report = create_tracking_template(days=1, seed=42)
+        summary = report.summary()
+        assert "SMM" in summary
+        assert "0" in summary
+
+    def test_weekly_report_by_platform(self) -> None:
+        from smm.analytics import create_tracking_template
+
+        report = create_tracking_template(days=1, seed=42)
+        by_plat = report.by_platform()
+        assert "instagram" in by_plat
+        assert "tiktok" in by_plat
+        assert "youtube" in by_plat
+
+    def test_weekly_report_by_pillar(self) -> None:
+        from smm.analytics import create_tracking_template
+
+        report = create_tracking_template(days=1, seed=42)
+        by_pil = report.by_pillar()
+        assert len(by_pil) >= 1
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.analytics import create_tracking_template
+
+        report = create_tracking_template(days=1, seed=42)
+        out = tmp_path / "report.json"
+        report.export_json(out)
+        data = json.loads(out.read_text())
+        assert data["summary"]["total_posts"] == 9
+        assert len(data["posts"]) == 9
+
+    def test_export_markdown(self, tmp_path: Path) -> None:
+        from smm.analytics import create_tracking_template
+
+        report = create_tracking_template(days=1, seed=42)
+        out = tmp_path / "report.md"
+        report.export_markdown(out)
+        content = out.read_text()
+        assert "SMM" in content
+
+    def test_top_posts_empty(self) -> None:
+        from smm.analytics import create_tracking_template
+
+        report = create_tracking_template(days=1, seed=42)
+        top = report.top_posts(3)
+        assert len(top) == 3
+        assert all(p.engagement_rate == 0.0 for p in top)
+
+    def test_load_report_missing(self, tmp_path: Path) -> None:
+        from smm.analytics import load_report
+
+        report = load_report(tmp_path / "missing.json")
+        assert report.total_posts > 0
+
+    def test_load_report_roundtrip(self, tmp_path: Path) -> None:
+        from smm.analytics import create_tracking_template, load_report
+
+        report = create_tracking_template(days=1, seed=42)
+        out = tmp_path / "report.json"
+        report.export_json(out)
+        loaded = load_report(out)
+        assert loaded.total_posts == report.total_posts
+        assert loaded.week_start == report.week_start
