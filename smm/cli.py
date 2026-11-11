@@ -121,6 +121,38 @@ def cmd_referral(args: argparse.Namespace) -> None:
             print(f"  {lnk.label}: {lnk.build_url()}")
 
 
+async def cmd_write(args: argparse.Namespace) -> None:
+    from smm.ai_writer import AIWriter
+
+    _ensure_data_dir()
+    plan = generate_week_plan(days=1, seed=args.seed)
+    slots = plan[: args.count]
+
+    writer = AIWriter()
+    print(f"Генерирую {len(slots)} постов через AI...\n")
+
+    posts = await writer.write_batch(slots)
+    output: list[dict[str, str]] = []
+    for p in posts:
+        print(f"[{p.slot.platform.value}] {p.slot.topic}")
+        print(f"  {p.caption[:120]}...")
+        print()
+        output.append(
+            {
+                "platform": p.slot.platform.value,
+                "topic": p.slot.topic,
+                "caption": p.caption,
+                "visual_brief": p.visual_brief,
+                "script": p.script,
+                "alt_hooks": p.alt_hooks,
+            }
+        )
+
+    out_path = DATA_DIR / "ai_posts.json"
+    out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2))
+    print(f"Сохранено в {out_path}")
+
+
 def cmd_generate(args: argparse.Namespace) -> None:
     _ensure_data_dir()
     plan = generate_week_plan(days=args.days, seed=args.seed)
@@ -189,6 +221,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_gen.add_argument("--days", type=int, default=7)
     p_gen.add_argument("--seed", type=int, default=None)
 
+    p_write = sub.add_parser("write", help="AI-generate ready posts from plan")
+    p_write.add_argument("--count", type=int, default=3)
+    p_write.add_argument("--seed", type=int, default=None)
+
     return parser
 
 
@@ -196,7 +232,7 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    async_commands = {"plan", "post", "script", "trends"}
+    async_commands = {"plan", "post", "script", "trends", "write"}
     if args.command in async_commands:
         asyncio.run(globals()[f"cmd_{args.command}"](args))
     else:

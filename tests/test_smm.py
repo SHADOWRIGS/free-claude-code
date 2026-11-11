@@ -318,3 +318,31 @@ class TestPostGenerator:
         days = {s.day for s in plan}
         assert start in days
         assert len(days) == 3
+
+
+# --- AI Writer tests ---
+
+
+class TestAIWriter:
+    def test_ready_post_fields(self) -> None:
+        from smm.ai_writer import ReadyPost
+
+        plan = generate_week_plan(days=1, seed=42)
+        slot = plan[0]
+        rp = ReadyPost(
+            slot=slot,
+            caption="Test caption",
+            visual_brief="Test brief",
+            script="Test script",
+            alt_hooks=["hook1", "hook2"],
+        )
+        assert rp.caption == "Test caption"
+        assert rp.slot is slot
+        assert len(rp.alt_hooks) == 2
+
+    def test_writer_prompt_has_placeholders(self) -> None:
+        from smm.ai_writer import POST_PROMPT
+
+        assert "{platform}" in POST_PROMPT
+        assert "{topic}" in POST_PROMPT
+        assert "{hook}" in POST_PROMPT
