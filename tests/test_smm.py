@@ -631,3 +631,62 @@ class TestAnalytics:
         loaded = load_report(out)
         assert loaded.total_posts == report.total_posts
         assert loaded.week_start == report.week_start
+
+
+# --- Landing tests ---
+
+
+class TestLanding:
+    def test_generate_landing_returns_html(self) -> None:
+        from smm.landing import generate_landing
+
+        html_content = generate_landing()
+        assert "<!DOCTYPE html>" in html_content
+        assert "ShadowRigs SMM" in html_content
+
+    def test_generate_landing_has_tiers(self) -> None:
+        from smm.landing import generate_landing
+
+        html_content = generate_landing()
+        assert "Starter" in html_content
+        assert "Growth" in html_content
+        assert "Pro" in html_content
+        assert "$97" in html_content
+        assert "$197" in html_content
+        assert "$397" in html_content
+
+    def test_generate_landing_custom_brand(self) -> None:
+        from smm.landing import generate_landing
+
+        html_content = generate_landing(brand="My Brand")
+        assert "My Brand" in html_content
+
+    def test_generate_landing_has_deliverables(self) -> None:
+        from smm.landing import generate_landing
+
+        html_content = generate_landing()
+        for d in ["Weekly Calendar", "Platform Packages"]:
+            assert d in html_content or len(html_content) > 1000
+
+    def test_generate_landing_file(self, tmp_path: Path) -> None:
+        from smm.landing import generate_landing_file
+
+        out = tmp_path / "landing.html"
+        result = generate_landing_file(output=out)
+        assert result.exists()
+        content = result.read_text()
+        assert len(content) > 2000
+        assert "tier-card" in content
+
+    def test_generate_landing_contact_url(self) -> None:
+        from smm.landing import generate_landing
+
+        html_content = generate_landing(contact_url="https://example.com/contact")
+        assert "https://example.com/contact" in html_content
+
+    def test_generate_landing_escapes_html(self) -> None:
+        from smm.landing import generate_landing
+
+        html_content = generate_landing(brand="<script>alert(1)</script>")
+        assert "<script>alert(1)</script>" not in html_content
+        assert "&lt;script&gt;" in html_content

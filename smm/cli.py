@@ -190,6 +190,20 @@ def cmd_report(args: argparse.Namespace) -> None:
     print(f"\nСохранено: {out}")
 
 
+def cmd_landing(args: argparse.Namespace) -> None:
+    from smm.landing import generate_landing_file
+
+    _ensure_data_dir()
+    out = DATA_DIR / "landing.html" if not args.output else Path(args.output)
+    kwargs: dict[str, str] = {}
+    if args.brand:
+        kwargs["brand"] = args.brand
+    if args.contact:
+        kwargs["contact_url"] = args.contact
+    path = generate_landing_file(output=out, **kwargs)
+    print(f"Лендинг сгенерирован: {path}")
+
+
 def cmd_service(args: argparse.Namespace) -> None:
     from smm.service_spec import ServiceSpec
 
@@ -289,6 +303,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_report.add_argument("--days", type=int, default=7)
     p_report.add_argument("--seed", type=int, default=None)
     p_report.add_argument("--format", choices=["json", "markdown"], default="markdown")
+
+    p_land = sub.add_parser("landing", help="Generate service landing page")
+    p_land.add_argument("--output", default="")
+    p_land.add_argument("--brand", default="")
+    p_land.add_argument("--contact", default="")
 
     p_svc = sub.add_parser("service", help="Show service specification")
     p_svc.add_argument(
