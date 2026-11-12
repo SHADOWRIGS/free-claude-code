@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShadowRigs SMM</title>
+<style>
+:root {
+  --bg: #0b0e14;
+  --surface: #141820;
+  --text: #e4e8f0;
+  --text-muted: #7a8194;
+  --accent: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.2);
+  --border: #1e2430;
+  --success: #10b981;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.hero {
+  text-align: center;
+  padding: 80px 20px 60px;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%);
+}
+.hero h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .tagline {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto 32px;
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat .num {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+}
+.hero-stat .label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+section {
+  padding: 60px 0;
+}
+section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 40px;
+}
+.tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+.tier-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  position: relative;
+  transition: transform 0.15s;
+}
+.tier-card:hover { transform: translateY(-3px); }
+.tier-card.highlight {
+  border-color: var(--accent);
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+.popular-badge {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  background: var(--accent);
+  color: #fff;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.tier-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+.price {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.price span {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.tier-card ul {
+  list-style: none;
+  margin-bottom: 20px;
+}
+.tier-card li {
+  padding: 6px 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.tier-card li::before {
+  content: "✓ ";
+  color: var(--success);
+  font-weight: 700;
+}
+.tier-cta {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: opacity 0.15s;
+}
+.tier-cta:hover { opacity: 0.9; }
+.deliverables {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 0 20px;
+}
+.deliverable {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+.deliverable h4 {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  color: var(--accent);
+}
+.deliverable p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.6rem; }
+  .hero { padding: 48px 16px 40px; }
+  .tiers { grid-template-columns: 1fr; }
+  .deliverables { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="container">
+    <h1>ShadowRigs SMM</h1>
+    <p class="tagline">Автоматизация контента для кибербезопасности и технологий</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="num">63</span><span class="label">постов/нед</span></div>
+      <div class="hero-stat"><span class="num">3</span><span class="label">платформы</span></div>
+      <div class="hero-stat"><span class="num">5</span><span class="label">направлений</span></div>
+      <div class="hero-stat"><span class="num">AI</span><span class="label">генерация</span></div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <h2>Тарифы</h2>
+    <div class="tiers">
+    <div class="tier-card">
+      
+      <h3>Starter</h3>
+      <div class="price">$97<span>/мес</span></div>
+      <ul>
+        <li>21 постов/нед</li>
+        <li>Платформы: Instagram</li>
+        <li>Контент-план</li>
+      </ul>
+      <a href="https://t.me/shadowrigs" class="tier-cta">Написать в Telegram</a>
+    </div>
+    <div class="tier-card highlight">
+      <span class="popular-badge">Popular</span>
+      <h3>Growth</h3>
+      <div class="price">$197<span>/мес</span></div>
+      <ul>
+        <li>42 постов/нед</li>
+        <li>Платформы: Instagram, Tiktok</li>
+        <li>Контент-план</li>
+        <li>AI-копирайтинг</li>
+      </ul>
+      <a href="https://t.me/shadowrigs" class="tier-cta">Написать в Telegram</a>
+    </div>
+    <div class="tier-card">
+      
+      <h3>Pro</h3>
+      <div class="price">$397<span>/мес</span></div>
+      <ul>
+        <li>63 постов/нед</li>
+        <li>Платформы: Instagram, Tiktok, Youtube</li>
+        <li>Контент-план</li>
+        <li>AI-копирайтинг</li>
+        <li>Видео-скрипты</li>
+        <li>Аналитика</li>
+      </ul>
+      <a href="https://t.me/shadowrigs" class="tier-cta">Написать в Telegram</a>
+    </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Что входит</h2>
+    <div class="deliverables">
+    <div class="deliverable">
+      <h4>Weekly content calendar</h4>
+      <p>63 posts with topics, hooks, CTAs, hashtags, referral URLs</p>
+    </div>
+    <div class="deliverable">
+      <h4>Instagram posting package</h4>
+      <p>21 ready-to-post Instagram entries with captions, hashtags, visual briefs</p>
+    </div>
+    <div class="deliverable">
+      <h4>TikTok posting package</h4>
+      <p>21 TikTok entries with scripts, hooks, captions, sound suggestions</p>
+    </div>
+    <div class="deliverable">
+      <h4>YouTube posting package</h4>
+      <p>21 YouTube entries with titles, descriptions, tags, scripts, thumbnail briefs</p>
+    </div>
+    <div class="deliverable">
+      <h4>AI-generated full captions</h4>
+      <p>Full post text generated via AI with multiple hook variants</p>
+    </div>
+    <div class="deliverable">
+      <h4>Trend analysis report</h4>
+      <p>Trending topics, hashtags, and content angles per niche</p>
+    </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  <div class="container">
+    <p>ShadowRigs SMM &mdash; AI-автоматизация SMM для кибербезопасности и технологий</p>
+  </div>
+</div>
+</body>
+</html>
