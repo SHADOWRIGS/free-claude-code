@@ -278,6 +278,17 @@ def cmd_hashtags(args: argparse.Namespace) -> None:
         print(hashtag_report(args.pillar))
 
 
+def cmd_calendar(args: argparse.Namespace) -> None:
+    from smm.content_calendar_html import generate_calendar_file
+    from smm.ready_posts import generate_ready_posts
+
+    _ensure_data_dir()
+    posts = generate_ready_posts(days=args.days, seed=args.seed)
+    output = Path(args.output) if args.output else DATA_DIR / "calendar.html"
+    path = generate_calendar_file(posts, output)
+    print(f"Контент-календарь: {len(posts)} постов → {path}")
+
+
 def cmd_ab_test(args: argparse.Namespace) -> None:
     from smm.ab_variants import (
         ab_summary,
@@ -529,6 +540,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_ht.add_argument("--pillar", default="Cyber Security & Ethical Hacking")
     p_ht.add_argument("--count", type=int, default=15)
+
+    p_cal = sub.add_parser("calendar", help="Generate visual HTML content calendar")
+    p_cal.add_argument("--days", type=int, default=7)
+    p_cal.add_argument("--seed", type=int, default=None)
+    p_cal.add_argument("--output", default="")
 
     return parser
 

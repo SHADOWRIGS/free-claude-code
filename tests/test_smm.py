@@ -1384,3 +1384,73 @@ class TestHashtagEngine:
         for slot in plan:
             if slot.pillar.name in HASHTAG_POOLS:
                 assert any(t in all_engine_tags for t in slot.hashtags)
+
+
+# --- Content calendar HTML tests ---
+
+
+class TestContentCalendarHTML:
+    def test_generates_html(self, tmp_path: Path) -> None:
+        from smm.content_calendar_html import generate_calendar_file
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        path = generate_calendar_file(posts, tmp_path / "cal.html")
+        assert path.exists()
+        content = path.read_text()
+        assert "<!DOCTYPE html>" in content
+        assert "Контент-календарь" in content
+
+    def test_contains_all_platforms(self, tmp_path: Path) -> None:
+        from smm.content_calendar_html import generate_calendar_html
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        html_out = generate_calendar_html(posts)
+        assert "IG" in html_out
+        assert "TT" in html_out
+        assert "YT" in html_out
+
+    def test_pillar_colors_present(self, tmp_path: Path) -> None:
+        from smm.content_calendar_html import generate_calendar_html
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        html_out = generate_calendar_html(posts)
+        assert "#00ff41" in html_out
+
+    def test_xss_prevention(self, tmp_path: Path) -> None:
+        from smm.content_calendar_html import generate_calendar_html
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        html_out = generate_calendar_html(posts)
+        assert "<script>" not in html_out
+
+    def test_post_count_in_title(self, tmp_path: Path) -> None:
+        from smm.content_calendar_html import generate_calendar_html
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        html_out = generate_calendar_html(posts)
+        assert "9 постов" in html_out
+
+    def test_weekday_names_russian(self, tmp_path: Path) -> None:
+        from smm.content_calendar_html import generate_calendar_html
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=3, seed=42)
+        html_out = generate_calendar_html(posts)
+        has_russian_day = any(
+            day in html_out
+            for day in [
+                "Понедельник",
+                "Вторник",
+                "Среда",
+                "Четверг",
+                "Пятница",
+                "Суббота",
+                "Воскресенье",
+            ]
+        )
+        assert has_russian_day

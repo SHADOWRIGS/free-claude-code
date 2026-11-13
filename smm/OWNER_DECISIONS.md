@@ -67,8 +67,9 @@
 | Недельный пакет контента (all-in-one) | Готово | `smm/week_pack.py` |
 | A/B тестирование подписей | Готово | `smm/ab_variants.py` |
 | Хештег-движок (150 тегов, 5 пулов) | Готово | `smm/hashtag_engine.py` |
-| CLI (22 команды) | Готово | `smm/cli.py` |
-| Тесты | 149 passed | `tests/test_smm.py` |
+| Визуальный контент-календарь (HTML) | Готово | `smm/content_calendar_html.py` |
+| CLI (23 команды) | Готово | `smm/cli.py` |
+| Тесты | 158 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

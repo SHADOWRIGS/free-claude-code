@@ -102,6 +102,7 @@ ignore = [
 "smm/biolink.py" = ["RUF001"]
 "smm/ab_variants.py" = ["RUF001"]
 "smm/hashtag_engine.py" = ["RUF001"]
+"smm/content_calendar_html.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]
