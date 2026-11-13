@@ -1281,3 +1281,74 @@ class TestABVariants:
         d = posts[0].to_dict()
         assert "variant_a" in d
         assert "caption" in d["variant_a"]
+
+
+# --- Hashtag engine tests ---
+
+
+class TestHashtagEngine:
+    def test_generate_default_count(self) -> None:
+        from smm.hashtag_engine import generate_hashtags
+
+        hs = generate_hashtags("Cyber Security & Ethical Hacking", seed=42)
+        assert hs.count == 15
+
+    def test_generate_custom_count(self) -> None:
+        from smm.hashtag_engine import generate_hashtags
+
+        hs = generate_hashtags("Machine Learning & AI", count=10, seed=42)
+        assert hs.count == 10
+
+    def test_all_tags_are_hashtags(self) -> None:
+        from smm.hashtag_engine import generate_hashtags
+
+        hs = generate_hashtags("Red Team / Offensive Security", seed=42)
+        for tag in hs.all_tags:
+            assert tag.startswith("#"), f"{tag} is not a hashtag"
+
+    def test_as_string(self) -> None:
+        from smm.hashtag_engine import generate_hashtags
+
+        hs = generate_hashtags("Blue Team / Defensive Security", count=5, seed=42)
+        s = hs.as_string
+        assert "#" in s
+        assert len(s.split()) == 5
+
+    def test_pools_cover_all_pillars(self) -> None:
+        from smm.hashtag_engine import HASHTAG_POOLS
+
+        assert len(HASHTAG_POOLS) >= 5
+        for name, pool in HASHTAG_POOLS.items():
+            assert "high" in pool, f"{name} missing high pool"
+            assert "mid" in pool, f"{name} missing mid pool"
+            assert "niche" in pool, f"{name} missing niche pool"
+            assert len(pool["high"]) >= 10
+            assert len(pool["mid"]) >= 10
+            assert len(pool["niche"]) >= 10
+
+    def test_no_duplicates_within_set(self) -> None:
+        from smm.hashtag_engine import generate_hashtags
+
+        hs = generate_hashtags("AliExpress - Гаджеты", count=15, seed=42)
+        assert len(set(hs.all_tags)) == len(hs.all_tags)
+
+    def test_report(self) -> None:
+        from smm.hashtag_engine import hashtag_report
+
+        report = hashtag_report("Cyber Security & Ethical Hacking")
+        assert "Высокочастотные" in report
+        assert "Нишевые" in report
+        assert "Всего" in report
+
+    def test_fallback_for_unknown_pillar(self) -> None:
+        from smm.hashtag_engine import generate_hashtags
+
+        hs = generate_hashtags("Unknown Pillar", count=10, seed=42)
+        assert hs.count == 10
+
+    def test_seed_reproducibility(self) -> None:
+        from smm.hashtag_engine import generate_hashtags
+
+        hs1 = generate_hashtags("Machine Learning & AI", seed=123)
+        hs2 = generate_hashtags("Machine Learning & AI", seed=123)
+        assert hs1.all_tags == hs2.all_tags

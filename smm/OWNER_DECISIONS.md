@@ -66,8 +66,9 @@
 | Биолинк-страница (Linktree-аналог) | Готово | `smm/biolink.py` |
 | Недельный пакет контента (all-in-one) | Готово | `smm/week_pack.py` |
 | A/B тестирование подписей | Готово | `smm/ab_variants.py` |
-| CLI (21 команда) | Готово | `smm/cli.py` |
-| Тесты | 140 passed | `tests/test_smm.py` |
+| Хештег-движок (150 тегов, 5 пулов) | Готово | `smm/hashtag_engine.py` |
+| CLI (22 команды) | Готово | `smm/cli.py` |
+| Тесты | 149 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

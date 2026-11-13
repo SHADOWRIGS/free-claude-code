@@ -264,6 +264,20 @@ def cmd_proposal(args: argparse.Namespace) -> None:
     print(f"  Файл: {path}")
 
 
+def cmd_hashtags(args: argparse.Namespace) -> None:
+    from smm.hashtag_engine import generate_hashtags, hashtag_report
+
+    if args.action == "generate":
+        hs = generate_hashtags(args.pillar, count=args.count)
+        print(f"Хештеги для «{args.pillar}» ({hs.count} шт.):\n")
+        print(f"  Высокочастотные: {' '.join(hs.high)}")
+        print(f"  Среднечастотные: {' '.join(hs.mid)}")
+        print(f"  Нишевые: {' '.join(hs.niche)}")
+        print(f"\nКопировать:\n{hs.as_string}")
+    elif args.action == "report":
+        print(hashtag_report(args.pillar))
+
+
 def cmd_ab_test(args: argparse.Namespace) -> None:
     from smm.ab_variants import (
         ab_summary,
@@ -508,6 +522,13 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["json", "csv", "markdown", "all"],
         default="all",
     )
+
+    p_ht = sub.add_parser("hashtags", help="Generate optimized hashtag sets")
+    p_ht.add_argument(
+        "action", choices=["generate", "report"], default="generate", nargs="?"
+    )
+    p_ht.add_argument("--pillar", default="Cyber Security & Ethical Hacking")
+    p_ht.add_argument("--count", type=int, default=15)
 
     return parser
 
