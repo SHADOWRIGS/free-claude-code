@@ -244,6 +244,26 @@ def cmd_scheduler_export(args: argparse.Namespace) -> None:
         print(f"  {name}: {path}")
 
 
+def cmd_proposal(args: argparse.Namespace) -> None:
+    from smm.proposal import ClientProfile, generate_proposal_file
+
+    _ensure_data_dir()
+    client = ClientProfile(
+        name=args.client_name,
+        business=args.business,
+        niche=args.niche,
+        current_platforms=[p.strip() for p in args.platforms.split(",")],
+        posts_per_week_goal=args.posts,
+        main_goal=args.goal,
+    )
+    path = generate_proposal_file(client)
+    print(f"Коммерческое предложение для {client.name}:")
+    print(
+        f"  Рекомендованный тариф: {client.recommended_tier.name} (${client.recommended_tier.price_monthly_usd}/мес)"
+    )
+    print(f"  Файл: {path}")
+
+
 def cmd_service(args: argparse.Namespace) -> None:
     from smm.service_spec import ServiceSpec
 
@@ -366,6 +386,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_sexp.add_argument("--days", type=int, default=7)
     p_sexp.add_argument("--seed", type=int, default=None)
+
+    p_prop = sub.add_parser("proposal", help="Generate a commercial proposal")
+    p_prop.add_argument("--client-name", default="Client")
+    p_prop.add_argument("--business", default="Tech Business")
+    p_prop.add_argument("--niche", default="cybersecurity")
+    p_prop.add_argument("--platforms", default="Instagram,TikTok")
+    p_prop.add_argument("--posts", type=int, default=42)
+    p_prop.add_argument("--goal", default="увеличить продажи через соцсети")
 
     p_svc = sub.add_parser("service", help="Show service specification")
     p_svc.add_argument(

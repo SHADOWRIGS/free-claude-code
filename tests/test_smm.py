@@ -864,3 +864,107 @@ class TestSchedulerExport:
         assert len(paths) == 4
         for p in paths.values():
             assert p.exists()
+
+
+# --- Proposal tests ---
+
+
+class TestProposal:
+    def _client(self):
+        from smm.proposal import ClientProfile
+
+        return ClientProfile(
+            name="Test Corp",
+            business="Cybersecurity Training",
+            niche="cybersecurity",
+            current_platforms=["Instagram", "TikTok"],
+            posts_per_week_goal=42,
+            main_goal="increase course sales",
+        )
+
+    def test_generate_proposal_returns_html(self) -> None:
+        from smm.proposal import generate_proposal
+
+        html_content = generate_proposal(self._client())
+        assert "<!DOCTYPE html>" in html_content
+        assert "Test Corp" in html_content
+
+    def test_recommended_tier_growth(self) -> None:
+        client = self._client()
+        assert client.recommended_tier.name == "Growth"
+
+    def test_recommended_tier_starter(self) -> None:
+        from smm.proposal import ClientProfile
+
+        client = ClientProfile(
+            name="Small Biz",
+            business="Blog",
+            niche="ai",
+            current_platforms=["Instagram"],
+            posts_per_week_goal=15,
+            main_goal="grow followers",
+        )
+        assert client.recommended_tier.name == "Starter"
+
+    def test_recommended_tier_pro(self) -> None:
+        from smm.proposal import ClientProfile
+
+        client = ClientProfile(
+            name="Big Corp",
+            business="Enterprise",
+            niche="gadgets",
+            current_platforms=["Instagram", "TikTok", "YouTube"],
+            posts_per_week_goal=63,
+            main_goal="maximize reach",
+        )
+        assert client.recommended_tier.name == "Pro"
+
+    def test_niche_samples_cybersecurity(self) -> None:
+        from smm.proposal import generate_proposal
+
+        html_content = generate_proposal(self._client())
+        assert "пентест" in html_content.lower() or "OWASP" in html_content
+
+    def test_niche_samples_default(self) -> None:
+        from smm.proposal import ClientProfile, generate_proposal
+
+        client = ClientProfile(
+            name="Generic",
+            business="Shop",
+            niche="fashion",
+            current_platforms=["Instagram"],
+            posts_per_week_goal=21,
+            main_goal="sales",
+        )
+        html_content = generate_proposal(client)
+        assert "Контент-план" in html_content or "охваты" in html_content
+
+    def test_escapes_html(self) -> None:
+        from smm.proposal import ClientProfile, generate_proposal
+
+        client = ClientProfile(
+            name="<script>alert(1)</script>",
+            business="Test",
+            niche="ai",
+            current_platforms=["Instagram"],
+            posts_per_week_goal=21,
+            main_goal="test",
+        )
+        html_content = generate_proposal(client)
+        assert "<script>alert(1)</script>" not in html_content
+        assert "&lt;script&gt;" in html_content
+
+    def test_generate_file(self, tmp_path: Path) -> None:
+        from smm.proposal import generate_proposal_file
+
+        path = generate_proposal_file(self._client(), output=tmp_path / "p.html")
+        assert path.exists()
+        content = path.read_text()
+        assert "Growth" in content
+
+    def test_roi_calculation(self) -> None:
+        from smm.proposal import generate_proposal
+
+        html_content = generate_proposal(self._client())
+        assert "168" in html_content
+        assert "$1.17" in html_content
