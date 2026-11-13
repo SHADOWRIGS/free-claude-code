@@ -1198,6 +1198,25 @@ class TestWeekPack:
         json2 = paths2["json"].read_text()
         assert json1 == json2
 
+    def test_ab_variants_included(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        assert "ab_json" in paths
+        assert "ab_csv" in paths
+        assert paths["ab_json"].exists()
+        data = json.loads(paths["ab_json"].read_text())
+        assert len(data) >= 1
+
+    def test_hashtag_pools_included(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        assert "hashtag_pools" in paths
+        content = paths["hashtag_pools"].read_text()
+        assert "Cyber Security" in content
+        assert "Machine Learning" in content
+
 
 # --- A/B variant tests ---
 
@@ -1352,3 +1371,16 @@ class TestHashtagEngine:
         hs1 = generate_hashtags("Machine Learning & AI", seed=123)
         hs2 = generate_hashtags("Machine Learning & AI", seed=123)
         assert hs1.all_tags == hs2.all_tags
+
+    def test_posts_use_engine_hashtags(self) -> None:
+        from smm.hashtag_engine import HASHTAG_POOLS
+        from smm.post_generator import generate_week_plan
+
+        plan = generate_week_plan(days=1, seed=42)
+        all_engine_tags = set()
+        for pool in HASHTAG_POOLS.values():
+            for tags in pool.values():
+                all_engine_tags.update(tags)
+        for slot in plan:
+            if slot.pillar.name in HASHTAG_POOLS:
+                assert any(t in all_engine_tags for t in slot.hashtags)

@@ -17,7 +17,9 @@ import json
 from datetime import date
 from pathlib import Path
 
+from smm.ab_variants import export_ab_csv, export_ab_json, generate_ab_posts
 from smm.biolink import generate_biolink_file
+from smm.hashtag_engine import HASHTAG_POOLS, hashtag_report
 from smm.ready_posts import (
     ReadyPost,
     batch_summary,
@@ -53,6 +55,22 @@ def generate_week_pack(
         paths[f"scheduler_{name}"] = path
 
     paths["biolink"] = generate_biolink_file(output=out_dir / "biolink.html")
+
+    ab_dir = out_dir / "ab_test"
+    ab_dir.mkdir(exist_ok=True)
+    ab_posts = generate_ab_posts(days=days, seed=seed, start=start)
+    paths["ab_json"] = export_ab_json(ab_posts, ab_dir / "ab_variants.json")
+    paths["ab_csv"] = export_ab_csv(ab_posts, ab_dir / "ab_variants.csv")
+
+    hashtag_dir = out_dir / "hashtags"
+    hashtag_dir.mkdir(exist_ok=True)
+    ht_lines: list[str] = []
+    for pillar_name in sorted(HASHTAG_POOLS):
+        ht_lines.append(hashtag_report(pillar_name))
+        ht_lines.append("")
+    ht_path = hashtag_dir / "hashtag_pools.txt"
+    ht_path.write_text("\n".join(ht_lines), encoding="utf-8")
+    paths["hashtag_pools"] = ht_path
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"
