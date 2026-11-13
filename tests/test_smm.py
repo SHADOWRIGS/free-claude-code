@@ -690,3 +690,114 @@ class TestLanding:
         html_content = generate_landing(brand="<script>alert(1)</script>")
         assert "<script>alert(1)</script>" not in html_content
         assert "&lt;script&gt;" in html_content
+
+
+# --- ReadyPosts tests ---
+
+
+class TestReadyPosts:
+    def test_generate_ready_posts_count(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        assert len(posts) == 9
+
+    def test_generate_ready_posts_week(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=7, seed=42)
+        assert len(posts) == 63
+
+    def test_ready_post_has_caption(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        for p in posts:
+            assert p.caption
+            assert len(p.caption) > 50
+
+    def test_ready_post_has_visual_brief(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        for p in posts:
+            assert p.visual_brief
+            assert len(p.visual_brief) > 20
+
+    def test_video_posts_have_script(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=7, seed=42)
+        video_formats = {"reels", "short_video", "shorts", "duet", "full_video"}
+        for p in posts:
+            if p.format in video_formats:
+                assert p.video_script, f"video post {p.format} has no script"
+            else:
+                assert p.video_script == ""
+
+    def test_all_platforms_present(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        platforms = {p.platform for p in posts}
+        assert platforms == {"instagram", "tiktok", "youtube"}
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.ready_posts import export_ready_json, generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        out = tmp_path / "posts.json"
+        export_ready_json(posts, out)
+        data = json.loads(out.read_text())
+        assert len(data) == 9
+        assert "caption" in data[0]
+
+    def test_export_buffer_csv(self, tmp_path: Path) -> None:
+        import csv as csv_mod
+
+        from smm.ready_posts import export_buffer_csv, generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        out = tmp_path / "buffer.csv"
+        export_buffer_csv(posts, out)
+        with out.open(newline="", encoding="utf-8") as f:
+            reader = list(csv_mod.reader(f))
+        assert reader[0] == ["Text", "Date", "Time", "Profile"]
+        assert len(reader) == 10
+
+    def test_export_markdown(self, tmp_path: Path) -> None:
+        from smm.ready_posts import export_ready_markdown, generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        out = tmp_path / "posts.md"
+        export_ready_markdown(posts, out)
+        content = out.read_text()
+        assert "Готовые посты" in content
+        assert "caption" in content
+
+    def test_to_dict(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        d = posts[0].to_dict()
+        assert "day" in d
+        assert "caption" in d
+        assert "visual_brief" in d
+
+    def test_batch_summary(self) -> None:
+        from smm.ready_posts import batch_summary, generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        s = batch_summary(posts)
+        assert "Готовые посты: 9" in s
+        assert "instagram" in s
+        assert "tiktok" in s
+        assert "youtube" in s
+
+    def test_seed_reproducibility(self) -> None:
+        from smm.ready_posts import generate_ready_posts
+
+        a = generate_ready_posts(days=1, seed=99)
+        b = generate_ready_posts(days=1, seed=99)
+        assert [p.topic for p in a] == [p.topic for p in b]
+        assert [p.caption for p in a] == [p.caption for p in b]

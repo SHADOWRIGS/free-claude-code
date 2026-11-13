@@ -96,6 +96,7 @@ ignore = [
 "smm/preview.py" = ["RUF001"]
 "smm/analytics.py" = ["RUF001"]
 "smm/landing.py" = ["RUF001"]
+"smm/ready_posts.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["api", "cli", "config", "core", "messaging", "providers", "smoke", "smm"]

@@ -204,6 +204,33 @@ def cmd_landing(args: argparse.Namespace) -> None:
     print(f"Лендинг сгенерирован: {path}")
 
 
+def cmd_batch(args: argparse.Namespace) -> None:
+    from smm.ready_posts import (
+        batch_summary,
+        export_buffer_csv,
+        export_ready_json,
+        export_ready_markdown,
+        generate_ready_posts,
+    )
+
+    _ensure_data_dir()
+    posts = generate_ready_posts(days=args.days, seed=args.seed)
+    print(batch_summary(posts))
+
+    batch_dir = DATA_DIR / "batch"
+    batch_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_ready_json(posts, batch_dir / "ready_posts.json")
+        print(f"\nJSON: {batch_dir / 'ready_posts.json'}")
+    if args.format in ("csv", "all"):
+        export_buffer_csv(posts, batch_dir / "buffer_import.csv")
+        print(f"Buffer CSV: {batch_dir / 'buffer_import.csv'}")
+    if args.format in ("markdown", "all"):
+        export_ready_markdown(posts, batch_dir / "ready_posts.md")
+        print(f"Markdown: {batch_dir / 'ready_posts.md'}")
+
+
 def cmd_service(args: argparse.Namespace) -> None:
     from smm.service_spec import ServiceSpec
 
@@ -308,6 +335,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_land.add_argument("--output", default="")
     p_land.add_argument("--brand", default="")
     p_land.add_argument("--contact", default="")
+
+    p_batch = sub.add_parser(
+        "batch", help="Generate ready-to-post content batch (no AI API needed)"
+    )
+    p_batch.add_argument("--days", type=int, default=7)
+    p_batch.add_argument("--seed", type=int, default=None)
+    p_batch.add_argument(
+        "--format",
+        choices=["json", "csv", "markdown", "all"],
+        default="all",
+    )
 
     p_svc = sub.add_parser("service", help="Show service specification")
     p_svc.add_argument(
