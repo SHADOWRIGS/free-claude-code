@@ -1060,3 +1060,76 @@ class TestContentBank:
 
         assert len(CAPTION_TEMPLATES_COURSE) >= 8
         assert len(CAPTION_TEMPLATES_REFERRAL) >= 6
+
+
+# --- Bio link page tests ---
+
+
+class TestBioLink:
+    def test_default_html_contains_brand(self) -> None:
+        from smm.biolink import generate_biolink_html
+
+        html = generate_biolink_html()
+        assert "ShadowRigs" in html
+
+    def test_default_has_all_links(self) -> None:
+        from smm.biolink import DEFAULT_LINKS, generate_biolink_html
+
+        html = generate_biolink_html()
+        for link in DEFAULT_LINKS:
+            assert link.url in html
+
+    def test_custom_brand(self) -> None:
+        from smm.biolink import BioLinkPage, generate_biolink_html
+
+        page = BioLinkPage(brand="TestBrand", tagline="Test tagline")
+        html = generate_biolink_html(page)
+        assert "TestBrand" in html
+        assert "Test tagline" in html
+
+    def test_xss_prevention(self) -> None:
+        from smm.biolink import BioLinkPage, generate_biolink_html
+
+        page = BioLinkPage(brand='<script>alert("xss")</script>')
+        html = generate_biolink_html(page)
+        assert "<script>" not in html
+        assert "&lt;script&gt;" in html
+
+    def test_add_link(self) -> None:
+        from smm.biolink import BioLinkPage, generate_biolink_html
+
+        page = BioLinkPage()
+        page.add("Test Link", "https://example.com", category="general")
+        html = generate_biolink_html(page)
+        assert "https://example.com" in html
+        assert "Test Link" in html
+
+    def test_generate_file(self, tmp_path: Path) -> None:
+        from smm.biolink import generate_biolink_file
+
+        path = generate_biolink_file(output=tmp_path / "bio.html")
+        assert path.exists()
+        content = path.read_text()
+        assert "ShadowRigs" in content
+        assert "<!DOCTYPE html>" in content
+
+    def test_telegram_link(self) -> None:
+        from smm.biolink import BioLinkPage, generate_biolink_html
+
+        page = BioLinkPage(telegram="https://t.me/test_channel")
+        html = generate_biolink_html(page)
+        assert "https://t.me/test_channel" in html
+
+    def test_category_headers(self) -> None:
+        from smm.biolink import generate_biolink_html
+
+        html = generate_biolink_html()
+        assert "Курсы" in html
+        assert "Гаджеты" in html
+
+    def test_dark_light_theme(self) -> None:
+        from smm.biolink import generate_biolink_html
+
+        html = generate_biolink_html()
+        assert "prefers-color-scheme: light" in html
+        assert 'data-theme="dark"' in html

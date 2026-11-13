@@ -63,8 +63,9 @@
 | Экспорт в планировщики (Buffer/Later/Meta/iCal/Notion) | Готово | `smm/scheduler_export.py` |
 | Коммерческое предложение (HTML) | Готово | `smm/proposal.py` |
 | Контент-банк (хуки, CTA, сторис, карусели) | Готово | `smm/content_bank.py` |
-| CLI (17 команд) | Готово | `smm/cli.py` |
-| Тесты | 115 passed | `tests/test_smm.py` |
+| Биолинк-страница (Linktree-аналог) | Готово | `smm/biolink.py` |
+| CLI (19 команд) | Готово | `smm/cli.py` |
+| Тесты | 124 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

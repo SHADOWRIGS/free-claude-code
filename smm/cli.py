@@ -264,6 +264,23 @@ def cmd_proposal(args: argparse.Namespace) -> None:
     print(f"  Файл: {path}")
 
 
+def cmd_biolink(args: argparse.Namespace) -> None:
+    from smm.biolink import BioLinkPage, generate_biolink_file
+
+    _ensure_data_dir()
+    page = BioLinkPage()
+    if args.brand:
+        page.brand = args.brand
+    if args.tagline:
+        page.tagline = args.tagline
+    if args.telegram:
+        page.telegram = args.telegram
+    out = Path(args.output) if args.output else None
+    path = generate_biolink_file(page, output=out)
+    print(f"Биолинк-страница сгенерирована: {path}")
+    print(f"  Ссылок: {len(page.links)}")
+
+
 def cmd_content_bank(args: argparse.Namespace) -> None:
     from smm.content_bank import get_ctas, get_hooks, get_story_framework
 
@@ -433,6 +450,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--product-type", choices=["course", "referral"], default="course"
     )
     p_cb.add_argument("--niche", default="cybersecurity")
+
+    p_bio = sub.add_parser("biolink", help="Generate bio link page (Linktree-style)")
+    p_bio.add_argument("--brand", default="")
+    p_bio.add_argument("--tagline", default="")
+    p_bio.add_argument("--telegram", default="")
+    p_bio.add_argument("--output", default="")
 
     return parser
 
