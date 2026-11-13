@@ -19,6 +19,13 @@ from pathlib import Path
 
 from smm.ab_variants import export_ab_csv, export_ab_json, generate_ab_posts
 from smm.biolink import generate_biolink_file
+from smm.engagement_hooks import (
+    POLLS_BY_PILLAR,
+    generate_poll,
+    generate_question,
+    generate_quiz,
+    generate_this_or_that,
+)
 from smm.hashtag_engine import HASHTAG_POOLS, hashtag_report
 from smm.ready_posts import (
     ReadyPost,
@@ -71,6 +78,30 @@ def generate_week_pack(
     ht_path = hashtag_dir / "hashtag_pools.txt"
     ht_path.write_text("\n".join(ht_lines), encoding="utf-8")
     paths["hashtag_pools"] = ht_path
+
+    engage_dir = out_dir / "engagement"
+    engage_dir.mkdir(exist_ok=True)
+    engage_lines: list[str] = []
+    for pillar_name in sorted(POLLS_BY_PILLAR):
+        engage_lines.append(f"=== {pillar_name} ===\n")
+        poll = generate_poll(pillar_name, seed=seed)
+        engage_lines.append(f"ОПРОС: {poll.content}")
+        for i, opt in enumerate(poll.options, 1):
+            engage_lines.append(f"  {i}. {opt}")
+        engage_lines.append("")
+        quiz = generate_quiz(pillar_name, seed=seed)
+        engage_lines.append(f"КВИЗ: {quiz.content}")
+        for i, opt in enumerate(quiz.options, 1):
+            marker = " [верно]" if i - 1 == quiz.correct_index else ""
+            engage_lines.append(f"  {i}. {opt}{marker}")
+        engage_lines.append("")
+        q = generate_question(pillar_name, seed=seed)
+        engage_lines.append(f"ВОПРОС: {q}")
+        a, b = generate_this_or_that(pillar_name, seed=seed)
+        engage_lines.append(f"THIS OR THAT: {a} vs {b}\n")
+    eng_path = engage_dir / "engagement_hooks.txt"
+    eng_path.write_text("\n".join(engage_lines), encoding="utf-8")
+    paths["engagement"] = eng_path
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"

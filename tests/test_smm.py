@@ -1217,6 +1217,17 @@ class TestWeekPack:
         assert "Cyber Security" in content
         assert "Machine Learning" in content
 
+    def test_engagement_hooks_included(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        assert "engagement" in paths
+        content = paths["engagement"].read_text()
+        assert "ОПРОС:" in content
+        assert "КВИЗ:" in content
+        assert "ВОПРОС:" in content
+        assert "THIS OR THAT:" in content
+
 
 # --- A/B variant tests ---
 
