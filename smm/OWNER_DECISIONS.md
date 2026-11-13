@@ -65,8 +65,9 @@
 | Контент-банк (хуки, CTA, сторис, карусели) | Готово | `smm/content_bank.py` |
 | Биолинк-страница (Linktree-аналог) | Готово | `smm/biolink.py` |
 | Недельный пакет контента (all-in-one) | Готово | `smm/week_pack.py` |
-| CLI (20 команд) | Готово | `smm/cli.py` |
-| Тесты | 131 passed | `tests/test_smm.py` |
+| A/B тестирование подписей | Готово | `smm/ab_variants.py` |
+| CLI (21 команда) | Готово | `smm/cli.py` |
+| Тесты | 140 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

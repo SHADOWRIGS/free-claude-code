@@ -100,6 +100,7 @@ ignore = [
 "smm/proposal.py" = ["RUF001"]
 "smm/content_bank.py" = ["RUF001"]
 "smm/biolink.py" = ["RUF001"]
+"smm/ab_variants.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["api", "cli", "config", "core", "messaging", "providers", "smoke", "smm"]

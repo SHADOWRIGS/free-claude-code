@@ -264,6 +264,33 @@ def cmd_proposal(args: argparse.Namespace) -> None:
     print(f"  Файл: {path}")
 
 
+def cmd_ab_test(args: argparse.Namespace) -> None:
+    from smm.ab_variants import (
+        ab_summary,
+        export_ab_csv,
+        export_ab_json,
+        export_ab_markdown,
+        generate_ab_posts,
+    )
+
+    _ensure_data_dir()
+    posts = generate_ab_posts(days=args.days, seed=args.seed)
+    print(ab_summary(posts))
+
+    ab_dir = DATA_DIR / "ab_test"
+    ab_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_ab_json(posts, ab_dir / "ab_variants.json")
+        print(f"\nJSON: {ab_dir / 'ab_variants.json'}")
+    if args.format in ("csv", "all"):
+        export_ab_csv(posts, ab_dir / "ab_variants.csv")
+        print(f"CSV: {ab_dir / 'ab_variants.csv'}")
+    if args.format in ("markdown", "all"):
+        export_ab_markdown(posts, ab_dir / "ab_variants.md")
+        print(f"Markdown: {ab_dir / 'ab_variants.md'}")
+
+
 def cmd_week_pack(args: argparse.Namespace) -> None:
     from smm.week_pack import generate_week_pack
 
@@ -472,6 +499,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_wp.add_argument("--days", type=int, default=7)
     p_wp.add_argument("--seed", type=int, default=None)
     p_wp.add_argument("--output", default="")
+
+    p_ab = sub.add_parser("ab-test", help="Generate A/B caption variants for testing")
+    p_ab.add_argument("--days", type=int, default=7)
+    p_ab.add_argument("--seed", type=int, default=None)
+    p_ab.add_argument(
+        "--format",
+        choices=["json", "csv", "markdown", "all"],
+        default="all",
+    )
 
     return parser
 

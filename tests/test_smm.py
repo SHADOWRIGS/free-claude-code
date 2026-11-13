@@ -1197,3 +1197,87 @@ class TestWeekPack:
         json1 = paths1["json"].read_text()
         json2 = paths2["json"].read_text()
         assert json1 == json2
+
+
+# --- A/B variant tests ---
+
+
+class TestABVariants:
+    def test_generates_correct_count(self) -> None:
+        from smm.ab_variants import generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        assert len(posts) == 9
+
+    def test_each_post_has_two_variants(self) -> None:
+        from smm.ab_variants import generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        for p in posts:
+            assert p.variant_a.variant == "A"
+            assert p.variant_b.variant == "B"
+            assert p.variant_a.caption != p.variant_b.caption
+
+    def test_variants_have_different_hooks(self) -> None:
+        from smm.ab_variants import generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        diff_count = sum(1 for p in posts if p.variant_a.hook != p.variant_b.hook)
+        assert diff_count >= 5
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.ab_variants import export_ab_json, generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        path = export_ab_json(posts, tmp_path / "ab.json")
+        data = json.loads(path.read_text())
+        assert len(data) == 9
+        assert "variant_a" in data[0]
+        assert "variant_b" in data[0]
+
+    def test_export_csv(self, tmp_path: Path) -> None:
+        import csv as csv_mod
+
+        from smm.ab_variants import export_ab_csv, generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        path = export_ab_csv(posts, tmp_path / "ab.csv")
+        with path.open() as f:
+            reader = csv_mod.reader(f)
+            rows = list(reader)
+        assert rows[0][-1] == "Winner"
+        assert len(rows) == 10
+
+    def test_export_markdown(self, tmp_path: Path) -> None:
+        from smm.ab_variants import export_ab_markdown, generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        path = export_ab_markdown(posts, tmp_path / "ab.md")
+        content = path.read_text()
+        assert "Variant A" in content
+        assert "Variant B" in content
+        assert "Winner" in content
+
+    def test_seed_reproducibility(self) -> None:
+        from smm.ab_variants import generate_ab_posts
+
+        posts1 = generate_ab_posts(days=1, seed=77)
+        posts2 = generate_ab_posts(days=1, seed=77)
+        for p1, p2 in zip(posts1, posts2, strict=True):
+            assert p1.variant_a.caption == p2.variant_a.caption
+
+    def test_summary(self) -> None:
+        from smm.ab_variants import ab_summary, generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        summary = ab_summary(posts)
+        assert "9" in summary
+        assert "18" in summary
+
+    def test_to_dict(self) -> None:
+        from smm.ab_variants import generate_ab_posts
+
+        posts = generate_ab_posts(days=1, seed=42)
+        d = posts[0].to_dict()
+        assert "variant_a" in d
+        assert "caption" in d["variant_a"]
