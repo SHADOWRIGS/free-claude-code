@@ -19,6 +19,7 @@ from pathlib import Path
 
 from smm.ab_variants import export_ab_csv, export_ab_json, generate_ab_posts
 from smm.biolink import generate_biolink_file
+from smm.caption_validator import validate_posts
 from smm.engagement_hooks import (
     POLLS_BY_PILLAR,
     generate_poll,
@@ -183,6 +184,9 @@ def _export_summary(posts: list[ReadyPost], paths: dict[str, Path], path: Path) 
     summary = batch_summary(posts)
     file_list = "\n".join(f"  {name}: {p}" for name, p in sorted(paths.items()))
 
+    validation = validate_posts(posts)
+    val_status = "ALL PASSED" if validation.ok else f"{validation.failed} FAILED"
+
     stats = json.dumps(
         {
             "total_posts": len(posts),
@@ -191,6 +195,7 @@ def _export_summary(posts: list[ReadyPost], paths: dict[str, Path], path: Path) 
             "video_scripts": sum(1 for p in posts if p.video_script),
             "referral_posts": sum(1 for p in posts if p.referral_url),
             "files_generated": len(paths) + 1,
+            "validation": val_status,
         },
         ensure_ascii=False,
         indent=2,
@@ -200,6 +205,9 @@ def _export_summary(posts: list[ReadyPost], paths: dict[str, Path], path: Path) 
 =============
 
 {summary}
+
+Validation: {val_status}
+{validation.summary()}
 
 Generated Files:
 {file_list}
