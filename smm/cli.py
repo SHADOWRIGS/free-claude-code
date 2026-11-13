@@ -278,6 +278,37 @@ def cmd_hashtags(args: argparse.Namespace) -> None:
         print(hashtag_report(args.pillar))
 
 
+def cmd_engage(args: argparse.Namespace) -> None:
+    from smm.engagement_hooks import (
+        engagement_summary,
+        generate_poll,
+        generate_question,
+        generate_quiz,
+        generate_this_or_that,
+    )
+
+    pillar = args.pillar
+    if args.action == "poll":
+        hook = generate_poll(pillar)
+        print(f"Опрос: {hook.content}")
+        for i, opt in enumerate(hook.options, 1):
+            print(f"  {i}. {opt}")
+    elif args.action == "quiz":
+        hook = generate_quiz(pillar)
+        print(f"Квиз: {hook.content}")
+        for i, opt in enumerate(hook.options, 1):
+            marker = " ✓" if i - 1 == hook.correct_index else ""
+            print(f"  {i}. {opt}{marker}")
+    elif args.action == "question":
+        q = generate_question(pillar)
+        print(f"Вопрос для аудитории: {q}")
+    elif args.action == "this-or-that":
+        a, b = generate_this_or_that(pillar)
+        print(f"This or That: {a} vs {b}")
+    elif args.action == "summary":
+        print(engagement_summary(pillar))
+
+
 def cmd_calendar(args: argparse.Namespace) -> None:
     from smm.content_calendar_html import generate_calendar_file
     from smm.ready_posts import generate_ready_posts
@@ -545,6 +576,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_cal.add_argument("--days", type=int, default=7)
     p_cal.add_argument("--seed", type=int, default=None)
     p_cal.add_argument("--output", default="")
+
+    p_eng = sub.add_parser(
+        "engage", help="Generate engagement hooks (polls, quizzes, questions)"
+    )
+    p_eng.add_argument(
+        "action",
+        choices=["poll", "quiz", "question", "this-or-that", "summary"],
+        default="poll",
+        nargs="?",
+    )
+    p_eng.add_argument("--pillar", default="Cyber Security & Ethical Hacking")
 
     return parser
 

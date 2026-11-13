@@ -1454,3 +1454,75 @@ class TestContentCalendarHTML:
             ]
         )
         assert has_russian_day
+
+
+# --- Engagement hooks tests ---
+
+
+class TestEngagementHooks:
+    def test_generate_poll(self) -> None:
+        from smm.engagement_hooks import generate_poll
+
+        hook = generate_poll("Cyber Security & Ethical Hacking", seed=42)
+        assert hook.hook_type == "poll"
+        assert len(hook.options) == 4
+        assert hook.content
+        assert hook.correct_index is None
+
+    def test_generate_quiz(self) -> None:
+        from smm.engagement_hooks import generate_quiz
+
+        hook = generate_quiz("Machine Learning & AI", seed=42)
+        assert hook.hook_type == "quiz"
+        assert len(hook.options) == 4
+        assert hook.correct_index is not None
+        assert 0 <= hook.correct_index < len(hook.options)
+
+    def test_generate_question(self) -> None:
+        from smm.engagement_hooks import generate_question
+
+        q = generate_question("Red Team / Offensive Security", seed=42)
+        assert isinstance(q, str)
+        assert len(q) > 10
+
+    def test_generate_this_or_that(self) -> None:
+        from smm.engagement_hooks import generate_this_or_that
+
+        a, b = generate_this_or_that("AliExpress - Гаджеты", seed=42)
+        assert isinstance(a, str)
+        assert isinstance(b, str)
+        assert a != b
+
+    def test_all_pillars_covered(self) -> None:
+        from smm.engagement_hooks import (
+            POLLS_BY_PILLAR,
+            QUESTIONS_BY_PILLAR,
+            QUIZ_BY_PILLAR,
+        )
+
+        for pool in (POLLS_BY_PILLAR, QUIZ_BY_PILLAR, QUESTIONS_BY_PILLAR):
+            assert len(pool) == 5
+
+    def test_engagement_summary(self) -> None:
+        from smm.engagement_hooks import engagement_summary
+
+        summary = engagement_summary("Cyber Security & Ethical Hacking")
+        assert "Опросы:" in summary
+        assert "Квизы:" in summary
+        assert "Вопросы:" in summary
+        assert "Всего:" in summary
+
+    def test_fallback_for_unknown_pillar(self) -> None:
+        from smm.engagement_hooks import generate_poll
+
+        hook = generate_poll("Unknown Pillar", seed=42)
+        assert hook.hook_type == "poll"
+        assert len(hook.options) == 4
+
+    def test_seed_reproducibility(self) -> None:
+        from smm.engagement_hooks import generate_poll
+
+        h1 = generate_poll("Blue Team / Defensive Security", seed=99)
+        h2 = generate_poll("Blue Team / Defensive Security", seed=99)
+        assert h1.content == h2.content
+        assert h1.options == h2.options
