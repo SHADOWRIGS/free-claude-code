@@ -6,6 +6,7 @@ content for Instagram, TikTok, and YouTube.
 """
 
 from smm.analytics import WeeklyReport, create_tracking_template
+from smm.content_bank import get_ctas, get_hooks, get_story_framework
 from smm.content_pillars import PILLARS, ContentPillar
 from smm.platforms import Platform
 from smm.post_generator import PostSlot, generate_week_plan
@@ -22,6 +23,9 @@ __all__ = [
     "create_tracking_template",
     "generate_ready_posts",
     "generate_week_plan",
+    "get_ctas",
+    "get_hooks",
+    "get_story_framework",
     "render_preview",
     "render_preview_file",
 ]

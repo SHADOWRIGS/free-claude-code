@@ -19,6 +19,11 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
+from smm.content_bank import (
+    CTA_COURSE_EXTENDED,
+    CTA_REFERRAL_EXTENDED,
+    HOOKS_EXTENDED,
+)
 from smm.content_pillars import ContentPillar
 from smm.post_generator import PostSlot, generate_week_plan
 
@@ -73,6 +78,36 @@ CAPTION_TEMPLATES_COURSE: list[str] = [
         "{cta}\n\n"
         "{hashtags}"
     ),
+    (
+        "{hook}\n\n"
+        "{topic} — must-have навык для любого айтишника.\n\n"
+        "Я прошёл этот путь и знаю, где подводные камни.\n"
+        "Делюсь тем, что реально работает:\n\n"
+        "- Практика > теория\n"
+        "- Один инструмент за раз\n"
+        "- 30 минут в день = результат через месяц\n\n"
+        "{cta}\n\n"
+        "{hashtags}"
+    ),
+    (
+        "{hook}\n\n"
+        "Топ-3 ошибки при изучении {topic_lower}:\n\n"
+        "1. Пропускать основы\n"
+        "2. Не практиковаться на реальных задачах\n"
+        "3. Учить всё сразу, а не по одному навыку\n\n"
+        "Не повторяй чужих ошибок.\n"
+        "{cta}\n\n"
+        "{hashtags}"
+    ),
+    (
+        "{hook}\n\n"
+        "Ты новичок в {pillar_short}?\n"
+        "Тогда {topic_lower} — идеальная точка входа.\n\n"
+        "Простыми словами, с примерами.\n"
+        "Даже если ты ни разу не открывал терминал.\n\n"
+        "{cta}\n\n"
+        "{hashtags}"
+    ),
 ]
 
 CAPTION_TEMPLATES_REFERRAL: list[str] = [
@@ -115,6 +150,26 @@ CAPTION_TEMPLATES_REFERRAL: list[str] = [
         "Проверенная ссылка — в шапке профиля.\n\n"
         "{hashtags}"
     ),
+    (
+        "{hook}\n\n"
+        "Тестирую {topic_lower}.\n\n"
+        "Что внутри коробки:\n"
+        "- Сам девайс\n"
+        "- Кабель и адаптер\n"
+        "- Инструкция (которую никто не читает)\n\n"
+        "Первое впечатление — огонь.\n"
+        "Ссылка в описании профиля.\n\n"
+        "{hashtags}"
+    ),
+    (
+        "{hook}\n\n"
+        "Бюджет на старт в {pillar_short}: $50.\n"
+        "Что можно купить за эти деньги?\n\n"
+        "{topic_lower} — как раз из этого списка.\n\n"
+        "Качество на уровне, а цена — в 3 раза ниже.\n"
+        "Проверено лично. Ссылка в шапке.\n\n"
+        "{hashtags}"
+    ),
 ]
 
 VIDEO_SCRIPT_TEMPLATES: list[str] = [
@@ -138,6 +193,21 @@ VIDEO_SCRIPT_TEMPLATES: list[str] = [
         "[3-10s] Контекст: для кого и зачем\n"
         "[10-20s] Основа: ключевые шаги\n"
         "[20-25s] Совет: чего избегать\n"
+        "[25-30s] CTA: {cta}"
+    ),
+    (
+        "[0-2s] HOOK: {hook}\n"
+        "[2-5s] «А ты знал?» — факт про {topic_lower}\n"
+        "[5-12s] Разбор: 3 ключевых момента\n"
+        "[12-22s] Демо на экране / показ гаджета\n"
+        "[22-27s] Итог: что это даёт тебе\n"
+        "[27-30s] CTA: {cta}"
+    ),
+    (
+        "[0-3s] HOOK: {hook}\n"
+        "[3-8s] Миф: популярное заблуждение\n"
+        "[8-18s] Правда: как работает {topic_lower}\n"
+        "[18-25s] Доказательства на экране\n"
         "[25-30s] CTA: {cta}"
     ),
 ]
@@ -217,17 +287,33 @@ def _pillar_short(pillar: ContentPillar) -> str:
     return pillar.name.split("/")[0].strip().split("&")[0].strip().split("-")[0].strip()
 
 
+def _pick_hook(slot: PostSlot) -> str:
+    keyword = _pillar_short(slot.pillar)
+    extended = [
+        h.format(keyword=keyword) if "{keyword}" in h else h for h in HOOKS_EXTENDED
+    ]
+    return random.choice([slot.hook, *extended[:10]])
+
+
+def _pick_cta(slot: PostSlot) -> str:
+    is_referral = slot.pillar.product == "referral"
+    extended = CTA_REFERRAL_EXTENDED if is_referral else CTA_COURSE_EXTENDED
+    return random.choice([slot.cta, *extended[:5]])
+
+
 def _build_caption(slot: PostSlot) -> str:
     is_referral = slot.pillar.product == "referral"
     templates = CAPTION_TEMPLATES_REFERRAL if is_referral else CAPTION_TEMPLATES_COURSE
     tpl = random.choice(templates)
     hashtags_str = " ".join(slot.hashtags)
+    hook = _pick_hook(slot)
+    cta = _pick_cta(slot)
     return tpl.format(
-        hook=slot.hook,
+        hook=hook,
         topic=slot.topic,
         topic_lower=slot.topic.lower() if slot.topic[0].isupper() else slot.topic,
         pillar_short=_pillar_short(slot.pillar),
-        cta=slot.cta,
+        cta=cta,
         hashtags=hashtags_str,
     )
 

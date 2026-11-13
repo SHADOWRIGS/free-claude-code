@@ -968,3 +968,95 @@ class TestProposal:
         html_content = generate_proposal(self._client())
         assert "168" in html_content
         assert "$1.17" in html_content
+
+
+# --- Content bank tests ---
+
+
+class TestContentBank:
+    def test_hooks_extended_count(self) -> None:
+        from smm.content_bank import HOOKS_EXTENDED
+
+        assert len(HOOKS_EXTENDED) >= 25
+
+    def test_get_hooks_returns_requested_count(self) -> None:
+        from smm.content_bank import get_hooks
+
+        hooks = get_hooks("Cyber Security", count=5)
+        assert len(hooks) == 5
+        for h in hooks:
+            assert len(h) > 10
+
+    def test_get_hooks_substitutes_keyword(self) -> None:
+        import random
+
+        from smm.content_bank import get_hooks
+
+        random.seed(42)
+        hooks = get_hooks("Nmap", count=30)
+        assert any("Nmap" in h for h in hooks)
+
+    def test_get_ctas_course(self) -> None:
+        from smm.content_bank import get_ctas
+
+        ctas = get_ctas("course", count=3)
+        assert len(ctas) == 3
+        for cta in ctas:
+            assert len(cta) > 10
+
+    def test_get_ctas_referral(self) -> None:
+        from smm.content_bank import get_ctas
+
+        ctas = get_ctas("referral", count=3)
+        assert len(ctas) == 3
+
+    def test_cta_pools_are_different(self) -> None:
+        from smm.content_bank import CTA_COURSE_EXTENDED, CTA_REFERRAL_EXTENDED
+
+        assert set(CTA_COURSE_EXTENDED) != set(CTA_REFERRAL_EXTENDED)
+
+    def test_story_framework_returns_dict(self) -> None:
+        from smm.content_bank import get_story_framework
+
+        fw = get_story_framework("Nmap", "Подпишись", niche="Cyber Security")
+        assert isinstance(fw, dict)
+        assert "name" in fw
+        assert "slide_1" in fw
+
+    def test_story_framework_substitutes_topic(self) -> None:
+        import random
+
+        from smm.content_bank import get_story_framework
+
+        random.seed(99)
+        fw = get_story_framework("Wireshark", "Подпишись", niche="Cyber Security")
+        values = " ".join(fw.values())
+        assert "Wireshark" in values or "wireshark" in values
+
+    def test_myths_by_niche_all_pillars(self) -> None:
+        from smm.content_bank import MYTHS_BY_NICHE
+
+        assert len(MYTHS_BY_NICHE) >= 5
+        for niche, myths in MYTHS_BY_NICHE.items():
+            assert len(myths) >= 3, f"{niche} has too few myths"
+
+    def test_problems_by_niche_all_pillars(self) -> None:
+        from smm.content_bank import PROBLEMS_BY_NICHE
+
+        assert len(PROBLEMS_BY_NICHE) >= 5
+        for niche, problems in PROBLEMS_BY_NICHE.items():
+            assert len(problems) >= 3, f"{niche} has too few problems"
+
+    def test_carousel_frameworks_exist(self) -> None:
+        from smm.content_bank import CAROUSEL_FRAMEWORKS
+
+        assert len(CAROUSEL_FRAMEWORKS) >= 3
+        for fw in CAROUSEL_FRAMEWORKS:
+            assert "name" in fw
+            assert "cover" in fw
+
+    def test_extended_templates_used_in_ready_posts(self) -> None:
+        from smm.ready_posts import CAPTION_TEMPLATES_COURSE, CAPTION_TEMPLATES_REFERRAL
+
+        assert len(CAPTION_TEMPLATES_COURSE) >= 8
+        assert len(CAPTION_TEMPLATES_REFERRAL) >= 6
