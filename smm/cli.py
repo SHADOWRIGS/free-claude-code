@@ -264,6 +264,27 @@ def cmd_proposal(args: argparse.Namespace) -> None:
     print(f"  Файл: {path}")
 
 
+def cmd_content_bank(args: argparse.Namespace) -> None:
+    from smm.content_bank import get_ctas, get_hooks, get_story_framework
+
+    if args.action == "hooks":
+        hooks = get_hooks(args.keyword, count=args.count)
+        print(f"Хуки для «{args.keyword}» ({len(hooks)} шт.):\n")
+        for i, h in enumerate(hooks, 1):
+            print(f"  {i}. {h}")
+    elif args.action == "ctas":
+        ctas = get_ctas(args.product_type, count=args.count)
+        print(f"CTA ({args.product_type}, {len(ctas)} шт.):\n")
+        for i, c in enumerate(ctas, 1):
+            print(f"  {i}. {c}")
+    elif args.action == "story":
+        fw = get_story_framework(args.keyword, "Подпишись", niche=args.niche)
+        print(f"Сторис-фреймворк ({fw['name']}):\n")
+        for key, val in fw.items():
+            if key != "name":
+                print(f"  {key}: {val}")
+
+
 def cmd_service(args: argparse.Namespace) -> None:
     from smm.service_spec import ServiceSpec
 
@@ -399,6 +420,19 @@ def build_parser() -> argparse.ArgumentParser:
     p_svc.add_argument(
         "action", choices=["pricing", "full"], default="pricing", nargs="?"
     )
+
+    p_cb = sub.add_parser(
+        "content-bank", help="Generate hooks, CTAs, and story frameworks"
+    )
+    p_cb.add_argument(
+        "action", choices=["hooks", "ctas", "story"], default="hooks", nargs="?"
+    )
+    p_cb.add_argument("--keyword", default="Cyber Security")
+    p_cb.add_argument("--count", type=int, default=5)
+    p_cb.add_argument(
+        "--product-type", choices=["course", "referral"], default="course"
+    )
+    p_cb.add_argument("--niche", default="cybersecurity")
 
     return parser
 
