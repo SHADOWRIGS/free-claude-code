@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from smm.content_pillars import PILLARS, ContentPillar
+from smm.hashtag_engine import HASHTAG_POOLS, generate_hashtags
 from smm.platforms import PLATFORM_SPECS, Platform
 
 
@@ -106,12 +107,15 @@ def _build_body(topic: str, pillar: ContentPillar, platform: Platform) -> str:
 
 def _pick_hashtags(pillar: ContentPillar, platform: Platform) -> list[str]:
     spec = PLATFORM_SPECS[platform]
-    count = min(
-        spec.hashtag_range[1], len(pillar.hashtags_ru) + len(pillar.hashtags_en)
-    )
+    max_tags = spec.hashtag_range[1]
+
+    if pillar.name in HASHTAG_POOLS:
+        ht = generate_hashtags(pillar.name, count=max_tags)
+        return ht.all_tags
+
     combined = pillar.hashtags_ru + pillar.hashtags_en
     random.shuffle(combined)
-    return [f"#{h}" for h in combined[:count]]
+    return [f"#{h}" for h in combined[:max_tags]]
 
 
 def _referral_url(pillar: ContentPillar, platform: Platform) -> str:
