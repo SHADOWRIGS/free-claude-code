@@ -59,9 +59,11 @@
 | Визуальное превью постов | Готово | `smm/preview.py` |
 | Аналитика и отчётность | Готово | `smm/analytics.py` |
 | Лендинг услуги (HTML) | Готово | `smm/landing.py` |
-| CLI (14 команд) | Готово | `smm/cli.py` |
-| Тесты | 77 passed | `tests/test_smm.py` |
-| Интеграция постинга (Buffer/Later) | Ожидает | — |
+| Батч-генератор готовых постов | Готово | `smm/ready_posts.py` |
+| Экспорт в планировщики (Buffer/Later/Meta/iCal/Notion) | Готово | `smm/scheduler_export.py` |
+| CLI (16 команд) | Готово | `smm/cli.py` |
+| Тесты | 94 passed | `tests/test_smm.py` |
+| Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
 *AI-райтер требует API-ключ (пункт 3)
