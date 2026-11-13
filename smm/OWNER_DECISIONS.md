@@ -69,8 +69,9 @@
 | Хештег-движок (150 тегов, 5 пулов) | Готово | `smm/hashtag_engine.py` |
 | Визуальный контент-календарь (HTML) | Готово | `smm/content_calendar_html.py` |
 | Engagement-хуки (опросы, квизы, вопросы) | Готово | `smm/engagement_hooks.py` |
-| CLI (24 команды) | Готово | `smm/cli.py` |
-| Тесты | 166 passed | `tests/test_smm.py` |
+| Валидатор подписей (проверка по платформам) | Готово | `smm/caption_validator.py` |
+| CLI (25 команд) | Готово | `smm/cli.py` |
+| Тесты | 173 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

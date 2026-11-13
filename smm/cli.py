@@ -278,6 +278,18 @@ def cmd_hashtags(args: argparse.Namespace) -> None:
         print(hashtag_report(args.pillar))
 
 
+def cmd_validate(args: argparse.Namespace) -> None:
+    from smm.caption_validator import validate_posts
+    from smm.ready_posts import generate_ready_posts
+
+    _ensure_data_dir()
+    posts = generate_ready_posts(days=args.days, seed=args.seed)
+    report = validate_posts(posts)
+    print(report.summary())
+    if report.ok:
+        print("\nВсе посты прошли валидацию!")
+
+
 def cmd_engage(args: argparse.Namespace) -> None:
     from smm.engagement_hooks import (
         engagement_summary,
@@ -576,6 +588,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_cal.add_argument("--days", type=int, default=7)
     p_cal.add_argument("--seed", type=int, default=None)
     p_cal.add_argument("--output", default="")
+
+    p_val = sub.add_parser(
+        "validate", help="Validate posts against platform constraints"
+    )
+    p_val.add_argument("--days", type=int, default=7)
+    p_val.add_argument("--seed", type=int, default=None)
 
     p_eng = sub.add_parser(
         "engage", help="Generate engagement hooks (polls, quizzes, questions)"

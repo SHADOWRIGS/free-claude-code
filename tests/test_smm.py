@@ -1537,3 +1537,63 @@ class TestEngagementHooks:
         h2 = generate_poll("Blue Team / Defensive Security", seed=99)
         assert h1.content == h2.content
         assert h1.options == h2.options
+
+
+# --- Caption validator tests ---
+
+
+class TestCaptionValidator:
+    def test_all_posts_pass(self) -> None:
+        from smm.caption_validator import validate_posts
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        report = validate_posts(posts)
+        assert report.ok
+        assert report.passed == report.total
+
+    def test_no_unresolved_placeholders(self) -> None:
+        from smm.caption_validator import validate_posts
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=7, seed=42)
+        report = validate_posts(posts)
+        placeholder_errors = [
+            e for e in report.errors if "placeholder" in e.message.lower()
+        ]
+        assert len(placeholder_errors) == 0
+
+    def test_summary_format(self) -> None:
+        from smm.caption_validator import validate_posts
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        report = validate_posts(posts)
+        summary = report.summary()
+        assert "Проверено:" in summary
+        assert "Прошло:" in summary
+
+    def test_empty_list(self) -> None:
+        from smm.caption_validator import validate_posts
+
+        report = validate_posts([])
+        assert report.ok
+        assert report.total == 0
+
+    def test_report_properties(self) -> None:
+        from smm.caption_validator import validate_posts
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        report = validate_posts(posts)
+        assert report.total == 9
+        assert report.failed == report.total - report.passed
+
+    def test_seven_days_all_pass(self) -> None:
+        from smm.caption_validator import validate_posts
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=7, seed=42)
+        report = validate_posts(posts)
+        assert report.ok
+        assert report.total == 63
