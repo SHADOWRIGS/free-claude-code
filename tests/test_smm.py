@@ -801,3 +801,66 @@ class TestReadyPosts:
         b = generate_ready_posts(days=1, seed=99)
         assert [p.topic for p in a] == [p.topic for p in b]
         assert [p.caption for p in a] == [p.caption for p in b]
+
+
+# --- SchedulerExport tests ---
+
+
+class TestSchedulerExport:
+    def test_export_later_csv(self, tmp_path: Path) -> None:
+        import csv as csv_mod
+
+        from smm.ready_posts import generate_ready_posts
+        from smm.scheduler_export import export_later_csv
+
+        posts = generate_ready_posts(days=1, seed=42)
+        out = tmp_path / "later.csv"
+        export_later_csv(posts, out)
+        with out.open(newline="", encoding="utf-8") as f:
+            rows = list(csv_mod.reader(f))
+        assert rows[0][0] == "Caption"
+        assert len(rows) == 10
+
+    def test_export_meta_json(self, tmp_path: Path) -> None:
+        from smm.ready_posts import generate_ready_posts
+        from smm.scheduler_export import export_meta_json
+
+        posts = generate_ready_posts(days=1, seed=42)
+        out = tmp_path / "meta.json"
+        export_meta_json(posts, out)
+        data = json.loads(out.read_text())
+        assert data["platform"] == "instagram"
+        assert data["total"] == 3
+
+    def test_export_ical(self, tmp_path: Path) -> None:
+        from smm.ready_posts import generate_ready_posts
+        from smm.scheduler_export import export_ical
+
+        posts = generate_ready_posts(days=1, seed=42)
+        out = tmp_path / "cal.ics"
+        export_ical(posts, out)
+        content = out.read_text()
+        assert "BEGIN:VCALENDAR" in content
+        assert "BEGIN:VEVENT" in content
+        assert content.count("BEGIN:VEVENT") == 9
+
+    def test_export_notion_json(self, tmp_path: Path) -> None:
+        from smm.ready_posts import generate_ready_posts
+        from smm.scheduler_export import export_notion_json
+
+        posts = generate_ready_posts(days=1, seed=42)
+        out = tmp_path / "notion.json"
+        export_notion_json(posts, out)
+        data = json.loads(out.read_text())
+        assert data["total"] == 9
+        assert "properties" in data["database_rows"][0]
+
+    def test_export_all_formats(self, tmp_path: Path) -> None:
+        from smm.ready_posts import generate_ready_posts
+        from smm.scheduler_export import export_all_formats
+
+        posts = generate_ready_posts(days=1, seed=42)
+        paths = export_all_formats(posts, tmp_path / "exports")
+        assert len(paths) == 4
+        for p in paths.values():
+            assert p.exists()

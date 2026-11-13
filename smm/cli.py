@@ -231,6 +231,19 @@ def cmd_batch(args: argparse.Namespace) -> None:
         print(f"Markdown: {batch_dir / 'ready_posts.md'}")
 
 
+def cmd_scheduler_export(args: argparse.Namespace) -> None:
+    from smm.ready_posts import generate_ready_posts
+    from smm.scheduler_export import export_all_formats
+
+    _ensure_data_dir()
+    posts = generate_ready_posts(days=args.days, seed=args.seed)
+    out_dir = DATA_DIR / "scheduler"
+    paths = export_all_formats(posts, out_dir)
+    print(f"Экспортировано {len(posts)} постов в форматы планировщиков:\n")
+    for name, path in paths.items():
+        print(f"  {name}: {path}")
+
+
 def cmd_service(args: argparse.Namespace) -> None:
     from smm.service_spec import ServiceSpec
 
@@ -347,6 +360,13 @@ def build_parser() -> argparse.ArgumentParser:
         default="all",
     )
 
+    p_sexp = sub.add_parser(
+        "scheduler-export",
+        help="Export content to Buffer/Later/Meta/iCal/Notion formats",
+    )
+    p_sexp.add_argument("--days", type=int, default=7)
+    p_sexp.add_argument("--seed", type=int, default=None)
+
     p_svc = sub.add_parser("service", help="Show service specification")
     p_svc.add_argument(
         "action", choices=["pricing", "full"], default="pricing", nargs="?"
@@ -360,10 +380,11 @@ def main() -> None:
     args = parser.parse_args()
 
     async_commands = {"plan", "post", "script", "trends", "write"}
+    func_name = f"cmd_{args.command.replace('-', '_')}"
     if args.command in async_commands:
-        asyncio.run(globals()[f"cmd_{args.command}"](args))
+        asyncio.run(globals()[func_name](args))
     else:
-        globals()[f"cmd_{args.command}"](args)
+        globals()[func_name](args)
 
 
 if __name__ == "__main__":
