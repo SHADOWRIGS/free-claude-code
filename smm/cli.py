@@ -264,6 +264,17 @@ def cmd_proposal(args: argparse.Namespace) -> None:
     print(f"  Файл: {path}")
 
 
+def cmd_week_pack(args: argparse.Namespace) -> None:
+    from smm.week_pack import generate_week_pack
+
+    _ensure_data_dir()
+    out = Path(args.output) if args.output else None
+    paths = generate_week_pack(days=args.days, seed=args.seed, out_dir=out)
+    print(f"Недельный пакет контента сгенерирован ({len(paths)} файлов):\n")
+    for name, path in sorted(paths.items()):
+        print(f"  {name}: {path}")
+
+
 def cmd_biolink(args: argparse.Namespace) -> None:
     from smm.biolink import BioLinkPage, generate_biolink_file
 
@@ -456,6 +467,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_bio.add_argument("--tagline", default="")
     p_bio.add_argument("--telegram", default="")
     p_bio.add_argument("--output", default="")
+
+    p_wp = sub.add_parser("week-pack", help="Generate complete weekly content package")
+    p_wp.add_argument("--days", type=int, default=7)
+    p_wp.add_argument("--seed", type=int, default=None)
+    p_wp.add_argument("--output", default="")
 
     return parser
 

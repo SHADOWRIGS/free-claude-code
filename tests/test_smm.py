@@ -1133,3 +1133,67 @@ class TestBioLink:
         html = generate_biolink_html()
         assert "prefers-color-scheme: light" in html
         assert 'data-theme="dark"' in html
+
+
+# --- Week pack tests ---
+
+
+class TestWeekPack:
+    def test_generates_all_files(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        assert len(paths) >= 10
+        for name, path in paths.items():
+            assert path.exists(), f"{name} not found at {path}"
+
+    def test_contains_key_files(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        assert "json" in paths
+        assert "csv" in paths
+        assert "markdown" in paths
+        assert "biolink" in paths
+        assert "readme" in paths
+
+    def test_platform_directories(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        platform_keys = [k for k in paths if k.startswith("captions_")]
+        assert len(platform_keys) == 3
+
+    def test_readme_has_stats(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        readme = paths["readme"].read_text()
+        assert "total_posts" in readme
+        assert "9" in readme
+
+    def test_scheduler_exports_present(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        scheduler_keys = [k for k in paths if k.startswith("scheduler_")]
+        assert len(scheduler_keys) >= 4
+
+    def test_video_scripts_generated(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "pack")
+        script_keys = [k for k in paths if k.startswith("scripts_")]
+        assert len(script_keys) >= 1
+        for key in script_keys:
+            content = paths[key].read_text()
+            assert "Script" in content
+
+    def test_seed_reproducibility(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths1 = generate_week_pack(days=1, seed=99, out_dir=tmp_path / "p1")
+        paths2 = generate_week_pack(days=1, seed=99, out_dir=tmp_path / "p2")
+        json1 = paths1["json"].read_text()
+        json2 = paths2["json"].read_text()
+        assert json1 == json2
