@@ -2323,3 +2323,73 @@ class TestConversionFunnel:
 
         posts = generate_funnel_posts("AliExpress - Гаджеты")
         assert all(p.cta for p in posts)
+
+
+class TestUGCTemplates:
+    def test_generate_ugc_templates(self) -> None:
+        from smm.ugc_templates import generate_ugc_templates
+
+        templates = generate_ugc_templates("Cyber Security & Ethical Hacking")
+        assert len(templates) == 5  # 1 per UGC type
+
+    def test_generate_ugc_templates_unknown_pillar(self) -> None:
+        from smm.ugc_templates import generate_ugc_templates
+
+        templates = generate_ugc_templates("Nonexistent")
+        assert templates == []
+
+    def test_generate_all_ugc_templates(self) -> None:
+        from smm.ugc_templates import generate_all_ugc_templates
+
+        templates = generate_all_ugc_templates()
+        assert len(templates) == 25  # 5 pillars x 5 types
+
+    def test_all_pillars_covered(self) -> None:
+        from smm.ugc_templates import PILLAR_UGC
+
+        for pillar in PILLARS:
+            assert pillar.name in PILLAR_UGC, f"Missing UGC for {pillar.name}"
+
+    def test_ugc_template_has_all_fields(self) -> None:
+        from smm.ugc_templates import generate_ugc_templates
+
+        templates = generate_ugc_templates("Red Team / Offensive Security")
+        for t in templates:
+            assert t.title
+            assert t.prompt_text
+            assert t.example
+            assert t.hashtags
+            assert t.cta
+
+    def test_export_ugc_json(self, tmp_path: Path) -> None:
+        from smm.ugc_templates import export_ugc_json, generate_all_ugc_templates
+
+        templates = generate_all_ugc_templates()
+        path = export_ugc_json(templates, tmp_path / "ugc.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == 25
+
+    def test_export_ugc_txt(self, tmp_path: Path) -> None:
+        from smm.ugc_templates import export_ugc_txt, generate_all_ugc_templates
+
+        templates = generate_all_ugc_templates()
+        path = export_ugc_txt(templates, tmp_path / "ugc.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "UGC" in text
+
+    def test_ugc_summary(self) -> None:
+        from smm.ugc_templates import generate_all_ugc_templates, ugc_summary
+
+        templates = generate_all_ugc_templates()
+        summary = ugc_summary(templates)
+        assert "UGC" in summary
+        assert "25" in summary
+
+    def test_ugc_types_all_present(self) -> None:
+        from smm.ugc_templates import UGC_TYPES, generate_ugc_templates
+
+        templates = generate_ugc_templates("Machine Learning & AI")
+        types = {t.ugc_type for t in templates}
+        assert types == set(UGC_TYPES)

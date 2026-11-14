@@ -463,6 +463,32 @@ def cmd_funnel(args: argparse.Namespace) -> None:
         print(f"TXT: {DATA_DIR / 'funnel.txt'}")
 
 
+def cmd_ugc(args: argparse.Namespace) -> None:
+    from smm.ugc_templates import (
+        export_ugc_json,
+        export_ugc_txt,
+        generate_all_ugc_templates,
+        generate_ugc_templates,
+        ugc_summary,
+    )
+
+    _ensure_data_dir()
+    templates = (
+        generate_ugc_templates(args.pillar)
+        if args.pillar
+        else generate_all_ugc_templates()
+    )
+    print(ugc_summary(templates))
+
+    fmt = args.format
+    if fmt in ("json", "all"):
+        export_ugc_json(templates, DATA_DIR / "ugc_templates.json")
+        print(f"\nJSON: {DATA_DIR / 'ugc_templates.json'}")
+    if fmt in ("txt", "all"):
+        export_ugc_txt(templates, DATA_DIR / "ugc_templates.txt")
+        print(f"TXT: {DATA_DIR / 'ugc_templates.txt'}")
+
+
 def cmd_strategy(args: argparse.Namespace) -> None:
     from smm.content_strategy import (
         export_strategy_json,
@@ -822,6 +848,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_funnel.add_argument("--pillar", default="")
     p_funnel.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ugc = sub.add_parser("ugc", help="Generate UGC templates for social proof")
+    p_ugc.add_argument("--pillar", default="")
+    p_ugc.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     p_strat = sub.add_parser(
         "strategy", help="Generate unified content strategy document"

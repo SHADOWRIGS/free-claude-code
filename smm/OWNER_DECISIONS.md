@@ -79,8 +79,9 @@
 | Контент-стратегия (единый план) | Готово | `smm/content_strategy.py` |
 | HTML-дашборд (единая панель управления) | Готово | `smm/dashboard.py` |
 | Конверсионная воронка (TOFU/MOFU/BOFU) | Готово | `smm/conversion_funnel.py` |
-| CLI (36 команд) | Готово | `smm/cli.py` |
-| Тесты | 263 passed | `tests/test_smm.py` |
+| UGC-шаблоны (отзывы, кейсы, до/после) | Готово | `smm/ugc_templates.py` |
+| CLI (37 команд) | Готово | `smm/cli.py` |
+| Тесты | 272 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
