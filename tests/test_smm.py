@@ -1597,3 +1597,98 @@ class TestCaptionValidator:
         report = validate_posts(posts)
         assert report.ok
         assert report.total == 63
+
+
+class TestStoryGenerator:
+    def test_generate_story_pack(self) -> None:
+        from smm.story_generator import generate_story_pack
+
+        pillar = PILLARS[0]
+        pack = generate_story_pack(pillar, pillar.topics[0], seed=42)
+        assert pack.pillar == pillar.name
+        assert pack.topic == pillar.topics[0]
+        assert len(pack.slides) >= 4
+
+    def test_generate_story_packs(self) -> None:
+        from smm.story_generator import generate_story_packs
+
+        packs = generate_story_packs(count=5, seed=42)
+        assert len(packs) == 5
+        pillars_seen = {p.pillar for p in packs}
+        assert len(pillars_seen) >= 2
+
+    def test_slides_have_text(self) -> None:
+        from smm.story_generator import generate_story_pack
+
+        pack = generate_story_pack(PILLARS[0], PILLARS[0].topics[0], seed=42)
+        for slide in pack.slides:
+            assert slide.text.strip()
+            assert slide.visual_note.strip()
+            assert slide.number > 0
+
+    def test_interactive_slides_present(self) -> None:
+        from smm.story_generator import generate_story_pack
+
+        pack = generate_story_pack(PILLARS[0], PILLARS[0].topics[0], seed=42)
+        interactive = [s for s in pack.slides if s.interactive]
+        assert len(interactive) >= 2
+
+    def test_to_dict(self) -> None:
+        from smm.story_generator import generate_story_pack
+
+        pack = generate_story_pack(PILLARS[0], PILLARS[0].topics[0], seed=42)
+        d = pack.to_dict()
+        assert d["pillar"] == pack.pillar
+        assert d["topic"] == pack.topic
+        assert len(d["slides"]) == len(pack.slides)
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.story_generator import export_story_packs_json, generate_story_packs
+
+        packs = generate_story_packs(count=3, seed=42)
+        path = export_story_packs_json(packs, tmp_path / "stories.json")
+        assert path.exists()
+        data = json.loads(path.read_text())
+        assert len(data) == 3
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.story_generator import export_story_packs_txt, generate_story_packs
+
+        packs = generate_story_packs(count=3, seed=42)
+        path = export_story_packs_txt(packs, tmp_path / "stories.txt")
+        assert path.exists()
+        text = path.read_text()
+        assert "СТОРИС #1" in text
+        assert "Слайд 1:" in text
+
+    def test_story_summary(self) -> None:
+        from smm.story_generator import generate_story_packs, story_summary
+
+        packs = generate_story_packs(count=5, seed=42)
+        summary = story_summary(packs)
+        assert "Сторис-пакеты: 5" in summary
+        assert "Всего слайдов:" in summary
+        assert "С интерактивом:" in summary
+
+    def test_seed_reproducibility(self) -> None:
+        from smm.story_generator import generate_story_packs
+
+        packs1 = generate_story_packs(count=3, seed=99)
+        packs2 = generate_story_packs(count=3, seed=99)
+        for p1, p2 in zip(packs1, packs2, strict=True):
+            assert p1.pillar == p2.pillar
+            assert p1.topic == p2.topic
+
+    def test_week_pack_includes_stories(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "wp")
+        assert "stories_json" in paths
+        assert "stories_txt" in paths
+        assert paths["stories_json"].exists()
+
+    def test_accent_colors_all_pillars(self) -> None:
+        from smm.story_generator import ACCENT_COLORS
+
+        for p in PILLARS:
+            assert p.name in ACCENT_COLORS

@@ -37,6 +37,11 @@ from smm.ready_posts import (
     generate_ready_posts,
 )
 from smm.scheduler_export import export_all_formats
+from smm.story_generator import (
+    export_story_packs_json,
+    export_story_packs_txt,
+    generate_story_packs,
+)
 
 
 def generate_week_pack(
@@ -103,6 +108,16 @@ def generate_week_pack(
     eng_path = engage_dir / "engagement_hooks.txt"
     eng_path.write_text("\n".join(engage_lines), encoding="utf-8")
     paths["engagement"] = eng_path
+
+    story_dir = out_dir / "stories"
+    story_dir.mkdir(exist_ok=True)
+    story_packs = generate_story_packs(count=5, seed=seed)
+    paths["stories_json"] = export_story_packs_json(
+        story_packs, story_dir / "story_packs.json"
+    )
+    paths["stories_txt"] = export_story_packs_txt(
+        story_packs, story_dir / "story_packs.txt"
+    )
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"

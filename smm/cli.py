@@ -387,6 +387,29 @@ def cmd_biolink(args: argparse.Namespace) -> None:
     print(f"  Ссылок: {len(page.links)}")
 
 
+def cmd_stories(args: argparse.Namespace) -> None:
+    from smm.story_generator import (
+        export_story_packs_json,
+        export_story_packs_txt,
+        generate_story_packs,
+        story_summary,
+    )
+
+    _ensure_data_dir()
+    packs = generate_story_packs(count=args.count, seed=args.seed)
+    print(story_summary(packs))
+
+    story_dir = DATA_DIR / "stories"
+    story_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_story_packs_json(packs, story_dir / "story_packs.json")
+        print(f"\nJSON: {story_dir / 'story_packs.json'}")
+    if args.format in ("txt", "all"):
+        export_story_packs_txt(packs, story_dir / "story_packs.txt")
+        print(f"TXT: {story_dir / 'story_packs.txt'}")
+
+
 def cmd_content_bank(args: argparse.Namespace) -> None:
     from smm.content_bank import get_ctas, get_hooks, get_story_framework
 
@@ -594,6 +617,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_val.add_argument("--days", type=int, default=7)
     p_val.add_argument("--seed", type=int, default=None)
+
+    p_story = sub.add_parser("stories", help="Generate story packs (5-7 slides)")
+    p_story.add_argument("--count", type=int, default=5)
+    p_story.add_argument("--seed", type=int, default=None)
+    p_story.add_argument(
+        "--format",
+        choices=["json", "txt", "all"],
+        default="all",
+    )
 
     p_eng = sub.add_parser(
         "engage", help="Generate engagement hooks (polls, quizzes, questions)"

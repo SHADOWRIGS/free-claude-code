@@ -70,8 +70,9 @@
 | Визуальный контент-календарь (HTML) | Готово | `smm/content_calendar_html.py` |
 | Engagement-хуки (опросы, квизы, вопросы) | Готово | `smm/engagement_hooks.py` |
 | Валидатор подписей (проверка по платформам) | Готово | `smm/caption_validator.py` |
-| CLI (25 команд) | Готово | `smm/cli.py` |
-| Тесты | 173 passed | `tests/test_smm.py` |
+| Генератор сторис-пакетов (5-7 слайдов) | Готово | `smm/story_generator.py` |
+| CLI (26 команд) | Готово | `smm/cli.py` |
+| Тесты | 184 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
