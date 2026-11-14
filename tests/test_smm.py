@@ -2029,3 +2029,78 @@ class TestContentSeries:
 
         types = {str(t["type"]) for t in SERIES_TEMPLATES}
         assert len(types) == len(SERIES_TEMPLATES)
+
+
+class TestCompetitorAnalysis:
+    def test_get_benchmark_known_pillar(self) -> None:
+        from smm.competitor_analysis import get_benchmark
+
+        b = get_benchmark("Cyber Security & Ethical Hacking")
+        assert b.pillar == "Cyber Security & Ethical Hacking"
+        assert b.avg_engagement_rate > 0
+
+    def test_get_benchmark_unknown_pillar(self) -> None:
+        from smm.competitor_analysis import get_benchmark
+
+        b = get_benchmark("Unknown Niche")
+        assert b.avg_engagement_rate == 2.0
+
+    def test_get_competitors(self) -> None:
+        from smm.competitor_analysis import get_competitors
+
+        comps = get_competitors("Cyber Security & Ethical Hacking")
+        assert len(comps) >= 2
+        assert all(c.name for c in comps)
+
+    def test_get_content_gaps(self) -> None:
+        from smm.competitor_analysis import get_content_gaps
+
+        gaps = get_content_gaps("Cyber Security & Ethical Hacking")
+        assert len(gaps) >= 3
+
+    def test_analyze_niche(self) -> None:
+        from smm.competitor_analysis import analyze_niche
+
+        analysis = analyze_niche("Cyber Security & Ethical Hacking")
+        assert analysis.pillar == "Cyber Security & Ethical Hacking"
+        assert len(analysis.gaps) > 0
+        assert len(analysis.competitors) > 0
+        assert len(analysis.recommendations) > 0
+
+    def test_analyze_all_niches(self) -> None:
+        from smm.competitor_analysis import analyze_all_niches
+
+        all_analyses = analyze_all_niches()
+        assert len(all_analyses) == len(PILLARS)
+
+    def test_export_analysis_json(self, tmp_path: Path) -> None:
+        from smm.competitor_analysis import analyze_all_niches, export_analysis_json
+
+        analyses = analyze_all_niches()
+        path = export_analysis_json(analyses, tmp_path / "analysis.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == len(PILLARS)
+
+    def test_export_analysis_txt(self, tmp_path: Path) -> None:
+        from smm.competitor_analysis import analyze_all_niches, export_analysis_txt
+
+        analyses = analyze_all_niches()
+        path = export_analysis_txt(analyses, tmp_path / "analysis.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "АНАЛИЗ #1" in text
+
+    def test_analysis_summary(self) -> None:
+        from smm.competitor_analysis import analysis_summary, analyze_all_niches
+
+        analyses = analyze_all_niches()
+        summary = analysis_summary(analyses)
+        assert "Анализ конкурентов" in summary
+        assert "Контент-гэпов" in summary
+
+    def test_benchmark_all_pillars_covered(self) -> None:
+        from smm.competitor_analysis import NICHE_BENCHMARKS
+
+        for p in PILLARS:
+            assert p.name in NICHE_BENCHMARKS

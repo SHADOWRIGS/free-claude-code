@@ -430,6 +430,30 @@ def cmd_repurpose(args: argparse.Namespace) -> None:
     print(f"\nJSON: {rep_dir / 'repurposed.json'}")
 
 
+def cmd_competitors(args: argparse.Namespace) -> None:
+    from smm.competitor_analysis import (
+        analysis_summary,
+        analyze_all_niches,
+        analyze_niche,
+        export_analysis_json,
+        export_analysis_txt,
+    )
+
+    _ensure_data_dir()
+    analyses = [analyze_niche(args.pillar)] if args.pillar else analyze_all_niches()
+    print(analysis_summary(analyses))
+
+    comp_dir = DATA_DIR / "competitors"
+    comp_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_analysis_json(analyses, comp_dir / "analysis.json")
+        print(f"\nJSON: {comp_dir / 'analysis.json'}")
+    if args.format in ("txt", "all"):
+        export_analysis_txt(analyses, comp_dir / "analysis.txt")
+        print(f"TXT: {comp_dir / 'analysis.txt'}")
+
+
 def cmd_series(args: argparse.Namespace) -> None:
     from smm.content_series import (
         export_series_json,
@@ -727,6 +751,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_story.add_argument("--count", type=int, default=5)
     p_story.add_argument("--seed", type=int, default=None)
     p_story.add_argument(
+        "--format",
+        choices=["json", "txt", "all"],
+        default="all",
+    )
+
+    p_comp = sub.add_parser(
+        "competitors", help="Analyze competitors and content gaps per niche"
+    )
+    p_comp.add_argument("--pillar", default="", help="Analyze specific pillar only")
+    p_comp.add_argument(
         "--format",
         choices=["json", "txt", "all"],
         default="all",

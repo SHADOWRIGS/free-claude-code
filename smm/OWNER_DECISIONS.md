@@ -75,8 +75,9 @@
 | Контент-репёрпозер (кросс-платформа) | Готово | `smm/content_repurposer.py` |
 | Оптимизатор расписания (тепловая карта) | Готово | `smm/posting_schedule_optimizer.py` |
 | Генератор контент-серий (многодневные арки) | Готово | `smm/content_series.py` |
-| CLI (30 команд) | Готово | `smm/cli.py` |
-| Тесты | 224 passed | `tests/test_smm.py` |
+| Анализ конкурентов и гэпов | Готово | `smm/competitor_analysis.py` |
+| CLI (32 команды) | Готово | `smm/cli.py` |
+| Тесты | 234 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
