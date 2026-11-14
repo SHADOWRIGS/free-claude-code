@@ -1940,3 +1940,92 @@ class TestPostingScheduleOptimizer:
         for p in Platform:
             assert p.value in WEEKDAY_MULTIPLIERS
             assert len(WEEKDAY_MULTIPLIERS[p.value]) == 7
+
+
+class TestContentSeries:
+    def test_generate_series_returns_content_series(self) -> None:
+        from smm.content_series import ContentSeries, generate_series
+
+        series = generate_series(PILLARS[0], seed=42)
+        assert isinstance(series, ContentSeries)
+        assert series.pillar == PILLARS[0].name
+        assert series.total_days == len(series.episodes)
+
+    def test_generate_series_episode_numbering(self) -> None:
+        from smm.content_series import generate_series
+
+        series = generate_series(PILLARS[0], seed=42)
+        for i, ep in enumerate(series.episodes, 1):
+            assert ep.day == i
+
+    def test_generate_series_first_episode_has_hook(self) -> None:
+        from smm.content_series import generate_series
+
+        series = generate_series(PILLARS[0], seed=42)
+        first = series.episodes[0]
+        assert len(first.caption) > 20
+
+    def test_generate_series_last_episode_has_cta(self) -> None:
+        from smm.content_series import generate_series
+
+        series = generate_series(PILLARS[0], seed=42)
+        last = series.episodes[-1]
+        assert last.cta
+
+    def test_generate_all_series_one_per_pillar(self) -> None:
+        from smm.content_series import generate_all_series
+
+        all_series = generate_all_series(seed=42)
+        assert len(all_series) == len(PILLARS)
+        pillar_names = {s.pillar for s in all_series}
+        assert len(pillar_names) == len(PILLARS)
+
+    def test_series_has_hashtags(self) -> None:
+        from smm.content_series import generate_series
+
+        series = generate_series(PILLARS[0], seed=42)
+        for ep in series.episodes:
+            assert ep.hashtags.startswith("#")
+
+    def test_to_dict_structure(self) -> None:
+        from smm.content_series import generate_series
+
+        series = generate_series(PILLARS[0], seed=42)
+        d = series.to_dict()
+        assert "pillar" in d
+        assert "series_name" in d
+        assert "episodes" in d
+        assert len(d["episodes"]) == series.total_days
+
+    def test_export_series_json(self, tmp_path: Path) -> None:
+        from smm.content_series import export_series_json, generate_all_series
+
+        all_series = generate_all_series(seed=42)
+        path = export_series_json(all_series, tmp_path / "series.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == len(PILLARS)
+
+    def test_export_series_txt(self, tmp_path: Path) -> None:
+        from smm.content_series import export_series_txt, generate_all_series
+
+        all_series = generate_all_series(seed=42)
+        path = export_series_txt(all_series, tmp_path / "series.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "СЕРИЯ #1" in text
+
+    def test_series_summary(self) -> None:
+        from smm.content_series import generate_all_series, series_summary
+
+        all_series = generate_all_series(seed=42)
+        summary = series_summary(all_series)
+        assert "Контент-серии" in summary
+        assert "Всего эпизодов" in summary
+        assert "По направлениям" in summary
+
+    def test_series_templates_all_types_covered(self) -> None:
+        from smm.content_series import SERIES_TEMPLATES
+
+        types = {str(t["type"]) for t in SERIES_TEMPLATES}
+        assert len(types) == len(SERIES_TEMPLATES)

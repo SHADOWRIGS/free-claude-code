@@ -132,7 +132,7 @@ async def cmd_write(args: argparse.Namespace) -> None:
     print(f"Генерирую {len(slots)} постов через AI...\n")
 
     posts = await writer.write_batch(slots)
-    output: list[dict[str, str]] = []
+    output: list[dict[str, str | list[str]]] = []
     for p in posts:
         print(f"[{p.slot.platform.value}] {p.slot.topic}")
         print(f"  {p.caption[:120]}...")
@@ -430,6 +430,31 @@ def cmd_repurpose(args: argparse.Namespace) -> None:
     print(f"\nJSON: {rep_dir / 'repurposed.json'}")
 
 
+def cmd_series(args: argparse.Namespace) -> None:
+    from smm.content_series import (
+        export_series_json,
+        export_series_txt,
+        generate_all_series,
+        series_summary,
+    )
+
+    _ensure_data_dir()
+    all_series = generate_all_series(seed=args.seed)
+    if args.pillar:
+        all_series = [s for s in all_series if args.pillar.lower() in s.pillar.lower()]
+    print(series_summary(all_series))
+
+    ser_dir = DATA_DIR / "series"
+    ser_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_series_json(all_series, ser_dir / "series.json")
+        print(f"\nJSON: {ser_dir / 'series.json'}")
+    if args.format in ("txt", "all"):
+        export_series_txt(all_series, ser_dir / "series.txt")
+        print(f"TXT: {ser_dir / 'series.txt'}")
+
+
 def cmd_carousel(args: argparse.Namespace) -> None:
     from smm.carousel_generator import (
         carousel_summary,
@@ -702,6 +727,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_story.add_argument("--count", type=int, default=5)
     p_story.add_argument("--seed", type=int, default=None)
     p_story.add_argument(
+        "--format",
+        choices=["json", "txt", "all"],
+        default="all",
+    )
+
+    p_ser = sub.add_parser(
+        "series", help="Generate multi-day content series (narrative arcs)"
+    )
+    p_ser.add_argument("--seed", type=int, default=None)
+    p_ser.add_argument("--pillar", default="", help="Filter by pillar name")
+    p_ser.add_argument(
         "--format",
         choices=["json", "txt", "all"],
         default="all",

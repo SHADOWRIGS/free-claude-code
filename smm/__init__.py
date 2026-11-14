@@ -9,6 +9,7 @@ from smm.analytics import WeeklyReport, create_tracking_template
 from smm.carousel_generator import CarouselPack, generate_carousels
 from smm.content_bank import get_ctas, get_hooks, get_story_framework
 from smm.content_pillars import PILLARS, ContentPillar
+from smm.content_series import ContentSeries, generate_all_series
 from smm.hashtag_engine import generate_hashtags, hashtag_report
 from smm.platforms import Platform
 from smm.post_generator import PostSlot, generate_week_plan
@@ -20,12 +21,14 @@ __all__ = [
     "PILLARS",
     "CarouselPack",
     "ContentPillar",
+    "ContentSeries",
     "Platform",
     "PostSlot",
     "ReadyPost",
     "StoryPack",
     "WeeklyReport",
     "create_tracking_template",
+    "generate_all_series",
     "generate_carousels",
     "generate_hashtags",
     "generate_ready_posts",

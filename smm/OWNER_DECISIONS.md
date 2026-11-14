@@ -74,8 +74,9 @@
 | Генератор каруселей (4-5 слайдов) | Готово | `smm/carousel_generator.py` |
 | Контент-репёрпозер (кросс-платформа) | Готово | `smm/content_repurposer.py` |
 | Оптимизатор расписания (тепловая карта) | Готово | `smm/posting_schedule_optimizer.py` |
-| CLI (29 команд) | Готово | `smm/cli.py` |
-| Тесты | 213 passed | `tests/test_smm.py` |
+| Генератор контент-серий (многодневные арки) | Готово | `smm/content_series.py` |
+| CLI (30 команд) | Готово | `smm/cli.py` |
+| Тесты | 224 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

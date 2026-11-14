@@ -25,6 +25,11 @@ from smm.carousel_generator import (
     export_carousels_txt,
     generate_carousels,
 )
+from smm.content_series import (
+    export_series_json,
+    export_series_txt,
+    generate_all_series,
+)
 from smm.engagement_hooks import (
     POLLS_BY_PILLAR,
     generate_poll,
@@ -133,6 +138,12 @@ def generate_week_pack(
     paths["carousels_txt"] = export_carousels_txt(
         carousel_packs, carousel_dir / "carousels.txt"
     )
+
+    series_dir = out_dir / "series"
+    series_dir.mkdir(exist_ok=True)
+    all_series = generate_all_series(seed=seed)
+    paths["series_json"] = export_series_json(all_series, series_dir / "series.json")
+    paths["series_txt"] = export_series_txt(all_series, series_dir / "series.txt")
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"
