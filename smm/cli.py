@@ -387,6 +387,28 @@ def cmd_biolink(args: argparse.Namespace) -> None:
     print(f"  Ссылок: {len(page.links)}")
 
 
+def cmd_repurpose(args: argparse.Namespace) -> None:
+    from smm.content_repurposer import (
+        export_repurposed_json,
+        repurpose_batch,
+        repurpose_summary,
+    )
+    from smm.ready_posts import generate_ready_posts
+
+    _ensure_data_dir()
+    posts = generate_ready_posts(days=args.days, seed=args.seed)
+    targets = (
+        [Platform(p.strip()) for p in args.targets.split(",")] if args.targets else None
+    )
+    repurposed = repurpose_batch(posts, targets=targets)
+    print(repurpose_summary(repurposed))
+
+    rep_dir = DATA_DIR / "repurposed"
+    rep_dir.mkdir(exist_ok=True)
+    export_repurposed_json(repurposed, rep_dir / "repurposed.json")
+    print(f"\nJSON: {rep_dir / 'repurposed.json'}")
+
+
 def cmd_carousel(args: argparse.Namespace) -> None:
     from smm.carousel_generator import (
         carousel_summary,
@@ -640,6 +662,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_val.add_argument("--days", type=int, default=7)
     p_val.add_argument("--seed", type=int, default=None)
+
+    p_rep = sub.add_parser("repurpose", help="Repurpose posts across platforms")
+    p_rep.add_argument("--days", type=int, default=1)
+    p_rep.add_argument("--seed", type=int, default=None)
+    p_rep.add_argument("--targets", default="", help="Comma-separated target platforms")
 
     p_car = sub.add_parser("carousel", help="Generate carousel packs (4-5 slides)")
     p_car.add_argument("--count", type=int, default=5)

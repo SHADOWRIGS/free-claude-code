@@ -1782,3 +1782,94 @@ class TestCarouselGenerator:
         assert "carousels_json" in paths
         assert "carousels_txt" in paths
         assert paths["carousels_json"].exists()
+
+
+class TestContentRepurposer:
+    def test_repurpose_single_post(self) -> None:
+        from smm.content_repurposer import repurpose_post
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        result = repurpose_post(posts[0], Platform.TIKTOK)
+        assert result.target_platform == "tiktok"
+        assert result.adapted_caption
+
+    def test_repurpose_batch(self) -> None:
+        from smm.content_repurposer import repurpose_batch
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        results = repurpose_batch(posts)
+        assert len(results) > 0
+        targets_seen = {r.target_platform for r in results}
+        assert len(targets_seen) >= 2
+
+    def test_caption_trimming(self) -> None:
+        from smm.content_repurposer import _trim_caption
+
+        long_text = "A " * 2000
+        trimmed = _trim_caption(long_text, 100)
+        assert len(trimmed) <= 100
+        assert trimmed.endswith("...")
+
+    def test_caption_no_trim_needed(self) -> None:
+        from smm.content_repurposer import _trim_caption
+
+        short = "Hello world"
+        assert _trim_caption(short, 100) == short
+
+    def test_adapted_hashtags_within_limit(self) -> None:
+        from smm.content_repurposer import repurpose_post
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        for post in posts:
+            for target in Platform:
+                result = repurpose_post(post, target)
+                spec = PLATFORM_SPECS[target]
+                assert len(result.adapted_hashtags) <= spec.hashtag_range[1]
+
+    def test_format_adaptation(self) -> None:
+        from smm.content_repurposer import _adapt_format
+
+        assert _adapt_format("reels", Platform.TIKTOK) == "short_video"
+        assert _adapt_format("reels", Platform.YOUTUBE) == "shorts"
+        assert _adapt_format("static_post", Platform.INSTAGRAM) == "static_post"
+
+    def test_visual_and_video_notes(self) -> None:
+        from smm.content_repurposer import repurpose_post
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        result = repurpose_post(posts[0], Platform.TIKTOK)
+        assert result.visual_note
+        assert result.video_note
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.content_repurposer import export_repurposed_json, repurpose_batch
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        repurposed = repurpose_batch(posts[:3])
+        path = export_repurposed_json(repurposed, tmp_path / "rep.json")
+        assert path.exists()
+        data = json.loads(path.read_text())
+        assert len(data) == len(repurposed)
+
+    def test_repurpose_summary(self) -> None:
+        from smm.content_repurposer import repurpose_batch, repurpose_summary
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        repurposed = repurpose_batch(posts)
+        summary = repurpose_summary(repurposed)
+        assert "адаптаций" in summary
+
+    def test_skip_same_platform(self) -> None:
+        from smm.content_repurposer import repurpose_batch
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        results = repurpose_batch(posts)
+        for r in results:
+            assert r.original_platform != r.target_platform
