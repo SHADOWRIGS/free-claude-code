@@ -112,6 +112,7 @@ ignore = [
 "smm/content_series.py" = ["RUF001"]
 "smm/competitor_analysis.py" = ["RUF001"]
 "smm/content_strategy.py" = ["RUF001"]
+"smm/content_mixer.py" = ["RUF001"]
 "smm/conversion_funnel.py" = ["RUF001"]
 "smm/dashboard.py" = ["RUF001"]
 "smm/ugc_templates.py" = ["RUF001"]

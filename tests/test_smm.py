@@ -2393,3 +2393,74 @@ class TestUGCTemplates:
         templates = generate_ugc_templates("Machine Learning & AI")
         types = {t.ugc_type for t in templates}
         assert types == set(UGC_TYPES)
+
+
+class TestContentMixer:
+    def test_generate_mixed_schedule(self) -> None:
+        from smm.content_mixer import generate_mixed_schedule
+
+        mixes = generate_mixed_schedule(days=3, seed=42)
+        assert len(mixes) == 3
+
+    def test_day_mix_has_posts(self) -> None:
+        from smm.content_mixer import generate_mixed_schedule
+
+        mixes = generate_mixed_schedule(days=2, seed=42)
+        for dm in mixes:
+            assert len(dm.posts) > 0
+
+    def test_classify_post(self) -> None:
+        from smm.content_mixer import classify_post
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        for p in posts:
+            ctype = classify_post(p)
+            assert ctype in {
+                "educational",
+                "entertaining",
+                "promotional",
+                "engagement",
+                "social_proof",
+            }
+
+    def test_balance_score_range(self) -> None:
+        from smm.content_mixer import generate_mixed_schedule
+
+        mixes = generate_mixed_schedule(days=3, seed=42)
+        for dm in mixes:
+            assert 0.0 <= dm.balance_score <= 1.0
+
+    def test_export_mix_json(self, tmp_path: Path) -> None:
+        from smm.content_mixer import export_mix_json, generate_mixed_schedule
+
+        mixes = generate_mixed_schedule(days=2, seed=42)
+        path = export_mix_json(mixes, tmp_path / "mix.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == 2
+
+    def test_export_mix_txt(self, tmp_path: Path) -> None:
+        from smm.content_mixer import export_mix_txt, generate_mixed_schedule
+
+        mixes = generate_mixed_schedule(days=2, seed=42)
+        path = export_mix_txt(mixes, tmp_path / "mix.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "КОНТЕНТ-МИКС" in text
+
+    def test_mix_summary(self) -> None:
+        from smm.content_mixer import generate_mixed_schedule, mix_summary
+
+        mixes = generate_mixed_schedule(days=3, seed=42)
+        summary = mix_summary(mixes)
+        assert "Контент-микс" in summary
+        assert "баланс" in summary.lower()
+
+    def test_type_distribution_counts(self) -> None:
+        from smm.content_mixer import generate_mixed_schedule
+
+        mixes = generate_mixed_schedule(days=1, seed=42)
+        for dm in mixes:
+            total = sum(dm.type_distribution.values())
+            assert total == len(dm.posts)

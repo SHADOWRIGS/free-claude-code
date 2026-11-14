@@ -463,6 +463,27 @@ def cmd_funnel(args: argparse.Namespace) -> None:
         print(f"TXT: {DATA_DIR / 'funnel.txt'}")
 
 
+def cmd_mix(args: argparse.Namespace) -> None:
+    from smm.content_mixer import (
+        export_mix_json,
+        export_mix_txt,
+        generate_mixed_schedule,
+        mix_summary,
+    )
+
+    _ensure_data_dir()
+    day_mixes = generate_mixed_schedule(days=args.days, seed=args.seed)
+    print(mix_summary(day_mixes))
+
+    fmt = args.format
+    if fmt in ("json", "all"):
+        export_mix_json(day_mixes, DATA_DIR / "content_mix.json")
+        print(f"\nJSON: {DATA_DIR / 'content_mix.json'}")
+    if fmt in ("txt", "all"):
+        export_mix_txt(day_mixes, DATA_DIR / "content_mix.txt")
+        print(f"TXT: {DATA_DIR / 'content_mix.txt'}")
+
+
 def cmd_ugc(args: argparse.Namespace) -> None:
     from smm.ugc_templates import (
         export_ugc_json,
@@ -852,6 +873,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_ugc = sub.add_parser("ugc", help="Generate UGC templates for social proof")
     p_ugc.add_argument("--pillar", default="")
     p_ugc.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_mix = sub.add_parser("mix", help="Generate balanced content mix schedule")
+    p_mix.add_argument("--days", type=int, default=7)
+    p_mix.add_argument("--seed", type=int, default=None)
+    p_mix.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     p_strat = sub.add_parser(
         "strategy", help="Generate unified content strategy document"

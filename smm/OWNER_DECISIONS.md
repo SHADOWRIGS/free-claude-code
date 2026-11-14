@@ -80,8 +80,9 @@
 | HTML-дашборд (единая панель управления) | Готово | `smm/dashboard.py` |
 | Конверсионная воронка (TOFU/MOFU/BOFU) | Готово | `smm/conversion_funnel.py` |
 | UGC-шаблоны (отзывы, кейсы, до/после) | Готово | `smm/ugc_templates.py` |
-| CLI (37 команд) | Готово | `smm/cli.py` |
-| Тесты | 272 passed | `tests/test_smm.py` |
+| Контент-миксер (баланс типов по дням) | Готово | `smm/content_mixer.py` |
+| CLI (38 команд) | Готово | `smm/cli.py` |
+| Тесты | 280 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
