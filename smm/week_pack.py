@@ -30,6 +30,11 @@ from smm.content_series import (
     export_series_txt,
     generate_all_series,
 )
+from smm.conversion_funnel import (
+    export_funnel_json,
+    export_funnel_txt,
+    generate_all_funnels,
+)
 from smm.engagement_hooks import (
     POLLS_BY_PILLAR,
     generate_poll,
@@ -144,6 +149,12 @@ def generate_week_pack(
     all_series = generate_all_series(seed=seed)
     paths["series_json"] = export_series_json(all_series, series_dir / "series.json")
     paths["series_txt"] = export_series_txt(all_series, series_dir / "series.txt")
+
+    funnel_dir = out_dir / "funnel"
+    funnel_dir.mkdir(exist_ok=True)
+    funnels = generate_all_funnels()
+    paths["funnel_json"] = export_funnel_json(funnels, funnel_dir / "funnel.json")
+    paths["funnel_txt"] = export_funnel_txt(funnels, funnel_dir / "funnel.txt")
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"
