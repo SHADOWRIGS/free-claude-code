@@ -430,6 +430,29 @@ def cmd_repurpose(args: argparse.Namespace) -> None:
     print(f"\nJSON: {rep_dir / 'repurposed.json'}")
 
 
+def cmd_strategy(args: argparse.Namespace) -> None:
+    from smm.content_strategy import (
+        export_strategy_json,
+        export_strategy_txt,
+        generate_strategy,
+        strategy_summary,
+    )
+
+    _ensure_data_dir()
+    strategy = generate_strategy()
+    print(strategy_summary(strategy))
+
+    strat_dir = DATA_DIR / "strategy"
+    strat_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_strategy_json(strategy, strat_dir / "strategy.json")
+        print(f"\nJSON: {strat_dir / 'strategy.json'}")
+    if args.format in ("txt", "all"):
+        export_strategy_txt(strategy, strat_dir / "strategy.txt")
+        print(f"TXT: {strat_dir / 'strategy.txt'}")
+
+
 def cmd_competitors(args: argparse.Namespace) -> None:
     from smm.competitor_analysis import (
         analysis_summary,
@@ -751,6 +774,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_story.add_argument("--count", type=int, default=5)
     p_story.add_argument("--seed", type=int, default=None)
     p_story.add_argument(
+        "--format",
+        choices=["json", "txt", "all"],
+        default="all",
+    )
+
+    p_strat = sub.add_parser(
+        "strategy", help="Generate unified content strategy document"
+    )
+    p_strat.add_argument(
         "--format",
         choices=["json", "txt", "all"],
         default="all",

@@ -2104,3 +2104,71 @@ class TestCompetitorAnalysis:
 
         for p in PILLARS:
             assert p.name in NICHE_BENCHMARKS
+
+
+class TestContentStrategy:
+    def test_generate_pillar_strategies(self) -> None:
+        from smm.content_strategy import generate_pillar_strategies
+
+        strategies = generate_pillar_strategies()
+        assert len(strategies) == len(PILLARS)
+        assert strategies[0].priority == 1
+
+    def test_pillar_strategy_shares_sum_to_one(self) -> None:
+        from smm.content_strategy import generate_pillar_strategies
+
+        strategies = generate_pillar_strategies()
+        total = sum(s.content_share for s in strategies)
+        assert abs(total - 1.0) < 0.01
+
+    def test_generate_strategy(self) -> None:
+        from smm.content_strategy import generate_strategy
+
+        strategy = generate_strategy()
+        assert strategy.total_posts_per_week == 63
+        assert len(strategy.pillars) == len(PILLARS)
+        assert len(strategy.priority_actions) > 0
+
+    def test_content_mix_sums_to_one(self) -> None:
+        from smm.content_strategy import CONTENT_MIX
+
+        assert abs(sum(CONTENT_MIX.values()) - 1.0) < 0.01
+
+    def test_format_distribution_all_platforms(self) -> None:
+        from smm.content_strategy import FORMAT_DISTRIBUTION
+
+        for p in Platform:
+            assert p.value in FORMAT_DISTRIBUTION
+
+    def test_growth_targets_periods(self) -> None:
+        from smm.content_strategy import GROWTH_TARGETS
+
+        assert "month_1" in GROWTH_TARGETS
+        assert "month_3" in GROWTH_TARGETS
+        assert "month_6" in GROWTH_TARGETS
+
+    def test_export_strategy_json(self, tmp_path: Path) -> None:
+        from smm.content_strategy import export_strategy_json, generate_strategy
+
+        strategy = generate_strategy()
+        path = export_strategy_json(strategy, tmp_path / "strategy.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert "pillars" in data
+
+    def test_export_strategy_txt(self, tmp_path: Path) -> None:
+        from smm.content_strategy import export_strategy_txt, generate_strategy
+
+        strategy = generate_strategy()
+        path = export_strategy_txt(strategy, tmp_path / "strategy.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "КОНТЕНТ-СТРАТЕГИЯ" in text
+
+    def test_strategy_summary(self) -> None:
+        from smm.content_strategy import generate_strategy, strategy_summary
+
+        strategy = generate_strategy()
+        summary = strategy_summary(strategy)
+        assert "Контент-стратегия" in summary
+        assert "63" in summary

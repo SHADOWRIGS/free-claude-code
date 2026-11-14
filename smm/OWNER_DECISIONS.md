@@ -76,8 +76,9 @@
 | Оптимизатор расписания (тепловая карта) | Готово | `smm/posting_schedule_optimizer.py` |
 | Генератор контент-серий (многодневные арки) | Готово | `smm/content_series.py` |
 | Анализ конкурентов и гэпов | Готово | `smm/competitor_analysis.py` |
-| CLI (32 команды) | Готово | `smm/cli.py` |
-| Тесты | 234 passed | `tests/test_smm.py` |
+| Контент-стратегия (единый план) | Готово | `smm/content_strategy.py` |
+| CLI (34 команды) | Готово | `smm/cli.py` |
+| Тесты | 243 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
