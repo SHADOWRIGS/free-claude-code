@@ -430,6 +430,15 @@ def cmd_repurpose(args: argparse.Namespace) -> None:
     print(f"\nJSON: {rep_dir / 'repurposed.json'}")
 
 
+def cmd_dashboard(args: argparse.Namespace) -> None:
+    from smm.dashboard import dashboard_summary, generate_dashboard
+
+    _ensure_data_dir()
+    output = Path(args.output) if args.output else None
+    path = generate_dashboard(days=args.days, seed=args.seed, output=output)
+    print(dashboard_summary(path))
+
+
 def cmd_strategy(args: argparse.Namespace) -> None:
     from smm.content_strategy import (
         export_strategy_json,
@@ -778,6 +787,11 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["json", "txt", "all"],
         default="all",
     )
+
+    p_dash = sub.add_parser("dashboard", help="Generate interactive HTML dashboard")
+    p_dash.add_argument("--days", type=int, default=7)
+    p_dash.add_argument("--seed", type=int, default=None)
+    p_dash.add_argument("--output", default="")
 
     p_strat = sub.add_parser(
         "strategy", help="Generate unified content strategy document"

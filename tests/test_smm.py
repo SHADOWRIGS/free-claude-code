@@ -2172,3 +2172,73 @@ class TestContentStrategy:
         summary = strategy_summary(strategy)
         assert "Контент-стратегия" in summary
         assert "63" in summary
+
+
+class TestDashboard:
+    def test_generate_dashboard_returns_path(self, tmp_path: Path) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        assert isinstance(path, Path)
+        assert path.exists()
+
+    def test_dashboard_html_contains_key_sections(self, tmp_path: Path) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        html = path.read_text(encoding="utf-8")
+        assert "SMM Dashboard" in html
+        assert "ShadowRigs" in html
+        assert "Cyber Security" in html
+
+    def test_dashboard_has_strategy_table(self, tmp_path: Path) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        html = path.read_text(encoding="utf-8")
+        assert "Стратегия по направлениям" in html
+
+    def test_dashboard_has_competitor_cards(self, tmp_path: Path) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        html = path.read_text(encoding="utf-8")
+        assert "Конкуренты и гэпы" in html
+
+    def test_dashboard_has_content_mix(self, tmp_path: Path) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        html = path.read_text(encoding="utf-8")
+        assert "Контент-микс" in html
+
+    def test_dashboard_has_growth_targets(self, tmp_path: Path) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        html = path.read_text(encoding="utf-8")
+        assert "Цели роста" in html
+
+    def test_dashboard_has_calendar(self, tmp_path: Path) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        html = path.read_text(encoding="utf-8")
+        assert "Контент-календарь" in html
+        assert "cal-grid" in html
+
+    def test_dashboard_summary(self, tmp_path: Path) -> None:
+        from smm.dashboard import dashboard_summary, generate_dashboard
+
+        path = generate_dashboard(days=3, seed=42, output=tmp_path / "dash.html")
+        summary = dashboard_summary(path)
+        assert "дашборд" in summary.lower()
+        assert str(path) in summary
+
+    def test_dashboard_default_output(self) -> None:
+        from smm.dashboard import generate_dashboard
+
+        path = generate_dashboard(days=2, seed=42)
+        assert path.exists()
+        assert path.name == "dashboard.html"
+        path.unlink()
