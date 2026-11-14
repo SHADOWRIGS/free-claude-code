@@ -1692,3 +1692,93 @@ class TestStoryGenerator:
 
         for p in PILLARS:
             assert p.name in ACCENT_COLORS
+
+
+class TestCarouselGenerator:
+    def test_generate_carousel(self) -> None:
+        from smm.carousel_generator import generate_carousel
+
+        pillar = PILLARS[0]
+        pack = generate_carousel(pillar, pillar.topics[0], seed=42)
+        assert pack.pillar == pillar.name
+        assert pack.topic == pillar.topics[0]
+        assert len(pack.slides) >= 4
+
+    def test_generate_carousels(self) -> None:
+        from smm.carousel_generator import generate_carousels
+
+        packs = generate_carousels(count=5, seed=42)
+        assert len(packs) == 5
+
+    def test_cover_and_cta_slides(self) -> None:
+        from smm.carousel_generator import generate_carousel
+
+        pack = generate_carousel(PILLARS[0], PILLARS[0].topics[0], seed=42)
+        covers = [s for s in pack.slides if s.is_cover]
+        ctas = [s for s in pack.slides if s.is_cta]
+        assert len(covers) == 1
+        assert len(ctas) == 1
+
+    def test_to_dict(self) -> None:
+        from smm.carousel_generator import generate_carousel
+
+        pack = generate_carousel(PILLARS[0], PILLARS[0].topics[0], seed=42)
+        d = pack.to_dict()
+        assert d["framework"] in ("listicle", "tutorial", "comparison")
+        assert len(d["slides"]) == len(pack.slides)
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.carousel_generator import export_carousels_json, generate_carousels
+
+        packs = generate_carousels(count=3, seed=42)
+        path = export_carousels_json(packs, tmp_path / "car.json")
+        assert path.exists()
+        data = json.loads(path.read_text())
+        assert len(data) == 3
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.carousel_generator import export_carousels_txt, generate_carousels
+
+        packs = generate_carousels(count=3, seed=42)
+        path = export_carousels_txt(packs, tmp_path / "car.txt")
+        assert path.exists()
+        text = path.read_text()
+        assert "КАРУСЕЛЬ #1" in text
+        assert "[ОБЛОЖКА]" in text
+
+    def test_carousel_summary(self) -> None:
+        from smm.carousel_generator import carousel_summary, generate_carousels
+
+        packs = generate_carousels(count=5, seed=42)
+        summary = carousel_summary(packs)
+        assert "Карусели: 5" in summary
+        assert "Всего слайдов:" in summary
+
+    def test_comparison_pairs_all_pillars(self) -> None:
+        from smm.carousel_generator import COMPARISON_PAIRS
+
+        for p in PILLARS:
+            assert p.name in COMPARISON_PAIRS
+
+    def test_listicle_points_all_pillars(self) -> None:
+        from smm.carousel_generator import LISTICLE_POINTS
+
+        for p in PILLARS:
+            assert p.name in LISTICLE_POINTS
+
+    def test_seed_reproducibility(self) -> None:
+        from smm.carousel_generator import generate_carousels
+
+        packs1 = generate_carousels(count=3, seed=99)
+        packs2 = generate_carousels(count=3, seed=99)
+        for p1, p2 in zip(packs1, packs2, strict=True):
+            assert p1.pillar == p2.pillar
+            assert p1.topic == p2.topic
+
+    def test_week_pack_includes_carousels(self, tmp_path: Path) -> None:
+        from smm.week_pack import generate_week_pack
+
+        paths = generate_week_pack(days=1, seed=42, out_dir=tmp_path / "wp")
+        assert "carousels_json" in paths
+        assert "carousels_txt" in paths
+        assert paths["carousels_json"].exists()

@@ -20,6 +20,11 @@ from pathlib import Path
 from smm.ab_variants import export_ab_csv, export_ab_json, generate_ab_posts
 from smm.biolink import generate_biolink_file
 from smm.caption_validator import validate_posts
+from smm.carousel_generator import (
+    export_carousels_json,
+    export_carousels_txt,
+    generate_carousels,
+)
 from smm.engagement_hooks import (
     POLLS_BY_PILLAR,
     generate_poll,
@@ -117,6 +122,16 @@ def generate_week_pack(
     )
     paths["stories_txt"] = export_story_packs_txt(
         story_packs, story_dir / "story_packs.txt"
+    )
+
+    carousel_dir = out_dir / "carousels"
+    carousel_dir.mkdir(exist_ok=True)
+    carousel_packs = generate_carousels(count=5, seed=seed)
+    paths["carousels_json"] = export_carousels_json(
+        carousel_packs, carousel_dir / "carousels.json"
+    )
+    paths["carousels_txt"] = export_carousels_txt(
+        carousel_packs, carousel_dir / "carousels.txt"
     )
 
     by_platform = _split_by_platform(posts)

@@ -106,6 +106,7 @@ ignore = [
 "smm/engagement_hooks.py" = ["RUF001"]
 "smm/caption_validator.py" = ["RUF001"]
 "smm/story_generator.py" = ["RUF001"]
+"smm/carousel_generator.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]

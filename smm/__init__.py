@@ -6,6 +6,7 @@ content for Instagram, TikTok, and YouTube.
 """
 
 from smm.analytics import WeeklyReport, create_tracking_template
+from smm.carousel_generator import CarouselPack, generate_carousels
 from smm.content_bank import get_ctas, get_hooks, get_story_framework
 from smm.content_pillars import PILLARS, ContentPillar
 from smm.hashtag_engine import generate_hashtags, hashtag_report
@@ -17,6 +18,7 @@ from smm.story_generator import StoryPack, generate_story_packs
 
 __all__ = [
     "PILLARS",
+    "CarouselPack",
     "ContentPillar",
     "Platform",
     "PostSlot",
@@ -24,6 +26,7 @@ __all__ = [
     "StoryPack",
     "WeeklyReport",
     "create_tracking_template",
+    "generate_carousels",
     "generate_hashtags",
     "generate_ready_posts",
     "generate_story_packs",

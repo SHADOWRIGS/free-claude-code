@@ -387,6 +387,29 @@ def cmd_biolink(args: argparse.Namespace) -> None:
     print(f"  Ссылок: {len(page.links)}")
 
 
+def cmd_carousel(args: argparse.Namespace) -> None:
+    from smm.carousel_generator import (
+        carousel_summary,
+        export_carousels_json,
+        export_carousels_txt,
+        generate_carousels,
+    )
+
+    _ensure_data_dir()
+    packs = generate_carousels(count=args.count, seed=args.seed)
+    print(carousel_summary(packs))
+
+    car_dir = DATA_DIR / "carousels"
+    car_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_carousels_json(packs, car_dir / "carousels.json")
+        print(f"\nJSON: {car_dir / 'carousels.json'}")
+    if args.format in ("txt", "all"):
+        export_carousels_txt(packs, car_dir / "carousels.txt")
+        print(f"TXT: {car_dir / 'carousels.txt'}")
+
+
 def cmd_stories(args: argparse.Namespace) -> None:
     from smm.story_generator import (
         export_story_packs_json,
@@ -617,6 +640,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_val.add_argument("--days", type=int, default=7)
     p_val.add_argument("--seed", type=int, default=None)
+
+    p_car = sub.add_parser("carousel", help="Generate carousel packs (4-5 slides)")
+    p_car.add_argument("--count", type=int, default=5)
+    p_car.add_argument("--seed", type=int, default=None)
+    p_car.add_argument(
+        "--format",
+        choices=["json", "txt", "all"],
+        default="all",
+    )
 
     p_story = sub.add_parser("stories", help="Generate story packs (5-7 slides)")
     p_story.add_argument("--count", type=int, default=5)
