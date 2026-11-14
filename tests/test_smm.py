@@ -2242,3 +2242,84 @@ class TestDashboard:
         assert path.exists()
         assert path.name == "dashboard.html"
         path.unlink()
+
+
+class TestConversionFunnel:
+    def test_generate_funnel_posts_all_stages(self) -> None:
+        from smm.conversion_funnel import generate_funnel_posts
+
+        posts = generate_funnel_posts("Cyber Security & Ethical Hacking")
+        stages = {p.stage for p in posts}
+        assert stages == {"tofu", "mofu", "bofu"}
+
+    def test_generate_funnel_posts_count(self) -> None:
+        from smm.conversion_funnel import generate_funnel_posts
+
+        posts = generate_funnel_posts("Cyber Security & Ethical Hacking")
+        assert len(posts) == 15  # 5 hooks x 3 stages
+
+    def test_generate_funnel_posts_unknown_pillar(self) -> None:
+        from smm.conversion_funnel import generate_funnel_posts
+
+        posts = generate_funnel_posts("Nonexistent")
+        assert posts == []
+
+    def test_generate_lead_magnets(self) -> None:
+        from smm.conversion_funnel import generate_lead_magnets
+
+        magnets = generate_lead_magnets("Red Team / Offensive Security")
+        assert len(magnets) == 2
+        assert all(m.pillar == "Red Team / Offensive Security" for m in magnets)
+
+    def test_generate_pillar_funnel(self) -> None:
+        from smm.conversion_funnel import generate_pillar_funnel
+
+        funnel = generate_pillar_funnel("Machine Learning & AI")
+        assert funnel.total_posts == 15
+        assert len(funnel.tofu_posts) == 5
+        assert len(funnel.mofu_posts) == 5
+        assert len(funnel.bofu_posts) == 5
+
+    def test_generate_all_funnels(self) -> None:
+        from smm.conversion_funnel import generate_all_funnels
+
+        funnels = generate_all_funnels()
+        assert len(funnels) == len(PILLARS)
+
+    def test_all_pillars_covered(self) -> None:
+        from smm.conversion_funnel import PILLAR_FUNNELS
+
+        for pillar in PILLARS:
+            assert pillar.name in PILLAR_FUNNELS, f"Missing funnel for {pillar.name}"
+
+    def test_export_funnel_json(self, tmp_path: Path) -> None:
+        from smm.conversion_funnel import export_funnel_json, generate_all_funnels
+
+        funnels = generate_all_funnels()
+        path = export_funnel_json(funnels, tmp_path / "funnel.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == len(PILLARS)
+
+    def test_export_funnel_txt(self, tmp_path: Path) -> None:
+        from smm.conversion_funnel import export_funnel_txt, generate_all_funnels
+
+        funnels = generate_all_funnels()
+        path = export_funnel_txt(funnels, tmp_path / "funnel.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "КОНВЕРСИОННАЯ ВОРОНКА" in text
+
+    def test_funnel_summary(self) -> None:
+        from smm.conversion_funnel import funnel_summary, generate_all_funnels
+
+        funnels = generate_all_funnels()
+        summary = funnel_summary(funnels)
+        assert "Конверсионная воронка" in summary
+        assert "лид-магнитов" in summary
+
+    def test_funnel_post_has_cta(self) -> None:
+        from smm.conversion_funnel import generate_funnel_posts
+
+        posts = generate_funnel_posts("AliExpress - Гаджеты")
+        assert all(p.cta for p in posts)

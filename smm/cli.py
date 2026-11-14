@@ -439,6 +439,30 @@ def cmd_dashboard(args: argparse.Namespace) -> None:
     print(dashboard_summary(path))
 
 
+def cmd_funnel(args: argparse.Namespace) -> None:
+    from smm.conversion_funnel import (
+        export_funnel_json,
+        export_funnel_txt,
+        funnel_summary,
+        generate_all_funnels,
+        generate_pillar_funnel,
+    )
+
+    _ensure_data_dir()
+    funnels = (
+        [generate_pillar_funnel(args.pillar)] if args.pillar else generate_all_funnels()
+    )
+    print(funnel_summary(funnels))
+
+    fmt = args.format
+    if fmt in ("json", "all"):
+        export_funnel_json(funnels, DATA_DIR / "funnel.json")
+        print(f"\nJSON: {DATA_DIR / 'funnel.json'}")
+    if fmt in ("txt", "all"):
+        export_funnel_txt(funnels, DATA_DIR / "funnel.txt")
+        print(f"TXT: {DATA_DIR / 'funnel.txt'}")
+
+
 def cmd_strategy(args: argparse.Namespace) -> None:
     from smm.content_strategy import (
         export_strategy_json,
@@ -792,6 +816,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_dash.add_argument("--days", type=int, default=7)
     p_dash.add_argument("--seed", type=int, default=None)
     p_dash.add_argument("--output", default="")
+
+    p_funnel = sub.add_parser(
+        "funnel", help="Generate conversion funnel content (TOFU/MOFU/BOFU)"
+    )
+    p_funnel.add_argument("--pillar", default="")
+    p_funnel.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     p_strat = sub.add_parser(
         "strategy", help="Generate unified content strategy document"

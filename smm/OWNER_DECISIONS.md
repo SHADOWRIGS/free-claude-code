@@ -78,8 +78,9 @@
 | Анализ конкурентов и гэпов | Готово | `smm/competitor_analysis.py` |
 | Контент-стратегия (единый план) | Готово | `smm/content_strategy.py` |
 | HTML-дашборд (единая панель управления) | Готово | `smm/dashboard.py` |
-| CLI (35 команд) | Готово | `smm/cli.py` |
-| Тесты | 252 passed | `tests/test_smm.py` |
+| Конверсионная воронка (TOFU/MOFU/BOFU) | Готово | `smm/conversion_funnel.py` |
+| CLI (36 команд) | Готово | `smm/cli.py` |
+| Тесты | 263 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
