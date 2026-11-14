@@ -387,6 +387,27 @@ def cmd_biolink(args: argparse.Namespace) -> None:
     print(f"  Ссылок: {len(page.links)}")
 
 
+def cmd_optimize(args: argparse.Namespace) -> None:
+    from smm.posting_schedule_optimizer import (
+        optimizer_summary,
+        recommend_schedule,
+        schedule_heatmap,
+    )
+
+    _ensure_data_dir()
+    if args.action == "recommend":
+        recs = recommend_schedule(days=args.days, posts_per_platform=3)
+        print(optimizer_summary(recs))
+        print()
+        for rec in recs[:9]:
+            times_str = ", ".join(t.strftime("%H:%M") for t in rec.recommended_times)
+            print(f"  {rec.day} {rec.platform:<10} -> {times_str}")
+        if len(recs) > 9:
+            print(f"  ... и ещё {len(recs) - 9}")
+    elif args.action == "heatmap":
+        print(schedule_heatmap(Platform(args.platform)))
+
+
 def cmd_repurpose(args: argparse.Namespace) -> None:
     from smm.content_repurposer import (
         export_repurposed_json,
@@ -684,6 +705,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--format",
         choices=["json", "txt", "all"],
         default="all",
+    )
+
+    p_opt = sub.add_parser(
+        "optimize", help="Optimize posting schedule for maximum engagement"
+    )
+    p_opt.add_argument(
+        "action", choices=["recommend", "heatmap"], default="recommend", nargs="?"
+    )
+    p_opt.add_argument("--days", type=int, default=7)
+    p_opt.add_argument(
+        "--platform", default="instagram", choices=[p.value for p in Platform]
     )
 
     p_eng = sub.add_parser(

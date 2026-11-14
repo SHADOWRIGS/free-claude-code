@@ -1873,3 +1873,70 @@ class TestContentRepurposer:
         results = repurpose_batch(posts)
         for r in results:
             assert r.original_platform != r.target_platform
+
+
+class TestPostingScheduleOptimizer:
+    def test_score_time_slot(self) -> None:
+        from smm.posting_schedule_optimizer import score_time_slot
+
+        score = score_time_slot(Platform.INSTAGRAM, 12, 2)
+        assert 0 < score.final_score <= 1.5
+        assert score.platform == "instagram"
+
+    def test_best_times(self) -> None:
+        from smm.posting_schedule_optimizer import best_times
+
+        tops = best_times(Platform.INSTAGRAM, weekday=2, count=3)
+        assert len(tops) == 3
+        assert tops[0].final_score >= tops[1].final_score
+
+    def test_recommend_schedule(self) -> None:
+        from smm.posting_schedule_optimizer import recommend_schedule
+
+        recs = recommend_schedule(start=date(2026, 1, 5), days=7)
+        assert len(recs) == 7 * 3
+        platforms = {r.platform for r in recs}
+        assert platforms == {"instagram", "tiktok", "youtube"}
+
+    def test_optimize_existing_posts(self) -> None:
+        from smm.posting_schedule_optimizer import optimize_existing_posts
+        from smm.ready_posts import generate_ready_posts
+
+        posts = generate_ready_posts(days=1, seed=42)
+        suggestions = optimize_existing_posts(posts)
+        assert isinstance(suggestions, list)
+        for s in suggestions:
+            assert "improvement" in s
+            assert "suggested_time" in s
+
+    def test_schedule_heatmap(self) -> None:
+        from smm.posting_schedule_optimizer import schedule_heatmap
+
+        hm = schedule_heatmap(Platform.INSTAGRAM)
+        assert "instagram" in hm
+        assert "███" in hm
+        assert "Легенда" in hm
+
+    def test_optimizer_summary(self) -> None:
+        from smm.posting_schedule_optimizer import (
+            optimizer_summary,
+            recommend_schedule,
+        )
+
+        recs = recommend_schedule(start=date(2026, 1, 5), days=3)
+        summary = optimizer_summary(recs)
+        assert "Оптимизация расписания" in summary
+        assert "Средний скор" in summary
+
+    def test_engagement_scores_all_platforms(self) -> None:
+        from smm.posting_schedule_optimizer import ENGAGEMENT_SCORES
+
+        for p in Platform:
+            assert p.value in ENGAGEMENT_SCORES
+
+    def test_weekday_multipliers_all_platforms(self) -> None:
+        from smm.posting_schedule_optimizer import WEEKDAY_MULTIPLIERS
+
+        for p in Platform:
+            assert p.value in WEEKDAY_MULTIPLIERS
+            assert len(WEEKDAY_MULTIPLIERS[p.value]) == 7
