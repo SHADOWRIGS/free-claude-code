@@ -407,6 +407,29 @@ def cmd_lead_magnets(args: argparse.Namespace) -> None:
         print(f"TXT: {lm_dir / 'lead_magnets.txt'}")
 
 
+def cmd_social_proof(args: argparse.Namespace) -> None:
+    from smm.social_proof import (
+        export_social_proof_json,
+        export_social_proof_txt,
+        generate_social_proof_pack,
+        social_proof_summary,
+    )
+
+    _ensure_data_dir()
+    pack = generate_social_proof_pack(seed=args.seed)
+    print(social_proof_summary(pack))
+
+    sp_dir = DATA_DIR / "social_proof"
+    sp_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_social_proof_json(pack, sp_dir / "social_proof.json")
+        print(f"\nJSON: {sp_dir / 'social_proof.json'}")
+    if args.format in ("txt", "all"):
+        export_social_proof_txt(pack, sp_dir / "social_proof.txt")
+        print(f"TXT: {sp_dir / 'social_proof.txt'}")
+
+
 def cmd_personas(args: argparse.Namespace) -> None:
     from smm.audience_personas import (
         export_personas_json,
@@ -1207,6 +1230,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_lm.add_argument("--pillar", default="", help="Filter by pillar name")
     p_lm.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_sp = sub.add_parser("social-proof", help="Testimonials, stats and trust badges")
+    p_sp.add_argument("--seed", type=int, default=None)
+    p_sp.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

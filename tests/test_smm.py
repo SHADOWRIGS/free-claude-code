@@ -3150,3 +3150,78 @@ class TestLeadMagnet:
         from smm.lead_magnet import lead_magnets_summary
 
         assert "0 материалов" in lead_magnets_summary([])
+
+
+class TestSocialProof:
+    def test_generate_all_testimonials(self) -> None:
+        from smm.social_proof import generate_testimonials
+
+        testimonials = generate_testimonials()
+        assert len(testimonials) == 10
+
+    def test_filter_by_pillar(self) -> None:
+        from smm.social_proof import generate_testimonials
+
+        t = generate_testimonials(pillar="Machine Learning & AI")
+        assert len(t) == 2
+        assert all(x.pillar == "Machine Learning & AI" for x in t)
+
+    def test_sample_count(self) -> None:
+        from smm.social_proof import generate_testimonials
+
+        t = generate_testimonials(count=3, seed=42)
+        assert len(t) == 3
+
+    def test_generate_pack(self) -> None:
+        from smm.social_proof import SocialProofPack, generate_social_proof_pack
+
+        pack = generate_social_proof_pack(seed=42)
+        assert isinstance(pack, SocialProofPack)
+        assert len(pack.testimonials) == 10
+        assert len(pack.stats) == 6
+        assert len(pack.trust_badges) == 6
+
+    def test_testimonial_fields(self) -> None:
+        from smm.social_proof import generate_testimonials
+
+        t = generate_testimonials()[0]
+        assert t.pillar
+        assert t.name
+        assert t.role
+        assert t.text
+        assert t.result
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.social_proof import export_social_proof_json, generate_social_proof_pack
+
+        pack = generate_social_proof_pack(seed=42)
+        p = export_social_proof_json(pack, tmp_path / "sp.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert "testimonials" in data
+        assert "stats" in data
+        assert "trust_badges" in data
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.social_proof import export_social_proof_txt, generate_social_proof_pack
+
+        pack = generate_social_proof_pack(seed=42)
+        p = export_social_proof_txt(pack, tmp_path / "sp.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "СОЦИАЛЬНОЕ ДОКАЗАТЕЛЬСТВО" in text
+        assert "ОТЗЫВЫ ВЫПУСКНИКОВ" in text
+
+    def test_summary(self) -> None:
+        from smm.social_proof import generate_social_proof_pack, social_proof_summary
+
+        pack = generate_social_proof_pack(seed=42)
+        summary = social_proof_summary(pack)
+        assert "10 отзывов" in summary
+        assert "6 метрик" in summary
+
+    def test_seed_reproducibility(self) -> None:
+        from smm.social_proof import generate_social_proof_pack
+
+        pack1 = generate_social_proof_pack(seed=123)
+        pack2 = generate_social_proof_pack(seed=123)
+        assert pack1.stats == pack2.stats
+        assert pack1.trust_badges == pack2.trust_badges

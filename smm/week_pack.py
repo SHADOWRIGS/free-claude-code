@@ -18,6 +18,11 @@ from datetime import date
 from pathlib import Path
 
 from smm.ab_variants import export_ab_csv, export_ab_json, generate_ab_posts
+from smm.audience_personas import (
+    export_personas_json,
+    export_personas_txt,
+    generate_personas,
+)
 from smm.biolink import generate_biolink_file
 from smm.caption_validator import validate_posts
 from smm.carousel_generator import (
@@ -63,6 +68,11 @@ from smm.engagement_hooks import (
     generate_this_or_that,
 )
 from smm.hashtag_engine import HASHTAG_POOLS, hashtag_report
+from smm.lead_magnet import (
+    export_lead_magnets_json,
+    export_lead_magnets_txt,
+    generate_lead_magnets,
+)
 from smm.ready_posts import (
     ReadyPost,
     batch_summary,
@@ -77,10 +87,20 @@ from smm.referral_analytics import (
     generate_campaign_metrics,
 )
 from smm.scheduler_export import export_all_formats
+from smm.social_proof import (
+    export_social_proof_json,
+    export_social_proof_txt,
+    generate_social_proof_pack,
+)
 from smm.story_generator import (
     export_story_packs_json,
     export_story_packs_txt,
     generate_story_packs,
+)
+from smm.topic_ab_test import (
+    export_ab_topics_json,
+    export_ab_topics_txt,
+    generate_ab_topics,
 )
 
 
@@ -212,6 +232,40 @@ def generate_week_pack(
         metrics, ra_dir / "analytics.json"
     )
     paths["ref_analytics_txt"] = export_analytics_txt(metrics, ra_dir / "analytics.txt")
+
+    persona_dir = out_dir / "personas"
+    persona_dir.mkdir(exist_ok=True)
+    personas = generate_personas()
+    paths["personas_json"] = export_personas_json(
+        personas, persona_dir / "personas.json"
+    )
+    paths["personas_txt"] = export_personas_txt(personas, persona_dir / "personas.txt")
+
+    lm_dir = out_dir / "lead_magnets"
+    lm_dir.mkdir(exist_ok=True)
+    magnets = generate_lead_magnets()
+    paths["lead_magnets_json"] = export_lead_magnets_json(
+        magnets, lm_dir / "lead_magnets.json"
+    )
+    paths["lead_magnets_txt"] = export_lead_magnets_txt(
+        magnets, lm_dir / "lead_magnets.txt"
+    )
+
+    sp_dir = out_dir / "social_proof"
+    sp_dir.mkdir(exist_ok=True)
+    sp_pack = generate_social_proof_pack(seed=seed)
+    paths["social_proof_json"] = export_social_proof_json(
+        sp_pack, sp_dir / "social_proof.json"
+    )
+    paths["social_proof_txt"] = export_social_proof_txt(
+        sp_pack, sp_dir / "social_proof.txt"
+    )
+
+    tab_dir = out_dir / "topic_ab"
+    tab_dir.mkdir(exist_ok=True)
+    ab_topics = generate_ab_topics(seed=seed)
+    paths["topic_ab_json"] = export_ab_topics_json(ab_topics, tab_dir / "topic_ab.json")
+    paths["topic_ab_txt"] = export_ab_topics_txt(ab_topics, tab_dir / "topic_ab.txt")
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"
