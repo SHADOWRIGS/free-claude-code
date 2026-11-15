@@ -88,8 +88,9 @@
 | Библиотека CTA (TOFU/MOFU/BOFU, 24 варианта) | Готово | `smm/cta_library.py` |
 | Аналитика реферальных кампаний (UTM, ROAS) | Готово | `smm/referral_analytics.py` |
 | A/B тестирование тем (75 пар, сплит-тесты) | Готово | `smm/topic_ab_test.py` |
-| CLI (45 команд) | Готово | `smm/cli.py` |
-| Тесты | 347 passed | `tests/test_smm.py` |
+| Профили целевой аудитории (5 персон) | Готово | `smm/audience_personas.py` |
+| CLI (47 команд) | Готово | `smm/cli.py` |
+| Тесты | 356 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

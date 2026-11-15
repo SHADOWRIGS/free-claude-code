@@ -122,6 +122,7 @@ ignore = [
 "smm/content_scoring.py" = ["RUF001"]
 "smm/cta_library.py" = ["RUF001"]
 "smm/referral_analytics.py" = ["RUF001"]
+"smm/audience_personas.py" = ["RUF001"]
 "smm/topic_ab_test.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 

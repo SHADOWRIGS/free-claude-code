@@ -3019,3 +3019,72 @@ class TestTopicABTest:
         from smm.topic_ab_test import ab_topics_summary
 
         assert "0 пар" in ab_topics_summary([])
+
+
+class TestAudiencePersonas:
+    def test_generate_all(self) -> None:
+        from smm.audience_personas import generate_personas
+
+        personas = generate_personas()
+        assert len(personas) == 5
+
+    def test_filter_by_pillar(self) -> None:
+        from smm.audience_personas import generate_personas
+
+        personas = generate_personas(pillar="Machine Learning & AI")
+        assert len(personas) == 1
+        assert personas[0].pillar == "Machine Learning & AI"
+
+    def test_persona_fields(self) -> None:
+        from smm.audience_personas import Persona, generate_personas
+
+        p = generate_personas()[0]
+        assert isinstance(p, Persona)
+        assert p.name
+        assert len(p.pain_points) >= 2
+        assert len(p.goals) >= 2
+        assert len(p.buying_triggers) >= 2
+
+    def test_pick_persona(self) -> None:
+        from smm.audience_personas import pick_persona
+
+        p = pick_persona("Cyber Security & Ethical Hacking", seed=42)
+        assert p.pillar == "Cyber Security & Ethical Hacking"
+
+    def test_content_brief(self) -> None:
+        from smm.audience_personas import generate_content_brief, generate_personas
+
+        p = generate_personas()[0]
+        brief = generate_content_brief(p)
+        assert "Бриф для" in brief
+        assert "Боли аудитории" in brief
+        assert "Триггеры покупки" in brief
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.audience_personas import export_personas_json, generate_personas
+
+        personas = generate_personas()
+        p = export_personas_json(personas, tmp_path / "personas.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data) == 5
+        assert "pain_points" in data[0]
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.audience_personas import export_personas_txt, generate_personas
+
+        personas = generate_personas()
+        p = export_personas_txt(personas, tmp_path / "personas.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "ПРОФИЛИ ЦЕЛЕВОЙ АУДИТОРИИ" in text
+
+    def test_summary(self) -> None:
+        from smm.audience_personas import generate_personas, personas_summary
+
+        personas = generate_personas()
+        summary = personas_summary(personas)
+        assert "5 профилей" in summary
+
+    def test_empty_summary(self) -> None:
+        from smm.audience_personas import personas_summary
+
+        assert "0 профилей" in personas_summary([])

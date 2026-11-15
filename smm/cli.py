@@ -384,6 +384,29 @@ def cmd_ref_analytics(args: argparse.Namespace) -> None:
         print(f"TXT: {ra_dir / 'analytics.txt'}")
 
 
+def cmd_personas(args: argparse.Namespace) -> None:
+    from smm.audience_personas import (
+        export_personas_json,
+        export_personas_txt,
+        generate_personas,
+        personas_summary,
+    )
+
+    _ensure_data_dir()
+    personas = generate_personas(pillar=args.pillar or None)
+    print(personas_summary(personas))
+
+    p_dir = DATA_DIR / "personas"
+    p_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_personas_json(personas, p_dir / "personas.json")
+        print(f"\nJSON: {p_dir / 'personas.json'}")
+    if args.format in ("txt", "all"):
+        export_personas_txt(personas, p_dir / "personas.txt")
+        print(f"TXT: {p_dir / 'personas.txt'}")
+
+
 def cmd_topic_ab(args: argparse.Namespace) -> None:
     from smm.topic_ab_test import (
         ab_topics_summary,
@@ -1132,6 +1155,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--platform", default="", help="Filter: instagram|tiktok|youtube"
     )
     p_cta.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_pers = sub.add_parser("personas", help="Audience personas and buyer profiles")
+    p_pers.add_argument("--pillar", default="", help="Filter by pillar name")
+    p_pers.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     p_score = sub.add_parser(
         "score", help="Score and prioritize content by performance"
