@@ -3225,3 +3225,72 @@ class TestSocialProof:
         pack2 = generate_social_proof_pack(seed=123)
         assert pack1.stats == pack2.stats
         assert pack1.trust_badges == pack2.trust_badges
+
+
+class TestContentPipeline:
+    def test_run_pipeline(self) -> None:
+        from smm.content_pipeline import run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        assert result.total == 9
+        assert result.avg_score > 0
+
+    def test_enriched_posts_have_cta(self) -> None:
+        from smm.content_pipeline import run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        for e in result.posts:
+            assert e.cta_short
+            assert e.cta_long
+
+    def test_funnel_stages_assigned(self) -> None:
+        from smm.content_pipeline import run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        stages = {e.funnel_stage for e in result.posts}
+        assert stages == {"tofu", "mofu", "bofu"}
+
+    def test_sorted_by_score(self) -> None:
+        from smm.content_pipeline import run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        scores = [e.score for e in result.posts]
+        assert scores == sorted(scores, reverse=True)
+
+    def test_by_platform(self) -> None:
+        from smm.content_pipeline import run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        assert sum(result.by_platform.values()) == result.total
+
+    def test_top_posts(self) -> None:
+        from smm.content_pipeline import run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        assert len(result.top_posts) <= 10
+        assert len(result.top_posts) <= result.total
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.content_pipeline import export_pipeline_json, run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        p = export_pipeline_json(result, tmp_path / "pl.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert data["total"] == 9
+        assert "posts" in data
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.content_pipeline import export_pipeline_txt, run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        p = export_pipeline_txt(result, tmp_path / "pl.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "КОНТЕНТ-ПАЙПЛАЙН" in text
+
+    def test_summary(self) -> None:
+        from smm.content_pipeline import pipeline_summary, run_pipeline
+
+        result = run_pipeline(days=1, seed=42)
+        summary = pipeline_summary(result)
+        assert "9 постов" in summary
+        assert "скоринг" in summary

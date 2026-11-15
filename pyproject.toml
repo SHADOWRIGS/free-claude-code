@@ -126,6 +126,7 @@ ignore = [
 "smm/lead_magnet.py" = ["RUF001"]
 "smm/topic_ab_test.py" = ["RUF001"]
 "smm/social_proof.py" = ["RUF001"]
+"smm/content_pipeline.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]

@@ -407,6 +407,29 @@ def cmd_lead_magnets(args: argparse.Namespace) -> None:
         print(f"TXT: {lm_dir / 'lead_magnets.txt'}")
 
 
+def cmd_pipeline(args: argparse.Namespace) -> None:
+    from smm.content_pipeline import (
+        export_pipeline_json,
+        export_pipeline_txt,
+        pipeline_summary,
+        run_pipeline,
+    )
+
+    _ensure_data_dir()
+    result = run_pipeline(days=args.days, seed=args.seed)
+    print(pipeline_summary(result))
+
+    pl_dir = DATA_DIR / "pipeline"
+    pl_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_pipeline_json(result, pl_dir / "pipeline.json")
+        print(f"\nJSON: {pl_dir / 'pipeline.json'}")
+    if args.format in ("txt", "all"):
+        export_pipeline_txt(result, pl_dir / "pipeline.txt")
+        print(f"TXT: {pl_dir / 'pipeline.txt'}")
+
+
 def cmd_social_proof(args: argparse.Namespace) -> None:
     from smm.social_proof import (
         export_social_proof_json,
@@ -1234,6 +1257,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_sp = sub.add_parser("social-proof", help="Testimonials, stats and trust badges")
     p_sp.add_argument("--seed", type=int, default=None)
     p_sp.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_pl = sub.add_parser(
+        "pipeline", help="Full content pipeline — enrich, score and rank posts"
+    )
+    p_pl.add_argument("--days", type=int, default=7)
+    p_pl.add_argument("--seed", type=int, default=None)
+    p_pl.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
