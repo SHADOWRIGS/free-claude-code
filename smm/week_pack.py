@@ -45,6 +45,11 @@ from smm.cross_promo import (
     export_promos_txt,
     generate_cross_promos,
 )
+from smm.cta_library import (
+    export_ctas_json,
+    export_ctas_txt,
+    generate_ctas,
+)
 from smm.email_sequences import (
     export_emails_json,
     export_emails_txt,
@@ -182,6 +187,12 @@ def generate_week_pack(
     emails = generate_all_emails()
     paths["emails_json"] = export_emails_json(emails, email_dir / "emails.json")
     paths["emails_txt"] = export_emails_txt(emails, email_dir / "emails.txt")
+
+    cta_dir = out_dir / "ctas"
+    cta_dir.mkdir(exist_ok=True)
+    ctas = generate_ctas()
+    paths["ctas_json"] = export_ctas_json(ctas, cta_dir / "ctas.json")
+    paths["ctas_txt"] = export_ctas_txt(ctas, cta_dir / "ctas.txt")
 
     score_dir = out_dir / "scoring"
     score_dir.mkdir(exist_ok=True)

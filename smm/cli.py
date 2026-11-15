@@ -338,6 +338,29 @@ def cmd_emails(args: argparse.Namespace) -> None:
         print(f"TXT: {em_dir / 'emails.txt'}")
 
 
+def cmd_ctas(args: argparse.Namespace) -> None:
+    from smm.cta_library import (
+        cta_summary,
+        export_ctas_json,
+        export_ctas_txt,
+        generate_ctas,
+    )
+
+    _ensure_data_dir()
+    ctas = generate_ctas(stage=args.stage or None, platform=args.platform or None)
+    print(cta_summary(ctas))
+
+    cta_dir = DATA_DIR / "ctas"
+    cta_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_ctas_json(ctas, cta_dir / "ctas.json")
+        print(f"\nJSON: {cta_dir / 'ctas.json'}")
+    if args.format in ("txt", "all"):
+        export_ctas_txt(ctas, cta_dir / "ctas.txt")
+        print(f"TXT: {cta_dir / 'ctas.txt'}")
+
+
 def cmd_score(args: argparse.Namespace) -> None:
     from smm.content_scoring import (
         export_scores_json,
@@ -1050,6 +1073,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_email.add_argument("--pillar", default="", help="Filter by pillar name")
     p_email.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_cta = sub.add_parser(
+        "ctas", help="CTA library — calls-to-action per funnel stage"
+    )
+    p_cta.add_argument("--stage", default="", help="Filter: tofu|mofu|bofu")
+    p_cta.add_argument(
+        "--platform", default="", help="Filter: instagram|tiktok|youtube"
+    )
+    p_cta.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     p_score = sub.add_parser(
         "score", help="Score and prioritize content by performance"

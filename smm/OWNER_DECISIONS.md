@@ -85,8 +85,9 @@
 | Кросс-промо (перегонка трафика между платформами) | Готово | `smm/cross_promo.py` |
 | Email-последовательности (welcome, nurture, abandon, upsell) | Готово | `smm/email_sequences.py` |
 | Скоринг контента (приоритизация 0-100) | Готово | `smm/content_scoring.py` |
-| CLI (42 команды) | Готово | `smm/cli.py` |
-| Тесты | 319 passed | `tests/test_smm.py` |
+| Библиотека CTA (TOFU/MOFU/BOFU, 24 варианта) | Готово | `smm/cta_library.py` |
+| CLI (43 команды) | Готово | `smm/cli.py` |
+| Тесты | 329 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

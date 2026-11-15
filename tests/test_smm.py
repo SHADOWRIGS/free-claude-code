@@ -2791,3 +2791,81 @@ class TestContentScoring:
         from smm.content_scoring import scoring_summary
 
         assert "0 постов" in scoring_summary([])
+
+
+class TestCTALibrary:
+    def test_generate_all(self) -> None:
+        from smm.cta_library import generate_ctas
+
+        ctas = generate_ctas()
+        assert len(ctas) == 24
+
+    def test_filter_by_stage(self) -> None:
+        from smm.cta_library import generate_ctas
+
+        tofu = generate_ctas(stage="tofu")
+        assert all(c.stage == "tofu" for c in tofu)
+        assert len(tofu) > 0
+
+    def test_filter_by_platform(self) -> None:
+        from smm.cta_library import generate_ctas
+
+        ig = generate_ctas(platform="instagram")
+        assert all(c.platform == "instagram" for c in ig)
+        assert len(ig) == 8
+
+    def test_filter_by_action(self) -> None:
+        from smm.cta_library import generate_ctas
+
+        saves = generate_ctas(action="save")
+        assert all(c.action == "save" for c in saves)
+        assert len(saves) > 0
+
+    def test_cta_fields(self) -> None:
+        from smm.cta_library import CTA, generate_ctas
+
+        cta = generate_ctas()[0]
+        assert isinstance(cta, CTA)
+        assert cta.short_text
+        assert cta.long_text
+        assert cta.stage_label
+        assert cta.action_label
+
+    def test_pick_cta(self) -> None:
+        from smm.cta_library import pick_cta
+
+        cta = pick_cta(stage="bofu", platform="youtube", seed=42)
+        assert cta.stage == "bofu"
+        assert cta.platform == "youtube"
+
+    def test_pick_cta_deterministic(self) -> None:
+        from smm.cta_library import pick_cta
+
+        a = pick_cta(seed=99)
+        b = pick_cta(seed=99)
+        assert a == b
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.cta_library import export_ctas_json, generate_ctas
+
+        ctas = generate_ctas()
+        p = export_ctas_json(ctas, tmp_path / "ctas.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data) == 24
+        assert data[0]["stage"] == "tofu"
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.cta_library import export_ctas_txt, generate_ctas
+
+        ctas = generate_ctas()
+        p = export_ctas_txt(ctas, tmp_path / "ctas.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "БИБЛИОТЕКА CTA" in text
+
+    def test_summary(self) -> None:
+        from smm.cta_library import cta_summary, generate_ctas
+
+        ctas = generate_ctas()
+        summary = cta_summary(ctas)
+        assert "24 вариантов" in summary
+        assert "По этапам воронки" in summary
