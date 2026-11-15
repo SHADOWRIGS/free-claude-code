@@ -121,6 +121,7 @@ ignore = [
 "smm/email_sequences.py" = ["RUF001"]
 "smm/content_scoring.py" = ["RUF001"]
 "smm/cta_library.py" = ["RUF001"]
+"smm/referral_analytics.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]

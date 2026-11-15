@@ -2869,3 +2869,85 @@ class TestCTALibrary:
         summary = cta_summary(ctas)
         assert "24 вариантов" in summary
         assert "По этапам воронки" in summary
+
+
+class TestReferralAnalytics:
+    def test_generate_metrics(self) -> None:
+        from smm.referral_analytics import generate_campaign_metrics
+
+        metrics = generate_campaign_metrics(seed=42)
+        assert len(metrics) == 5 * 3 * 6  # 5 products * 3 platforms * 6 campaigns
+
+    def test_deterministic(self) -> None:
+        from smm.referral_analytics import generate_campaign_metrics
+
+        a = generate_campaign_metrics(seed=42)
+        b = generate_campaign_metrics(seed=42)
+        assert a[0].impressions == b[0].impressions
+
+    def test_metric_fields(self) -> None:
+        from smm.referral_analytics import CampaignMetric, generate_campaign_metrics
+
+        m = generate_campaign_metrics(seed=1)[0]
+        assert isinstance(m, CampaignMetric)
+        assert m.impressions > 0
+        assert m.clicks > 0
+        assert m.ctr > 0
+
+    def test_summarize_by_product(self) -> None:
+        from smm.referral_analytics import (
+            generate_campaign_metrics,
+            summarize_by_product,
+        )
+
+        metrics = generate_campaign_metrics(seed=1)
+        summaries = summarize_by_product(metrics)
+        assert len(summaries) == 5
+        assert all(s.total_impressions > 0 for s in summaries)
+        assert all(
+            s.best_platform in ("instagram", "tiktok", "youtube") for s in summaries
+        )
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.referral_analytics import (
+            export_analytics_json,
+            generate_campaign_metrics,
+        )
+
+        metrics = generate_campaign_metrics(seed=1)
+        p = export_analytics_json(metrics, tmp_path / "analytics.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data) == 90
+        assert "product_id" in data[0]
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.referral_analytics import (
+            export_analytics_txt,
+            generate_campaign_metrics,
+        )
+
+        metrics = generate_campaign_metrics(seed=1)
+        p = export_analytics_txt(metrics, tmp_path / "analytics.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "АНАЛИТИКА РЕФЕРАЛЬНЫХ КАМПАНИЙ" in text
+        assert "ROAS" in text
+
+    def test_summary(self) -> None:
+        from smm.referral_analytics import analytics_summary, generate_campaign_metrics
+
+        metrics = generate_campaign_metrics(seed=1)
+        summary = analytics_summary(metrics)
+        assert "90 кампаний" in summary
+        assert "ROAS" in summary
+
+    def test_empty_summary(self) -> None:
+        from smm.referral_analytics import analytics_summary
+
+        assert "0 кампаний" in analytics_summary([])
+
+    def test_product_types(self) -> None:
+        from smm.referral_analytics import generate_campaign_metrics
+
+        metrics = generate_campaign_metrics(seed=1)
+        types = {m.product_type for m in metrics}
+        assert types == {"course", "referral"}

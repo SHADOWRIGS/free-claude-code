@@ -71,6 +71,11 @@ from smm.ready_posts import (
     export_ready_markdown,
     generate_ready_posts,
 )
+from smm.referral_analytics import (
+    export_analytics_json,
+    export_analytics_txt,
+    generate_campaign_metrics,
+)
 from smm.scheduler_export import export_all_formats
 from smm.story_generator import (
     export_story_packs_json,
@@ -199,6 +204,14 @@ def generate_week_pack(
     scored = generate_scored_batch(count=len(posts), seed=seed)
     paths["scores_json"] = export_scores_json(scored, score_dir / "scores.json")
     paths["scores_txt"] = export_scores_txt(scored, score_dir / "scores.txt")
+
+    ra_dir = out_dir / "referral_analytics"
+    ra_dir.mkdir(exist_ok=True)
+    metrics = generate_campaign_metrics(seed=seed)
+    paths["ref_analytics_json"] = export_analytics_json(
+        metrics, ra_dir / "analytics.json"
+    )
+    paths["ref_analytics_txt"] = export_analytics_txt(metrics, ra_dir / "analytics.txt")
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"

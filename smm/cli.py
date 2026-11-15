@@ -361,6 +361,29 @@ def cmd_ctas(args: argparse.Namespace) -> None:
         print(f"TXT: {cta_dir / 'ctas.txt'}")
 
 
+def cmd_ref_analytics(args: argparse.Namespace) -> None:
+    from smm.referral_analytics import (
+        analytics_summary,
+        export_analytics_json,
+        export_analytics_txt,
+        generate_campaign_metrics,
+    )
+
+    _ensure_data_dir()
+    metrics = generate_campaign_metrics(seed=args.seed)
+    print(analytics_summary(metrics))
+
+    ra_dir = DATA_DIR / "referral_analytics"
+    ra_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_analytics_json(metrics, ra_dir / "analytics.json")
+        print(f"\nJSON: {ra_dir / 'analytics.json'}")
+    if args.format in ("txt", "all"):
+        export_analytics_txt(metrics, ra_dir / "analytics.txt")
+        print(f"TXT: {ra_dir / 'analytics.txt'}")
+
+
 def cmd_score(args: argparse.Namespace) -> None:
     from smm.content_scoring import (
         export_scores_json,
@@ -1089,6 +1112,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_score.add_argument("--count", type=int, default=30)
     p_score.add_argument("--seed", type=int, default=None)
     p_score.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ra = sub.add_parser("ref-analytics", help="Referral campaign analytics report")
+    p_ra.add_argument("--seed", type=int, default=None)
+    p_ra.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
