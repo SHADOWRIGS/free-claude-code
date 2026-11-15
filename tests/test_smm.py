@@ -3379,3 +3379,92 @@ class TestRetargetingGuide:
         summary = retargeting_summary(guides, audiences)
         assert "3 платформы" in summary
         assert "6 сегментов" in summary
+
+
+class TestPricingCalculator:
+    def test_generate_tiers(self) -> None:
+        from smm.pricing_calculator import generate_tier_breakdowns
+
+        tiers = generate_tier_breakdowns()
+        assert len(tiers) == 3
+        assert tiers[0].tier_id == "starter"
+        assert tiers[2].tier_id == "pro"
+
+    def test_tier_prices(self) -> None:
+        from smm.pricing_calculator import generate_tier_breakdowns
+
+        tiers = generate_tier_breakdowns()
+        prices = [t.price_usd for t in tiers]
+        assert prices == [97, 197, 397]
+
+    def test_cost_per_post(self) -> None:
+        from smm.pricing_calculator import generate_tier_breakdowns
+
+        tiers = generate_tier_breakdowns()
+        for t in tiers:
+            assert t.cost_per_post > 0
+            assert t.cost_per_post < t.price_usd
+
+    def test_savings_positive(self) -> None:
+        from smm.pricing_calculator import generate_tier_breakdowns
+
+        tiers = generate_tier_breakdowns()
+        for t in tiers:
+            assert t.savings_vs_agency > 0
+
+    def test_roi_projections(self) -> None:
+        from smm.pricing_calculator import generate_roi_projections
+
+        roi = generate_roi_projections()
+        assert len(roi) == 3
+        for r in roi:
+            assert r.monthly_impressions > 0
+            assert r.monthly_clicks > 0
+
+    def test_roi_positive(self) -> None:
+        from smm.pricing_calculator import generate_roi_projections
+
+        roi = generate_roi_projections()
+        for r in roi:
+            assert r.roi_percent > 0
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.pricing_calculator import (
+            export_pricing_json,
+            generate_roi_projections,
+            generate_tier_breakdowns,
+        )
+
+        tiers = generate_tier_breakdowns()
+        roi = generate_roi_projections()
+        p = export_pricing_json(tiers, roi, tmp_path / "pr.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert "tiers" in data
+        assert "roi_projections" in data
+        assert "benchmarks" in data
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.pricing_calculator import (
+            export_pricing_txt,
+            generate_roi_projections,
+            generate_tier_breakdowns,
+        )
+
+        tiers = generate_tier_breakdowns()
+        roi = generate_roi_projections()
+        p = export_pricing_txt(tiers, roi, tmp_path / "pr.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "ROI" in text
+
+    def test_summary(self) -> None:
+        from smm.pricing_calculator import (
+            generate_roi_projections,
+            generate_tier_breakdowns,
+            pricing_summary,
+        )
+
+        tiers = generate_tier_breakdowns()
+        roi = generate_roi_projections()
+        summary = pricing_summary(tiers, roi)
+        assert "Starter" in summary
+        assert "$97" in summary

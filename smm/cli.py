@@ -407,6 +407,31 @@ def cmd_lead_magnets(args: argparse.Namespace) -> None:
         print(f"TXT: {lm_dir / 'lead_magnets.txt'}")
 
 
+def cmd_pricing(args: argparse.Namespace) -> None:
+    from smm.pricing_calculator import (
+        export_pricing_json,
+        export_pricing_txt,
+        generate_roi_projections,
+        generate_tier_breakdowns,
+        pricing_summary,
+    )
+
+    _ensure_data_dir()
+    tiers = generate_tier_breakdowns()
+    roi = generate_roi_projections()
+    print(pricing_summary(tiers, roi))
+
+    pr_dir = DATA_DIR / "pricing"
+    pr_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_pricing_json(tiers, roi, pr_dir / "pricing.json")
+        print(f"\nJSON: {pr_dir / 'pricing.json'}")
+    if args.format in ("txt", "all"):
+        export_pricing_txt(tiers, roi, pr_dir / "pricing.txt")
+        print(f"TXT: {pr_dir / 'pricing.txt'}")
+
+
 def cmd_retargeting(args: argparse.Namespace) -> None:
     from smm.retargeting_guide import (
         export_retargeting_json,
@@ -1294,6 +1319,9 @@ def build_parser() -> argparse.ArgumentParser:
         "retargeting", help="Retargeting pixel and audience setup guide"
     )
     p_rt.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_pr = sub.add_parser("pricing", help="Pricing tiers and ROI calculator")
+    p_pr.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
