@@ -2710,3 +2710,84 @@ class TestEmailSequences:
             by_seq.setdefault(e.sequence_type, []).append(e.day)
         for days in by_seq.values():
             assert days == sorted(days)
+
+
+# --- Content scoring tests ---
+
+
+class TestContentScoring:
+    def test_score_post_range(self) -> None:
+        from smm.content_scoring import score_post
+
+        s = score_post(
+            "Бесплатный гайд по хакерским инструментам",
+            "Cyber Security & Ethical Hacking",
+            "tiktok",
+            "reel",
+            19,
+        )
+        assert 0 <= s.total_score <= 100
+        assert s.grade in ("A", "B", "C", "D", "F")
+
+    def test_generate_scored_batch(self) -> None:
+        from smm.content_scoring import generate_scored_batch
+
+        scored = generate_scored_batch(count=20, seed=42)
+        assert len(scored) == 20
+        scores = [s.total_score for s in scored]
+        assert scores == sorted(scores, reverse=True)
+
+    def test_seed_deterministic(self) -> None:
+        from smm.content_scoring import generate_scored_batch
+
+        a = generate_scored_batch(seed=7)
+        b = generate_scored_batch(seed=7)
+        assert [s.total_score for s in a] == [s.total_score for s in b]
+
+    def test_grade_assignment(self) -> None:
+        from smm.content_scoring import _grade
+
+        assert _grade(85) == "A"
+        assert _grade(70) == "B"
+        assert _grade(55) == "C"
+        assert _grade(40) == "D"
+        assert _grade(20) == "F"
+
+    def test_hook_score_capped(self) -> None:
+        from smm.content_scoring import _hook_score
+
+        score = _hook_score(
+            "Бесплатный секрет: топ-5 ошибок хакеров при взломе нейросети"
+        )
+        assert score <= 30
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.content_scoring import export_scores_json, generate_scored_batch
+
+        scored = generate_scored_batch(count=10, seed=1)
+        path = export_scores_json(scored, tmp_path / "scores.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == 10
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.content_scoring import export_scores_txt, generate_scored_batch
+
+        scored = generate_scored_batch(count=10, seed=1)
+        path = export_scores_txt(scored, tmp_path / "scores.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "СКОРИНГ" in text
+
+    def test_summary(self) -> None:
+        from smm.content_scoring import generate_scored_batch, scoring_summary
+
+        scored = generate_scored_batch(count=15, seed=1)
+        summary = scoring_summary(scored)
+        assert "Скоринг контента" in summary
+        assert "Средний балл" in summary
+
+    def test_empty_summary(self) -> None:
+        from smm.content_scoring import scoring_summary
+
+        assert "0 постов" in scoring_summary([])

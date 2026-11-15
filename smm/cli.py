@@ -338,6 +338,29 @@ def cmd_emails(args: argparse.Namespace) -> None:
         print(f"TXT: {em_dir / 'emails.txt'}")
 
 
+def cmd_score(args: argparse.Namespace) -> None:
+    from smm.content_scoring import (
+        export_scores_json,
+        export_scores_txt,
+        generate_scored_batch,
+        scoring_summary,
+    )
+
+    _ensure_data_dir()
+    scored = generate_scored_batch(count=args.count, seed=args.seed)
+    print(scoring_summary(scored))
+
+    sc_dir = DATA_DIR / "scoring"
+    sc_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_scores_json(scored, sc_dir / "scores.json")
+        print(f"\nJSON: {sc_dir / 'scores.json'}")
+    if args.format in ("txt", "all"):
+        export_scores_txt(scored, sc_dir / "scores.txt")
+        print(f"TXT: {sc_dir / 'scores.txt'}")
+
+
 def cmd_engage(args: argparse.Namespace) -> None:
     from smm.engagement_hooks import (
         engagement_summary,
@@ -1027,6 +1050,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_email.add_argument("--pillar", default="", help="Filter by pillar name")
     p_email.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_score = sub.add_parser(
+        "score", help="Score and prioritize content by performance"
+    )
+    p_score.add_argument("--count", type=int, default=30)
+    p_score.add_argument("--seed", type=int, default=None)
+    p_score.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

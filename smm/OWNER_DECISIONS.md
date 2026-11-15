@@ -84,8 +84,9 @@
 | Вирусные хуки (стоп-скролл контент) | Готово | `smm/viral_hooks.py` |
 | Кросс-промо (перегонка трафика между платформами) | Готово | `smm/cross_promo.py` |
 | Email-последовательности (welcome, nurture, abandon, upsell) | Готово | `smm/email_sequences.py` |
-| CLI (41 команда) | Готово | `smm/cli.py` |
-| Тесты | 310 passed | `tests/test_smm.py` |
+| Скоринг контента (приоритизация 0-100) | Готово | `smm/content_scoring.py` |
+| CLI (42 команды) | Готово | `smm/cli.py` |
+| Тесты | 319 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
