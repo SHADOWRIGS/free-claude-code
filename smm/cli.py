@@ -384,6 +384,33 @@ def cmd_ref_analytics(args: argparse.Namespace) -> None:
         print(f"TXT: {ra_dir / 'analytics.txt'}")
 
 
+def cmd_topic_ab(args: argparse.Namespace) -> None:
+    from smm.topic_ab_test import (
+        ab_topics_summary,
+        export_ab_topics_json,
+        export_ab_topics_txt,
+        generate_ab_topics,
+    )
+
+    _ensure_data_dir()
+    pairs = generate_ab_topics(
+        pillar=args.pillar or None,
+        platform=args.platform or None,
+        seed=args.seed,
+    )
+    print(ab_topics_summary(pairs))
+
+    ab_dir = DATA_DIR / "topic_ab"
+    ab_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_ab_topics_json(pairs, ab_dir / "topic_ab.json")
+        print(f"\nJSON: {ab_dir / 'topic_ab.json'}")
+    if args.format in ("txt", "all"):
+        export_ab_topics_txt(pairs, ab_dir / "topic_ab.txt")
+        print(f"TXT: {ab_dir / 'topic_ab.txt'}")
+
+
 def cmd_score(args: argparse.Namespace) -> None:
     from smm.content_scoring import (
         export_scores_json,
@@ -1116,6 +1143,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_ra = sub.add_parser("ref-analytics", help="Referral campaign analytics report")
     p_ra.add_argument("--seed", type=int, default=None)
     p_ra.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_tab = sub.add_parser("topic-ab", help="A/B topic variants for split-testing")
+    p_tab.add_argument("--pillar", default="", help="Filter by pillar name")
+    p_tab.add_argument(
+        "--platform", default="", help="Filter: instagram|tiktok|youtube"
+    )
+    p_tab.add_argument("--seed", type=int, default=None)
+    p_tab.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

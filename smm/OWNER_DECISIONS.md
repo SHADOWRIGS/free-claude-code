@@ -87,8 +87,9 @@
 | Скоринг контента (приоритизация 0-100) | Готово | `smm/content_scoring.py` |
 | Библиотека CTA (TOFU/MOFU/BOFU, 24 варианта) | Готово | `smm/cta_library.py` |
 | Аналитика реферальных кампаний (UTM, ROAS) | Готово | `smm/referral_analytics.py` |
-| CLI (44 команды) | Готово | `smm/cli.py` |
-| Тесты | 338 passed | `tests/test_smm.py` |
+| A/B тестирование тем (75 пар, сплит-тесты) | Готово | `smm/topic_ab_test.py` |
+| CLI (45 команд) | Готово | `smm/cli.py` |
+| Тесты | 347 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

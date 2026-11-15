@@ -2951,3 +2951,71 @@ class TestReferralAnalytics:
         metrics = generate_campaign_metrics(seed=1)
         types = {m.product_type for m in metrics}
         assert types == {"course", "referral"}
+
+
+class TestTopicABTest:
+    def test_generate_all(self) -> None:
+        from smm.topic_ab_test import generate_ab_topics
+
+        pairs = generate_ab_topics(seed=42)
+        assert len(pairs) == 5 * 3 * 5  # 5 pillars * 3 platforms * 5 pairs each
+
+    def test_deterministic(self) -> None:
+        from smm.topic_ab_test import generate_ab_topics
+
+        a = generate_ab_topics(seed=42)
+        b = generate_ab_topics(seed=42)
+        assert a[0].variant_a == b[0].variant_a
+
+    def test_filter_by_pillar(self) -> None:
+        from smm.topic_ab_test import generate_ab_topics
+
+        pairs = generate_ab_topics(pillar="Machine Learning & AI", seed=1)
+        assert all(p.pillar == "Machine Learning & AI" for p in pairs)
+        assert len(pairs) == 15
+
+    def test_filter_by_platform(self) -> None:
+        from smm.topic_ab_test import generate_ab_topics
+
+        pairs = generate_ab_topics(platform="tiktok", seed=1)
+        assert all(p.platform == "tiktok" for p in pairs)
+        assert len(pairs) == 25
+
+    def test_pair_fields(self) -> None:
+        from smm.topic_ab_test import TopicABPair, generate_ab_topics
+
+        p = generate_ab_topics(seed=1)[0]
+        assert isinstance(p, TopicABPair)
+        assert p.variant_a
+        assert p.variant_b
+        assert p.test_id
+        assert p.hypothesis
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.topic_ab_test import export_ab_topics_json, generate_ab_topics
+
+        pairs = generate_ab_topics(seed=1)
+        p = export_ab_topics_json(pairs, tmp_path / "topic_ab.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data) == 75
+        assert "variant_a" in data[0]
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.topic_ab_test import export_ab_topics_txt, generate_ab_topics
+
+        pairs = generate_ab_topics(seed=1)
+        p = export_ab_topics_txt(pairs, tmp_path / "topic_ab.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "A/B" in text
+
+    def test_summary(self) -> None:
+        from smm.topic_ab_test import ab_topics_summary, generate_ab_topics
+
+        pairs = generate_ab_topics(seed=1)
+        summary = ab_topics_summary(pairs)
+        assert "75 пар" in summary
+
+    def test_empty_summary(self) -> None:
+        from smm.topic_ab_test import ab_topics_summary
+
+        assert "0 пар" in ab_topics_summary([])
