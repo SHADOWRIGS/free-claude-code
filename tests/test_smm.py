@@ -3294,3 +3294,88 @@ class TestContentPipeline:
         summary = pipeline_summary(result)
         assert "9 постов" in summary
         assert "скоринг" in summary
+
+
+class TestRetargetingGuide:
+    def test_generate_pixel_events_all(self) -> None:
+        from smm.retargeting_guide import generate_pixel_events
+
+        events = generate_pixel_events()
+        assert len(events) == 17
+
+    def test_filter_by_platform(self) -> None:
+        from smm.retargeting_guide import generate_pixel_events
+
+        events = generate_pixel_events(platform="meta")
+        assert len(events) == 7
+        assert all(e.platform == "meta" for e in events)
+
+    def test_generate_audiences(self) -> None:
+        from smm.retargeting_guide import generate_audiences
+
+        audiences = generate_audiences()
+        assert len(audiences) == 6
+
+    def test_generate_guides(self) -> None:
+        from smm.retargeting_guide import generate_retargeting_guides
+
+        guides = generate_retargeting_guides()
+        assert len(guides) == 3
+        platforms = {g.platform for g in guides}
+        assert platforms == {"meta", "tiktok", "youtube"}
+
+    def test_guide_has_events(self) -> None:
+        from smm.retargeting_guide import generate_retargeting_guides
+
+        for g in generate_retargeting_guides():
+            assert len(g.events) >= 5
+            assert len(g.setup_steps) >= 6
+
+    def test_event_fields(self) -> None:
+        from smm.retargeting_guide import generate_pixel_events
+
+        e = generate_pixel_events()[0]
+        assert e.platform
+        assert e.name
+        assert e.trigger
+        assert e.priority in ("high", "medium", "critical")
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.retargeting_guide import (
+            export_retargeting_json,
+            generate_audiences,
+            generate_retargeting_guides,
+        )
+
+        guides = generate_retargeting_guides()
+        audiences = generate_audiences()
+        p = export_retargeting_json(guides, audiences, tmp_path / "rt.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert "platforms" in data
+        assert "audiences" in data
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.retargeting_guide import (
+            export_retargeting_txt,
+            generate_audiences,
+            generate_retargeting_guides,
+        )
+
+        guides = generate_retargeting_guides()
+        audiences = generate_audiences()
+        p = export_retargeting_txt(guides, audiences, tmp_path / "rt.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "РЕТАРГЕТИНГ" in text
+
+    def test_summary(self) -> None:
+        from smm.retargeting_guide import (
+            generate_audiences,
+            generate_retargeting_guides,
+            retargeting_summary,
+        )
+
+        guides = generate_retargeting_guides()
+        audiences = generate_audiences()
+        summary = retargeting_summary(guides, audiences)
+        assert "3 платформы" in summary
+        assert "6 сегментов" in summary

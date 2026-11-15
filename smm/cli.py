@@ -407,6 +407,31 @@ def cmd_lead_magnets(args: argparse.Namespace) -> None:
         print(f"TXT: {lm_dir / 'lead_magnets.txt'}")
 
 
+def cmd_retargeting(args: argparse.Namespace) -> None:
+    from smm.retargeting_guide import (
+        export_retargeting_json,
+        export_retargeting_txt,
+        generate_audiences,
+        generate_retargeting_guides,
+        retargeting_summary,
+    )
+
+    _ensure_data_dir()
+    guides = generate_retargeting_guides()
+    audiences = generate_audiences()
+    print(retargeting_summary(guides, audiences))
+
+    rt_dir = DATA_DIR / "retargeting"
+    rt_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_retargeting_json(guides, audiences, rt_dir / "retargeting.json")
+        print(f"\nJSON: {rt_dir / 'retargeting.json'}")
+    if args.format in ("txt", "all"):
+        export_retargeting_txt(guides, audiences, rt_dir / "retargeting.txt")
+        print(f"TXT: {rt_dir / 'retargeting.txt'}")
+
+
 def cmd_pipeline(args: argparse.Namespace) -> None:
     from smm.content_pipeline import (
         export_pipeline_json,
@@ -1264,6 +1289,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_pl.add_argument("--days", type=int, default=7)
     p_pl.add_argument("--seed", type=int, default=None)
     p_pl.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_rt = sub.add_parser(
+        "retargeting", help="Retargeting pixel and audience setup guide"
+    )
+    p_rt.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
