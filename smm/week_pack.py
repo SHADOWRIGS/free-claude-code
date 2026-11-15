@@ -25,6 +25,11 @@ from smm.carousel_generator import (
     export_carousels_txt,
     generate_carousels,
 )
+from smm.content_scoring import (
+    export_scores_json,
+    export_scores_txt,
+    generate_scored_batch,
+)
 from smm.content_series import (
     export_series_json,
     export_series_txt,
@@ -34,6 +39,16 @@ from smm.conversion_funnel import (
     export_funnel_json,
     export_funnel_txt,
     generate_all_funnels,
+)
+from smm.cross_promo import (
+    export_promos_json,
+    export_promos_txt,
+    generate_cross_promos,
+)
+from smm.email_sequences import (
+    export_emails_json,
+    export_emails_txt,
+    generate_all_emails,
 )
 from smm.engagement_hooks import (
     POLLS_BY_PILLAR,
@@ -155,6 +170,24 @@ def generate_week_pack(
     funnels = generate_all_funnels()
     paths["funnel_json"] = export_funnel_json(funnels, funnel_dir / "funnel.json")
     paths["funnel_txt"] = export_funnel_txt(funnels, funnel_dir / "funnel.txt")
+
+    xp_dir = out_dir / "cross_promo"
+    xp_dir.mkdir(exist_ok=True)
+    promos = generate_cross_promos(seed=seed)
+    paths["cross_promo_json"] = export_promos_json(promos, xp_dir / "cross_promo.json")
+    paths["cross_promo_txt"] = export_promos_txt(promos, xp_dir / "cross_promo.txt")
+
+    email_dir = out_dir / "emails"
+    email_dir.mkdir(exist_ok=True)
+    emails = generate_all_emails()
+    paths["emails_json"] = export_emails_json(emails, email_dir / "emails.json")
+    paths["emails_txt"] = export_emails_txt(emails, email_dir / "emails.txt")
+
+    score_dir = out_dir / "scoring"
+    score_dir.mkdir(exist_ok=True)
+    scored = generate_scored_batch(count=len(posts), seed=seed)
+    paths["scores_json"] = export_scores_json(scored, score_dir / "scores.json")
+    paths["scores_txt"] = export_scores_txt(scored, score_dir / "scores.txt")
 
     by_platform = _split_by_platform(posts)
     platform_dir = out_dir / "platforms"
