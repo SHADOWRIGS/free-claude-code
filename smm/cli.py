@@ -290,6 +290,30 @@ def cmd_validate(args: argparse.Namespace) -> None:
         print("\nВсе посты прошли валидацию!")
 
 
+def cmd_cross_promo(args: argparse.Namespace) -> None:
+    from smm.cross_promo import (
+        export_promos_json,
+        export_promos_txt,
+        generate_cross_promos,
+        promos_summary,
+    )
+
+    _ensure_data_dir()
+    pillar = args.pillar if args.pillar else None
+    promos = generate_cross_promos(pillar_name=pillar, seed=args.seed)
+    print(promos_summary(promos))
+
+    xp_dir = DATA_DIR / "cross_promo"
+    xp_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_promos_json(promos, xp_dir / "cross_promo.json")
+        print(f"\nJSON: {xp_dir / 'cross_promo.json'}")
+    if args.format in ("txt", "all"):
+        export_promos_txt(promos, xp_dir / "cross_promo.txt")
+        print(f"TXT: {xp_dir / 'cross_promo.txt'}")
+
+
 def cmd_engage(args: argparse.Namespace) -> None:
     from smm.engagement_hooks import (
         engagement_summary,
@@ -957,6 +981,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_opt.add_argument(
         "--platform", default="instagram", choices=[p.value for p in Platform]
     )
+
+    p_xp = sub.add_parser("cross-promo", help="Generate cross-platform promotion posts")
+    p_xp.add_argument("--pillar", default="", help="Filter by pillar name")
+    p_xp.add_argument("--seed", type=int, default=None)
+    p_xp.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     p_eng = sub.add_parser(
         "engage", help="Generate engagement hooks (polls, quizzes, questions)"

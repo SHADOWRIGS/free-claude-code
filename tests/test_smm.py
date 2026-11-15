@@ -2546,3 +2546,88 @@ class TestViralHooks:
         hooks = generate_hooks("AliExpress - Гаджеты")
         types = {h.hook_type for h in hooks}
         assert types == set(HOOK_TYPES)
+
+
+# --- Cross-promo tests ---
+
+
+class TestCrossPromo:
+    def test_generate_all_promos(self) -> None:
+        from smm.cross_promo import generate_cross_promos
+
+        promos = generate_cross_promos(seed=42)
+        assert len(promos) == 50  # 5 pillars * 10 routes
+
+    def test_generate_single_pillar(self) -> None:
+        from smm.cross_promo import generate_cross_promos
+
+        promos = generate_cross_promos(
+            pillar_name="Cyber Security & Ethical Hacking", seed=1
+        )
+        assert len(promos) == 10
+        assert all(p.pillar == "Cyber Security & Ethical Hacking" for p in promos)
+
+    def test_promo_fields_populated(self) -> None:
+        from smm.cross_promo import generate_cross_promos
+
+        promos = generate_cross_promos(seed=7)
+        for p in promos:
+            assert p.pillar
+            assert p.source_platform in ("instagram", "tiktok", "youtube")
+            assert p.target
+            assert p.hook
+            assert p.caption
+            assert p.cta
+
+    def test_caption_has_no_format_placeholders(self) -> None:
+        from smm.cross_promo import generate_cross_promos
+
+        promos = generate_cross_promos(seed=99)
+        for p in promos:
+            assert "{" not in p.caption, f"Unformatted placeholder in: {p.caption}"
+
+    def test_seed_deterministic(self) -> None:
+        from smm.cross_promo import generate_cross_promos
+
+        a = generate_cross_promos(seed=42)
+        b = generate_cross_promos(seed=42)
+        assert [p.caption for p in a] == [p.caption for p in b]
+
+    def test_routes_cover_all_targets(self) -> None:
+        from smm.cross_promo import generate_cross_promos
+
+        promos = generate_cross_promos(seed=1)
+        targets = {p.target for p in promos}
+        assert targets >= {"youtube", "instagram", "tiktok", "course", "referral"}
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.cross_promo import export_promos_json, generate_cross_promos
+
+        promos = generate_cross_promos(seed=1)
+        path = export_promos_json(promos, tmp_path / "promos.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == 50
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.cross_promo import export_promos_txt, generate_cross_promos
+
+        promos = generate_cross_promos(seed=1)
+        path = export_promos_txt(promos, tmp_path / "promos.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "КРОСС-ПРОМО" in text
+
+    def test_summary(self) -> None:
+        from smm.cross_promo import generate_cross_promos, promos_summary
+
+        promos = generate_cross_promos(seed=1)
+        summary = promos_summary(promos)
+        assert "Кросс-промо" in summary
+        assert "Маршруты" in summary
+
+    def test_unknown_pillar_returns_empty(self) -> None:
+        from smm.cross_promo import generate_cross_promos
+
+        promos = generate_cross_promos(pillar_name="Nonexistent")
+        assert promos == []
