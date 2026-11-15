@@ -3088,3 +3088,65 @@ class TestAudiencePersonas:
         from smm.audience_personas import personas_summary
 
         assert "0 профилей" in personas_summary([])
+
+
+class TestLeadMagnet:
+    def test_generate_all(self) -> None:
+        from smm.lead_magnet import generate_lead_magnets
+
+        magnets = generate_lead_magnets()
+        assert len(magnets) == 5
+
+    def test_filter_by_pillar(self) -> None:
+        from smm.lead_magnet import generate_lead_magnets
+
+        magnets = generate_lead_magnets(pillar="Machine Learning & AI")
+        assert len(magnets) == 1
+        assert magnets[0].pillar == "Machine Learning & AI"
+
+    def test_magnet_fields(self) -> None:
+        from smm.lead_magnet import LeadMagnet, generate_lead_magnets
+
+        m = generate_lead_magnets()[0]
+        assert isinstance(m, LeadMagnet)
+        assert m.title
+        assert m.subtitle
+        assert len(m.sections) >= 2
+        assert m.cta
+
+    def test_section_items(self) -> None:
+        from smm.lead_magnet import generate_lead_magnets
+
+        m = generate_lead_magnets()[0]
+        for s in m.sections:
+            assert s.heading
+            assert len(s.items) >= 3
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.lead_magnet import export_lead_magnets_json, generate_lead_magnets
+
+        magnets = generate_lead_magnets()
+        p = export_lead_magnets_json(magnets, tmp_path / "lm.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data) == 5
+        assert "sections" in data[0]
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.lead_magnet import export_lead_magnets_txt, generate_lead_magnets
+
+        magnets = generate_lead_magnets()
+        p = export_lead_magnets_txt(magnets, tmp_path / "lm.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "ЛИД-МАГНИТЫ" in text
+
+    def test_summary(self) -> None:
+        from smm.lead_magnet import generate_lead_magnets, lead_magnets_summary
+
+        magnets = generate_lead_magnets()
+        summary = lead_magnets_summary(magnets)
+        assert "5 материалов" in summary
+
+    def test_empty_summary(self) -> None:
+        from smm.lead_magnet import lead_magnets_summary
+
+        assert "0 материалов" in lead_magnets_summary([])

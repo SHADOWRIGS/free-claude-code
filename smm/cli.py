@@ -384,6 +384,29 @@ def cmd_ref_analytics(args: argparse.Namespace) -> None:
         print(f"TXT: {ra_dir / 'analytics.txt'}")
 
 
+def cmd_lead_magnets(args: argparse.Namespace) -> None:
+    from smm.lead_magnet import (
+        export_lead_magnets_json,
+        export_lead_magnets_txt,
+        generate_lead_magnets,
+        lead_magnets_summary,
+    )
+
+    _ensure_data_dir()
+    magnets = generate_lead_magnets(pillar=args.pillar or None)
+    print(lead_magnets_summary(magnets))
+
+    lm_dir = DATA_DIR / "lead_magnets"
+    lm_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_lead_magnets_json(magnets, lm_dir / "lead_magnets.json")
+        print(f"\nJSON: {lm_dir / 'lead_magnets.json'}")
+    if args.format in ("txt", "all"):
+        export_lead_magnets_txt(magnets, lm_dir / "lead_magnets.txt")
+        print(f"TXT: {lm_dir / 'lead_magnets.txt'}")
+
+
 def cmd_personas(args: argparse.Namespace) -> None:
     from smm.audience_personas import (
         export_personas_json,
@@ -1178,6 +1201,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_tab.add_argument("--seed", type=int, default=None)
     p_tab.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_lm = sub.add_parser(
+        "lead-magnets", help="Lead magnet content outlines for email capture"
+    )
+    p_lm.add_argument("--pillar", default="", help="Filter by pillar name")
+    p_lm.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

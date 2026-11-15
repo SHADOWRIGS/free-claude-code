@@ -89,8 +89,9 @@
 | Аналитика реферальных кампаний (UTM, ROAS) | Готово | `smm/referral_analytics.py` |
 | A/B тестирование тем (75 пар, сплит-тесты) | Готово | `smm/topic_ab_test.py` |
 | Профили целевой аудитории (5 персон) | Готово | `smm/audience_personas.py` |
-| CLI (47 команд) | Готово | `smm/cli.py` |
-| Тесты | 356 passed | `tests/test_smm.py` |
+| Лид-магниты (5 материалов для сбора email) | Готово | `smm/lead_magnet.py` |
+| CLI (48 команд) | Готово | `smm/cli.py` |
+| Тесты | 364 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
