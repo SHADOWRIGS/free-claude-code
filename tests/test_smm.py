@@ -3468,3 +3468,69 @@ class TestPricingCalculator:
         summary = pricing_summary(tiers, roi)
         assert "Starter" in summary
         assert "$97" in summary
+
+
+class TestWebinarFunnel:
+    def test_generate_all(self) -> None:
+        from smm.webinar_funnel import generate_webinar_funnel
+
+        messages = generate_webinar_funnel()
+        assert len(messages) == 25
+
+    def test_filter_by_pillar(self) -> None:
+        from smm.webinar_funnel import generate_webinar_funnel
+
+        messages = generate_webinar_funnel(pillar="Machine Learning & AI")
+        assert len(messages) == 5
+        assert all(m.pillar == "Machine Learning & AI" for m in messages)
+
+    def test_stages_complete(self) -> None:
+        from smm.webinar_funnel import FUNNEL_STAGES, generate_webinar_funnel
+
+        messages = generate_webinar_funnel(pillar="Machine Learning & AI")
+        stages = [m.stage for m in messages]
+        assert stages == list(FUNNEL_STAGES)
+
+    def test_message_fields(self) -> None:
+        from smm.webinar_funnel import generate_webinar_funnel
+
+        m = generate_webinar_funnel()[0]
+        assert m.pillar
+        assert m.stage
+        assert m.stage_label
+        assert m.webinar_title
+        assert m.subject
+        assert m.body
+
+    def test_subject_contains_title(self) -> None:
+        from smm.webinar_funnel import generate_webinar_funnel
+
+        for m in generate_webinar_funnel():
+            if m.stage == "invite":
+                assert m.webinar_title in m.subject
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.webinar_funnel import export_webinar_json, generate_webinar_funnel
+
+        messages = generate_webinar_funnel()
+        p = export_webinar_json(messages, tmp_path / "wb.json")
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data) == 25
+        assert "subject" in data[0]
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.webinar_funnel import export_webinar_txt, generate_webinar_funnel
+
+        messages = generate_webinar_funnel()
+        p = export_webinar_txt(messages, tmp_path / "wb.txt")
+        text = p.read_text(encoding="utf-8")
+        assert "ВЕБИНАРНАЯ ВОРОНКА" in text
+
+    def test_summary(self) -> None:
+        from smm.webinar_funnel import generate_webinar_funnel, webinar_summary
+
+        messages = generate_webinar_funnel()
+        summary = webinar_summary(messages)
+        assert "25 писем" in summary
+        assert "5 направлений" in summary
+        assert "5 этапов" in summary

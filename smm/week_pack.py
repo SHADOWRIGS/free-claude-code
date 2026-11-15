@@ -102,6 +102,11 @@ from smm.topic_ab_test import (
     export_ab_topics_txt,
     generate_ab_topics,
 )
+from smm.webinar_funnel import (
+    export_webinar_json,
+    export_webinar_txt,
+    generate_webinar_funnel,
+)
 
 
 def generate_week_pack(
@@ -260,6 +265,12 @@ def generate_week_pack(
     paths["social_proof_txt"] = export_social_proof_txt(
         sp_pack, sp_dir / "social_proof.txt"
     )
+
+    wb_dir = out_dir / "webinar"
+    wb_dir.mkdir(exist_ok=True)
+    wb_messages = generate_webinar_funnel()
+    paths["webinar_json"] = export_webinar_json(wb_messages, wb_dir / "webinar.json")
+    paths["webinar_txt"] = export_webinar_txt(wb_messages, wb_dir / "webinar.txt")
 
     tab_dir = out_dir / "topic_ab"
     tab_dir.mkdir(exist_ok=True)

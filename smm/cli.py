@@ -407,6 +407,29 @@ def cmd_lead_magnets(args: argparse.Namespace) -> None:
         print(f"TXT: {lm_dir / 'lead_magnets.txt'}")
 
 
+def cmd_webinar(args: argparse.Namespace) -> None:
+    from smm.webinar_funnel import (
+        export_webinar_json,
+        export_webinar_txt,
+        generate_webinar_funnel,
+        webinar_summary,
+    )
+
+    _ensure_data_dir()
+    messages = generate_webinar_funnel(pillar=args.pillar or None)
+    print(webinar_summary(messages))
+
+    wb_dir = DATA_DIR / "webinar"
+    wb_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_webinar_json(messages, wb_dir / "webinar.json")
+        print(f"\nJSON: {wb_dir / 'webinar.json'}")
+    if args.format in ("txt", "all"):
+        export_webinar_txt(messages, wb_dir / "webinar.txt")
+        print(f"TXT: {wb_dir / 'webinar.txt'}")
+
+
 def cmd_pricing(args: argparse.Namespace) -> None:
     from smm.pricing_calculator import (
         export_pricing_json,
@@ -1322,6 +1345,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_pr = sub.add_parser("pricing", help="Pricing tiers and ROI calculator")
     p_pr.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_wb = sub.add_parser("webinar", help="Webinar funnel messages (invite to sales)")
+    p_wb.add_argument("--pillar", default="", help="Filter by pillar name")
+    p_wb.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
