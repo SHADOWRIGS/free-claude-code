@@ -439,6 +439,36 @@ def cmd_dashboard(args: argparse.Namespace) -> None:
     print(dashboard_summary(path))
 
 
+def cmd_hooks(args: argparse.Namespace) -> None:
+    from smm.viral_hooks import (
+        export_hooks_json,
+        export_hooks_txt,
+        generate_all_hooks,
+        generate_hooks,
+        hooks_summary,
+        pick_random_hooks,
+    )
+
+    _ensure_data_dir()
+    if args.count > 0:
+        hooks = pick_random_hooks(
+            count=args.count,
+            pillar=args.pillar or None,
+            seed=args.seed,
+        )
+    else:
+        hooks = generate_hooks(args.pillar) if args.pillar else generate_all_hooks()
+    print(hooks_summary(hooks))
+
+    fmt = args.format
+    if fmt in ("json", "all"):
+        export_hooks_json(hooks, DATA_DIR / "viral_hooks.json")
+        print(f"\nJSON: {DATA_DIR / 'viral_hooks.json'}")
+    if fmt in ("txt", "all"):
+        export_hooks_txt(hooks, DATA_DIR / "viral_hooks.txt")
+        print(f"TXT: {DATA_DIR / 'viral_hooks.txt'}")
+
+
 def cmd_funnel(args: argparse.Namespace) -> None:
     from smm.conversion_funnel import (
         export_funnel_json,
@@ -858,6 +888,14 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["json", "txt", "all"],
         default="all",
     )
+
+    p_hooks = sub.add_parser(
+        "hooks", help="Generate viral hooks for stop-scroll content"
+    )
+    p_hooks.add_argument("--pillar", default="")
+    p_hooks.add_argument("--count", type=int, default=0)
+    p_hooks.add_argument("--seed", type=int, default=None)
+    p_hooks.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     p_dash = sub.add_parser("dashboard", help="Generate interactive HTML dashboard")
     p_dash.add_argument("--days", type=int, default=7)

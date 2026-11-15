@@ -81,8 +81,9 @@
 | Конверсионная воронка (TOFU/MOFU/BOFU) | Готово | `smm/conversion_funnel.py` |
 | UGC-шаблоны (отзывы, кейсы, до/после) | Готово | `smm/ugc_templates.py` |
 | Контент-миксер (баланс типов по дням) | Готово | `smm/content_mixer.py` |
-| CLI (38 команд) | Готово | `smm/cli.py` |
-| Тесты | 280 passed | `tests/test_smm.py` |
+| Вирусные хуки (стоп-скролл контент) | Готово | `smm/viral_hooks.py` |
+| CLI (39 команд) | Готово | `smm/cli.py` |
+| Тесты | 291 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

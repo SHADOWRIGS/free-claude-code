@@ -2464,3 +2464,85 @@ class TestContentMixer:
         for dm in mixes:
             total = sum(dm.type_distribution.values())
             assert total == len(dm.posts)
+
+
+class TestViralHooks:
+    def test_generate_hooks(self) -> None:
+        from smm.viral_hooks import generate_hooks
+
+        hooks = generate_hooks("Cyber Security & Ethical Hacking")
+        assert len(hooks) > 0
+        assert all(h.pillar == "Cyber Security & Ethical Hacking" for h in hooks)
+
+    def test_generate_hooks_unknown_pillar(self) -> None:
+        from smm.viral_hooks import generate_hooks
+
+        hooks = generate_hooks("Nonexistent")
+        assert hooks == []
+
+    def test_generate_all_hooks(self) -> None:
+        from smm.viral_hooks import generate_all_hooks
+
+        hooks = generate_all_hooks()
+        pillars = {h.pillar for h in hooks}
+        assert len(pillars) == len(PILLARS)
+
+    def test_all_pillars_covered(self) -> None:
+        from smm.viral_hooks import PILLAR_HOOKS
+
+        for pillar in PILLARS:
+            assert pillar.name in PILLAR_HOOKS, f"Missing hooks for {pillar.name}"
+
+    def test_hook_has_all_fields(self) -> None:
+        from smm.viral_hooks import generate_hooks
+
+        hooks = generate_hooks("Red Team / Offensive Security")
+        for h in hooks:
+            assert h.text
+            assert h.thumbnail_text
+            assert h.platform_best in ("instagram", "tiktok", "youtube")
+
+    def test_pick_random_hooks(self) -> None:
+        from smm.viral_hooks import pick_random_hooks
+
+        hooks = pick_random_hooks(count=5, seed=42)
+        assert len(hooks) == 5
+
+    def test_pick_random_hooks_pillar(self) -> None:
+        from smm.viral_hooks import pick_random_hooks
+
+        hooks = pick_random_hooks(count=3, pillar="Machine Learning & AI", seed=42)
+        assert len(hooks) == 3
+        assert all(h.pillar == "Machine Learning & AI" for h in hooks)
+
+    def test_export_hooks_json(self, tmp_path: Path) -> None:
+        from smm.viral_hooks import export_hooks_json, generate_all_hooks
+
+        hooks = generate_all_hooks()
+        path = export_hooks_json(hooks, tmp_path / "hooks.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == len(hooks)
+
+    def test_export_hooks_txt(self, tmp_path: Path) -> None:
+        from smm.viral_hooks import export_hooks_txt, generate_all_hooks
+
+        hooks = generate_all_hooks()
+        path = export_hooks_txt(hooks, tmp_path / "hooks.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "ВИРУСНЫЕ ХУКИ" in text
+
+    def test_hooks_summary(self) -> None:
+        from smm.viral_hooks import generate_all_hooks, hooks_summary
+
+        hooks = generate_all_hooks()
+        summary = hooks_summary(hooks)
+        assert "Вирусные хуки" in summary
+
+    def test_all_hook_types_present(self) -> None:
+        from smm.viral_hooks import HOOK_TYPES, generate_hooks
+
+        hooks = generate_hooks("AliExpress - Гаджеты")
+        types = {h.hook_type for h in hooks}
+        assert types == set(HOOK_TYPES)
