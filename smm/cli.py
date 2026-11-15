@@ -314,6 +314,30 @@ def cmd_cross_promo(args: argparse.Namespace) -> None:
         print(f"TXT: {xp_dir / 'cross_promo.txt'}")
 
 
+def cmd_emails(args: argparse.Namespace) -> None:
+    from smm.email_sequences import (
+        emails_summary,
+        export_emails_json,
+        export_emails_txt,
+        generate_all_emails,
+        generate_emails,
+    )
+
+    _ensure_data_dir()
+    emails = generate_emails(args.pillar) if args.pillar else generate_all_emails()
+    print(emails_summary(emails))
+
+    em_dir = DATA_DIR / "emails"
+    em_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_emails_json(emails, em_dir / "emails.json")
+        print(f"\nJSON: {em_dir / 'emails.json'}")
+    if args.format in ("txt", "all"):
+        export_emails_txt(emails, em_dir / "emails.txt")
+        print(f"TXT: {em_dir / 'emails.txt'}")
+
+
 def cmd_engage(args: argparse.Namespace) -> None:
     from smm.engagement_hooks import (
         engagement_summary,
@@ -997,6 +1021,12 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="?",
     )
     p_eng.add_argument("--pillar", default="Cyber Security & Ethical Hacking")
+
+    p_email = sub.add_parser(
+        "emails", help="Generate email nurture sequences per pillar"
+    )
+    p_email.add_argument("--pillar", default="", help="Filter by pillar name")
+    p_email.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

@@ -118,6 +118,7 @@ ignore = [
 "smm/ugc_templates.py" = ["RUF001"]
 "smm/viral_hooks.py" = ["RUF001"]
 "smm/cross_promo.py" = ["RUF001"]
+"smm/email_sequences.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]

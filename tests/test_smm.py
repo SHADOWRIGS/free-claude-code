@@ -2631,3 +2631,82 @@ class TestCrossPromo:
 
         promos = generate_cross_promos(pillar_name="Nonexistent")
         assert promos == []
+
+
+# --- Email sequences tests ---
+
+
+class TestEmailSequences:
+    def test_generate_all_emails(self) -> None:
+        from smm.email_sequences import generate_all_emails
+
+        emails = generate_all_emails()
+        assert len(emails) > 40
+
+    def test_generate_single_pillar(self) -> None:
+        from smm.email_sequences import generate_emails
+
+        emails = generate_emails("Cyber Security & Ethical Hacking")
+        assert len(emails) == 12
+        assert all(e.pillar == "Cyber Security & Ethical Hacking" for e in emails)
+
+    def test_all_sequence_types_present(self) -> None:
+        from smm.email_sequences import SEQUENCE_TYPES, generate_emails
+
+        emails = generate_emails("Red Team / Offensive Security")
+        types = {e.sequence_type for e in emails}
+        assert types == set(SEQUENCE_TYPES)
+
+    def test_email_fields_populated(self) -> None:
+        from smm.email_sequences import generate_all_emails
+
+        for e in generate_all_emails():
+            assert e.pillar
+            assert e.sequence_type
+            assert e.sequence_label
+            assert e.day >= 0
+            assert e.subject
+            assert e.preview
+            assert e.body_outline
+            assert e.cta
+
+    def test_unknown_pillar_returns_empty(self) -> None:
+        from smm.email_sequences import generate_emails
+
+        assert generate_emails("Nonexistent") == []
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.email_sequences import export_emails_json, generate_all_emails
+
+        emails = generate_all_emails()
+        path = export_emails_json(emails, tmp_path / "emails.json")
+        assert path.exists()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert len(data) == len(emails)
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.email_sequences import export_emails_txt, generate_all_emails
+
+        emails = generate_all_emails()
+        path = export_emails_txt(emails, tmp_path / "emails.txt")
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert "EMAIL-ПОСЛЕДОВАТЕЛЬНОСТИ" in text
+
+    def test_summary(self) -> None:
+        from smm.email_sequences import emails_summary, generate_all_emails
+
+        emails = generate_all_emails()
+        summary = emails_summary(emails)
+        assert "Email-последовательности" in summary
+        assert "По типам серий" in summary
+
+    def test_days_ascending_within_sequence(self) -> None:
+        from smm.email_sequences import generate_emails
+
+        emails = generate_emails("Machine Learning & AI")
+        by_seq: dict[str, list[int]] = {}
+        for e in emails:
+            by_seq.setdefault(e.sequence_type, []).append(e.day)
+        for days in by_seq.values():
+            assert days == sorted(days)
