@@ -453,6 +453,29 @@ def cmd_auto_poster(args: argparse.Namespace) -> None:
         print(f"TXT: {ap_dir / 'auto_poster.txt'}")
 
 
+def cmd_analytics_dash(args: argparse.Namespace) -> None:
+    from smm.analytics_dashboard import (
+        analytics_dashboard_summary,
+        export_analytics_dashboard_json,
+        export_analytics_dashboard_txt,
+        generate_analytics_dashboard,
+    )
+
+    _ensure_data_dir()
+    dashboard = generate_analytics_dashboard(seed=args.seed)
+    print(analytics_dashboard_summary(dashboard))
+
+    ad_dir = DATA_DIR / "analytics_dashboard"
+    ad_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_analytics_dashboard_json(dashboard, ad_dir / "dashboard.json")
+        print(f"\nJSON: {ad_dir / 'dashboard.json'}")
+    if args.format in ("txt", "all"):
+        export_analytics_dashboard_txt(dashboard, ad_dir / "dashboard.txt")
+        print(f"TXT: {ad_dir / 'dashboard.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1403,6 +1426,12 @@ def build_parser() -> argparse.ArgumentParser:
         "auto-poster", help="Auto-posting config (API profiles, slots, retry)"
     )
     p_ap.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ad = sub.add_parser(
+        "analytics-dash", help="Analytics dashboard (KPI, ROI, growth)"
+    )
+    p_ad.add_argument("--seed", type=int, default=None)
+    p_ad.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

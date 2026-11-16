@@ -3701,3 +3701,91 @@ class TestAutoPoster:
         for platform in ("instagram", "tiktok", "youtube"):
             count = sum(1 for s in slots if s.platform == platform)
             assert count == 3
+
+
+class TestAnalyticsDashboard:
+    def test_generate_dashboard(self) -> None:
+        from smm.analytics_dashboard import generate_analytics_dashboard
+
+        d = generate_analytics_dashboard(seed=42)
+        assert len(d.kpis) == 12
+        assert len(d.pillar_roi) == 5
+        assert len(d.growth) == 3
+
+    def test_kpi_snapshots_deterministic(self) -> None:
+        from smm.analytics_dashboard import generate_kpi_snapshots
+
+        a = generate_kpi_snapshots(seed=42)
+        b = generate_kpi_snapshots(seed=42)
+        assert a == b
+
+    def test_kpi_platforms(self) -> None:
+        from smm.analytics_dashboard import generate_kpi_snapshots
+
+        kpis = generate_kpi_snapshots(seed=1)
+        platforms = {k.platform for k in kpis}
+        assert platforms == {"instagram", "tiktok", "youtube"}
+
+    def test_pillar_roi_covers_all(self) -> None:
+        from smm.analytics_dashboard import generate_pillar_roi
+
+        rois = generate_pillar_roi(seed=1)
+        pillars = {r.pillar for r in rois}
+        assert len(pillars) == 5
+
+    def test_growth_projections(self) -> None:
+        from smm.analytics_dashboard import generate_growth_projections
+
+        projections = generate_growth_projections(seed=1)
+        assert len(projections) == 3
+        for g in projections:
+            assert (
+                g.projected_12m > g.projected_6m > g.projected_3m > g.current_followers
+            )
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.analytics_dashboard import (
+            export_analytics_dashboard_json,
+            generate_analytics_dashboard,
+        )
+
+        d = generate_analytics_dashboard(seed=42)
+        p = export_analytics_dashboard_json(d, tmp_path / "dash.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["kpis"]) == 12
+        assert len(data["pillar_roi"]) == 5
+        assert len(data["growth_projections"]) == 3
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.analytics_dashboard import (
+            export_analytics_dashboard_txt,
+            generate_analytics_dashboard,
+        )
+
+        d = generate_analytics_dashboard(seed=42)
+        p = export_analytics_dashboard_txt(d, tmp_path / "dash.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "АНАЛИТИЧЕСКИЙ ДАШБОРД" in text
+        assert "ROI" in text
+
+    def test_summary(self) -> None:
+        from smm.analytics_dashboard import (
+            analytics_dashboard_summary,
+            generate_analytics_dashboard,
+        )
+
+        d = generate_analytics_dashboard(seed=42)
+        s = analytics_dashboard_summary(d)
+        assert "12 KPI" in s
+        assert "5 направлений" in s
+        assert "ROI" in s
+
+    def test_roi_positive(self) -> None:
+        from smm.analytics_dashboard import generate_pillar_roi
+
+        rois = generate_pillar_roi(seed=42)
+        for r in rois:
+            assert r.revenue_usd >= 0
+            assert r.cost_usd >= 0

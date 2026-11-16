@@ -97,8 +97,9 @@
 | Вебинарная воронка (invite→reminder→replay→sales) | Готово | `smm/webinar_funnel.py` |
 | Telegram-бот (команды, FAQ, уведомления) | Готово | `smm/telegram_bot_config.py` |
 | Авто-постинг (API-профили, слоты, retry, лимиты) | Готово | `smm/auto_poster.py` |
-| CLI (57 команд) | Готово | `smm/cli.py` |
-| Тесты | 426 passed | `tests/test_smm.py` |
+| Аналитический дашборд (KPI, ROI, прогноз роста) | Готово | `smm/analytics_dashboard.py` |
+| CLI (58 команд) | Готово | `smm/cli.py` |
+| Тесты | 435 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 
