@@ -95,8 +95,9 @@
 | Гайд по ретаргетингу (пиксели, аудитории, сегменты) | Готово | `smm/retargeting_guide.py` |
 | Калькулятор стоимости и ROI (3 тарифа, проекции) | Готово | `smm/pricing_calculator.py` |
 | Вебинарная воронка (invite→reminder→replay→sales) | Готово | `smm/webinar_funnel.py` |
-| CLI (55 команд) | Готово | `smm/cli.py` |
-| Тесты | 408 passed | `tests/test_smm.py` |
+| Telegram-бот (команды, FAQ, уведомления) | Готово | `smm/telegram_bot_config.py` |
+| CLI (56 команд) | Готово | `smm/cli.py` |
+| Тесты | 417 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

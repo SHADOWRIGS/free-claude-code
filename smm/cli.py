@@ -407,6 +407,29 @@ def cmd_lead_magnets(args: argparse.Namespace) -> None:
         print(f"TXT: {lm_dir / 'lead_magnets.txt'}")
 
 
+def cmd_tg_bot(args: argparse.Namespace) -> None:
+    from smm.telegram_bot_config import (
+        bot_config_summary,
+        export_bot_config_json,
+        export_bot_config_txt,
+        generate_bot_config,
+    )
+
+    _ensure_data_dir()
+    config = generate_bot_config()
+    print(bot_config_summary(config))
+
+    tg_dir = DATA_DIR / "telegram_bot"
+    tg_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_bot_config_json(config, tg_dir / "bot_config.json")
+        print(f"\nJSON: {tg_dir / 'bot_config.json'}")
+    if args.format in ("txt", "all"):
+        export_bot_config_txt(config, tg_dir / "bot_config.txt")
+        print(f"TXT: {tg_dir / 'bot_config.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1349,6 +1372,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_wb = sub.add_parser("webinar", help="Webinar funnel messages (invite to sales)")
     p_wb.add_argument("--pillar", default="", help="Filter by pillar name")
     p_wb.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_tg = sub.add_parser("tg-bot", help="Telegram bot config and message templates")
+    p_tg.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

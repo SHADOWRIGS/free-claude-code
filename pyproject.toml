@@ -129,6 +129,8 @@ ignore = [
 "smm/content_pipeline.py" = ["RUF001"]
 "smm/retargeting_guide.py" = ["RUF001"]
 "smm/webinar_funnel.py" = ["RUF001"]
+"smm/telegram_bot_config.py" = ["RUF001"]
+"smm/pricing_calculator.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]

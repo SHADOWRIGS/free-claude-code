@@ -3192,7 +3192,10 @@ class TestSocialProof:
         assert t.result
 
     def test_export_json(self, tmp_path: Path) -> None:
-        from smm.social_proof import export_social_proof_json, generate_social_proof_pack
+        from smm.social_proof import (
+            export_social_proof_json,
+            generate_social_proof_pack,
+        )
 
         pack = generate_social_proof_pack(seed=42)
         p = export_social_proof_json(pack, tmp_path / "sp.json")
@@ -3534,3 +3537,88 @@ class TestWebinarFunnel:
         assert "25 писем" in summary
         assert "5 направлений" in summary
         assert "5 этапов" in summary
+
+
+class TestTelegramBotConfig:
+    def test_generate_bot_config(self) -> None:
+        from smm.telegram_bot_config import generate_bot_config
+
+        config = generate_bot_config()
+        assert len(config.commands) == 6
+        assert len(config.course_messages) == 4
+        assert len(config.faq_items) == 6
+        assert len(config.notification_templates) == 3
+
+    def test_commands_are_bot_command(self) -> None:
+        from smm.telegram_bot_config import BotCommand, generate_bot_config
+
+        config = generate_bot_config()
+        for cmd in config.commands:
+            assert isinstance(cmd, BotCommand)
+            assert cmd.command.startswith("/")
+            assert len(cmd.description) > 0
+
+    def test_welcome_message_nonempty(self) -> None:
+        from smm.telegram_bot_config import generate_bot_config
+
+        config = generate_bot_config()
+        assert len(config.welcome_message) > 50
+
+    def test_course_messages_cover_pillars(self) -> None:
+        from smm.telegram_bot_config import generate_bot_config
+
+        config = generate_bot_config()
+        expected = {
+            "Cyber Security & Ethical Hacking",
+            "Blue Team / Defensive Security",
+            "Red Team / Offensive Security",
+            "Machine Learning & AI",
+        }
+        assert set(config.course_messages.keys()) == expected
+
+    def test_faq_items_are_faqitem(self) -> None:
+        from smm.telegram_bot_config import FAQItem, generate_bot_config
+
+        config = generate_bot_config()
+        for item in config.faq_items:
+            assert isinstance(item, FAQItem)
+            assert len(item.question) > 0
+            assert len(item.answer) > 0
+
+    def test_notification_templates_have_placeholders(self) -> None:
+        from smm.telegram_bot_config import generate_bot_config
+
+        config = generate_bot_config()
+        assert "{name}" in config.notification_templates["new_lead"]
+        assert "{course}" in config.notification_templates["new_purchase"]
+        assert "{magnet_name}" in config.notification_templates["lead_magnet_download"]
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.telegram_bot_config import export_bot_config_json, generate_bot_config
+
+        config = generate_bot_config()
+        p = export_bot_config_json(config, tmp_path / "bot.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["commands"]) == 6
+        assert len(data["faq"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.telegram_bot_config import export_bot_config_txt, generate_bot_config
+
+        config = generate_bot_config()
+        p = export_bot_config_txt(config, tmp_path / "bot.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "TELEGRAM-БОТ" in text
+        assert "/start" in text
+
+    def test_summary(self) -> None:
+        from smm.telegram_bot_config import bot_config_summary, generate_bot_config
+
+        config = generate_bot_config()
+        summary = bot_config_summary(config)
+        assert "6 команд" in summary
+        assert "4 курсов" in summary
+        assert "6 FAQ" in summary
+        assert "3 уведомлений" in summary
