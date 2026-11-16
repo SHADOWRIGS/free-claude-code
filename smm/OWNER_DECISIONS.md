@@ -98,8 +98,9 @@
 | Telegram-бот (команды, FAQ, уведомления) | Готово | `smm/telegram_bot_config.py` |
 | Авто-постинг (API-профили, слоты, retry, лимиты) | Готово | `smm/auto_poster.py` |
 | Аналитический дашборд (KPI, ROI, прогноз роста) | Готово | `smm/analytics_dashboard.py` |
-| CLI (58 команд) | Готово | `smm/cli.py` |
-| Тесты | 435 passed | `tests/test_smm.py` |
+| Инфлюенсер-аутрич (шаблоны, критерии, коллаборации) | Готово | `smm/influencer_outreach.py` |
+| CLI (59 команд) | Готово | `smm/cli.py` |
+| Тесты | 443 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

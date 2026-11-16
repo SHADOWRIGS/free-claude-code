@@ -3789,3 +3789,81 @@ class TestAnalyticsDashboard:
         for r in rois:
             assert r.revenue_usd >= 0
             assert r.cost_usd >= 0
+
+
+class TestInfluencerOutreach:
+    def test_generate_outreach(self) -> None:
+        from smm.influencer_outreach import generate_influencer_outreach
+
+        o = generate_influencer_outreach()
+        assert len(o.messages) == 3
+        assert len(o.criteria) == 5
+        assert len(o.collab_formats) == 5
+
+    def test_messages_have_placeholders(self) -> None:
+        from smm.influencer_outreach import generate_outreach_messages
+
+        msgs = generate_outreach_messages()
+        for m in msgs:
+            assert "{influencer_name}" in m.body
+
+    def test_criteria_cover_pillars(self) -> None:
+        from smm.influencer_outreach import generate_influencer_criteria
+
+        criteria = generate_influencer_criteria()
+        pillars = {c.pillar for c in criteria}
+        assert len(pillars) == 5
+
+    def test_criteria_min_followers(self) -> None:
+        from smm.influencer_outreach import generate_influencer_criteria
+
+        criteria = generate_influencer_criteria()
+        for c in criteria:
+            assert c.min_followers >= 3000
+            assert len(c.platforms) >= 2
+
+    def test_collab_formats(self) -> None:
+        from smm.influencer_outreach import generate_collab_formats
+
+        formats = generate_collab_formats()
+        keys = {f.key for f in formats}
+        assert "affiliate" in keys
+        assert "giveaway" in keys
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.influencer_outreach import (
+            export_outreach_json,
+            generate_influencer_outreach,
+        )
+
+        o = generate_influencer_outreach()
+        p = export_outreach_json(o, tmp_path / "outreach.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["messages"]) == 3
+        assert len(data["criteria"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.influencer_outreach import (
+            export_outreach_txt,
+            generate_influencer_outreach,
+        )
+
+        o = generate_influencer_outreach()
+        p = export_outreach_txt(o, tmp_path / "outreach.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ИНФЛЮЕНСЕР" in text
+        assert "КРИТЕРИИ" in text
+
+    def test_summary(self) -> None:
+        from smm.influencer_outreach import (
+            generate_influencer_outreach,
+            outreach_summary,
+        )
+
+        o = generate_influencer_outreach()
+        s = outreach_summary(o)
+        assert "3 шаблонов" in s
+        assert "5 профилей" in s
+        assert "5 форматов" in s

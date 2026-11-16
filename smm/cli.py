@@ -476,6 +476,29 @@ def cmd_analytics_dash(args: argparse.Namespace) -> None:
         print(f"TXT: {ad_dir / 'dashboard.txt'}")
 
 
+def cmd_influencer(args: argparse.Namespace) -> None:
+    from smm.influencer_outreach import (
+        export_outreach_json,
+        export_outreach_txt,
+        generate_influencer_outreach,
+        outreach_summary,
+    )
+
+    _ensure_data_dir()
+    outreach = generate_influencer_outreach()
+    print(outreach_summary(outreach))
+
+    inf_dir = DATA_DIR / "influencer"
+    inf_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_outreach_json(outreach, inf_dir / "outreach.json")
+        print(f"\nJSON: {inf_dir / 'outreach.json'}")
+    if args.format in ("txt", "all"):
+        export_outreach_txt(outreach, inf_dir / "outreach.txt")
+        print(f"TXT: {inf_dir / 'outreach.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1432,6 +1455,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_ad.add_argument("--seed", type=int, default=None)
     p_ad.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_inf = sub.add_parser(
+        "influencer", help="Influencer outreach templates and criteria"
+    )
+    p_inf.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
