@@ -545,6 +545,29 @@ def cmd_seo(args: argparse.Namespace) -> None:
         print(f"TXT: {seo_dir / 'seo.txt'}")
 
 
+def cmd_launch_check(args: argparse.Namespace) -> None:
+    from smm.launch_checklist import (
+        checklist_summary,
+        export_checklist_json,
+        export_checklist_txt,
+        generate_launch_checklist,
+    )
+
+    _ensure_data_dir()
+    checklist = generate_launch_checklist()
+    print(checklist_summary(checklist))
+
+    lc_dir = DATA_DIR / "launch_checklist"
+    lc_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_checklist_json(checklist, lc_dir / "checklist.json")
+        print(f"\nJSON: {lc_dir / 'checklist.json'}")
+    if args.format in ("txt", "all"):
+        export_checklist_txt(checklist, lc_dir / "checklist.txt")
+        print(f"TXT: {lc_dir / 'checklist.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1512,6 +1535,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_seo = sub.add_parser("seo", help="SEO pack (keywords, YT titles, meta, alt)")
     p_seo.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_lc = sub.add_parser("launch-check", help="Launch checklist — go-live readiness")
+    p_lc.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

@@ -4014,3 +4014,73 @@ class TestSEOOptimizer:
         pack = generate_seo_pack()
         for alt in pack.alt_text_templates:
             assert "{" in alt
+
+
+class TestLaunchChecklist:
+    def test_generate_checklist(self) -> None:
+        from smm.launch_checklist import generate_launch_checklist
+
+        cl = generate_launch_checklist()
+        assert cl.total == 21
+        assert cl.ready + cl.pending == cl.total
+        assert 0 <= cl.ready_percent <= 100
+
+    def test_phases_covered(self) -> None:
+        from smm.launch_checklist import generate_launch_checklist
+
+        cl = generate_launch_checklist()
+        phases = {i.phase for i in cl.items}
+        assert phases == {"accounts", "content", "tools", "referral", "launch"}
+
+    def test_priorities_valid(self) -> None:
+        from smm.launch_checklist import generate_launch_checklist
+
+        cl = generate_launch_checklist()
+        for i in cl.items:
+            assert i.priority in ("high", "medium", "low")
+
+    def test_statuses_valid(self) -> None:
+        from smm.launch_checklist import generate_launch_checklist
+
+        cl = generate_launch_checklist()
+        for i in cl.items:
+            assert i.status in ("ready", "pending")
+
+    def test_some_items_ready(self) -> None:
+        from smm.launch_checklist import generate_launch_checklist
+
+        cl = generate_launch_checklist()
+        assert cl.ready > 0
+        assert cl.pending > 0
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.launch_checklist import (
+            export_checklist_json,
+            generate_launch_checklist,
+        )
+
+        cl = generate_launch_checklist()
+        p = export_checklist_json(cl, tmp_path / "checklist.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert data["summary"]["total"] == 21
+        assert len(data["items"]) == 21
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.launch_checklist import export_checklist_txt, generate_launch_checklist
+
+        cl = generate_launch_checklist()
+        p = export_checklist_txt(cl, tmp_path / "checklist.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ЧЕКЛИСТ ЗАПУСКА" in text
+        assert "✅" in text
+        assert "⏳" in text
+
+    def test_summary(self) -> None:
+        from smm.launch_checklist import checklist_summary, generate_launch_checklist
+
+        cl = generate_launch_checklist()
+        s = checklist_summary(cl)
+        assert "готово" in s
+        assert "ожидает" in s

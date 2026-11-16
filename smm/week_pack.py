@@ -18,6 +18,11 @@ from datetime import date
 from pathlib import Path
 
 from smm.ab_variants import export_ab_csv, export_ab_json, generate_ab_posts
+from smm.analytics_dashboard import (
+    export_analytics_dashboard_json,
+    export_analytics_dashboard_txt,
+    generate_analytics_dashboard,
+)
 from smm.audience_personas import (
     export_personas_json,
     export_personas_txt,
@@ -34,6 +39,11 @@ from smm.carousel_generator import (
     export_carousels_json,
     export_carousels_txt,
     generate_carousels,
+)
+from smm.community_manager import (
+    export_community_json,
+    export_community_txt,
+    generate_community_config,
 )
 from smm.content_scoring import (
     export_scores_json,
@@ -73,6 +83,11 @@ from smm.engagement_hooks import (
     generate_this_or_that,
 )
 from smm.hashtag_engine import HASHTAG_POOLS, hashtag_report
+from smm.influencer_outreach import (
+    export_outreach_json,
+    export_outreach_txt,
+    generate_influencer_outreach,
+)
 from smm.lead_magnet import (
     export_lead_magnets_json,
     export_lead_magnets_txt,
@@ -92,6 +107,11 @@ from smm.referral_analytics import (
     generate_campaign_metrics,
 )
 from smm.scheduler_export import export_all_formats
+from smm.seo_optimizer import (
+    export_seo_json,
+    export_seo_txt,
+    generate_seo_pack,
+)
 from smm.social_proof import (
     export_social_proof_json,
     export_social_proof_txt,
@@ -298,6 +318,40 @@ def generate_week_pack(
     )
     paths["auto_poster_txt"] = export_auto_poster_txt(
         ap_config, ap_dir / "auto_poster.txt"
+    )
+
+    seo_dir = out_dir / "seo"
+    seo_dir.mkdir(exist_ok=True)
+    seo_pack = generate_seo_pack()
+    paths["seo_json"] = export_seo_json(seo_pack, seo_dir / "seo.json")
+    paths["seo_txt"] = export_seo_txt(seo_pack, seo_dir / "seo.txt")
+
+    cm_dir = out_dir / "community"
+    cm_dir.mkdir(exist_ok=True)
+    cm_config = generate_community_config()
+    paths["community_json"] = export_community_json(
+        cm_config, cm_dir / "community.json"
+    )
+    paths["community_txt"] = export_community_txt(cm_config, cm_dir / "community.txt")
+
+    inf_dir = out_dir / "influencer"
+    inf_dir.mkdir(exist_ok=True)
+    inf_outreach = generate_influencer_outreach()
+    paths["influencer_json"] = export_outreach_json(
+        inf_outreach, inf_dir / "outreach.json"
+    )
+    paths["influencer_txt"] = export_outreach_txt(
+        inf_outreach, inf_dir / "outreach.txt"
+    )
+
+    dash_dir = out_dir / "analytics_dashboard"
+    dash_dir.mkdir(exist_ok=True)
+    dashboard = generate_analytics_dashboard(seed=seed)
+    paths["dashboard_json"] = export_analytics_dashboard_json(
+        dashboard, dash_dir / "dashboard.json"
+    )
+    paths["dashboard_txt"] = export_analytics_dashboard_txt(
+        dashboard, dash_dir / "dashboard.txt"
     )
 
     tab_dir = out_dir / "topic_ab"
