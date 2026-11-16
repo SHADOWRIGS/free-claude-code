@@ -4465,3 +4465,81 @@ class TestCrisisManagement:
         s = crisis_summary(cm)
         assert "6 типов" in s
         assert "4 протоколов" in s
+
+
+class TestPartnershipProgram:
+    def test_generate(self) -> None:
+        from smm.partnership_program import generate_partnership_program
+
+        pp = generate_partnership_program()
+        assert len(pp.commission_tiers) == 4
+        assert len(pp.partner_types) == 5
+        assert len(pp.promo_materials) == 6
+        assert len(pp.onboarding) == 5
+        assert len(pp.tracking_metrics) == 6
+
+    def test_commission_levels_ascending(self) -> None:
+        from smm.partnership_program import generate_partnership_program
+
+        pp = generate_partnership_program()
+        percents = [t.commission_percent for t in pp.commission_tiers]
+        assert percents == sorted(percents)
+
+    def test_partner_types_have_formats(self) -> None:
+        from smm.partnership_program import generate_partnership_program
+
+        pp = generate_partnership_program()
+        for p in pp.partner_types:
+            assert len(p.formats) >= 3
+
+    def test_onboarding_steps_ordered(self) -> None:
+        from smm.partnership_program import generate_partnership_program
+
+        pp = generate_partnership_program()
+        steps = [s.step for s in pp.onboarding]
+        assert steps == list(range(1, 6))
+
+    def test_tracking_metrics_unique(self) -> None:
+        from smm.partnership_program import generate_partnership_program
+
+        pp = generate_partnership_program()
+        keys = [m.metric for m in pp.tracking_metrics]
+        assert len(keys) == len(set(keys))
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.partnership_program import (
+            export_partnership_json,
+            generate_partnership_program,
+        )
+
+        pp = generate_partnership_program()
+        p = export_partnership_json(pp, tmp_path / "partner.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["commission_tiers"]) == 4
+        assert len(data["partner_types"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.partnership_program import (
+            export_partnership_txt,
+            generate_partnership_program,
+        )
+
+        pp = generate_partnership_program()
+        p = export_partnership_txt(pp, tmp_path / "partner.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ПАРТНЁРСКАЯ ПРОГРАММА" in text
+        assert "КОМИССИОННЫЕ УРОВНИ" in text
+
+    def test_summary(self) -> None:
+        from smm.partnership_program import (
+            generate_partnership_program,
+            partnership_summary,
+        )
+
+        pp = generate_partnership_program()
+        s = partnership_summary(pp)
+        assert "4 уровней" in s
+        assert "5 типов" in s
+        assert "6 промо" in s

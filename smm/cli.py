@@ -614,6 +614,29 @@ def cmd_brand_kit(args: argparse.Namespace) -> None:
         print(f"TXT: {kit_dir / 'brand_kit.txt'}")
 
 
+def cmd_partnership(args: argparse.Namespace) -> None:
+    from smm.partnership_program import (
+        export_partnership_json,
+        export_partnership_txt,
+        generate_partnership_program,
+        partnership_summary,
+    )
+
+    _ensure_data_dir()
+    pp = generate_partnership_program()
+    print(partnership_summary(pp))
+
+    pp_dir = DATA_DIR / "partnership"
+    pp_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_partnership_json(pp, pp_dir / "partnership_program.json")
+        print(f"\nJSON: {pp_dir / 'partnership_program.json'}")
+    if args.format in ("txt", "all"):
+        export_partnership_txt(pp, pp_dir / "partnership_program.txt")
+        print(f"TXT: {pp_dir / 'partnership_program.txt'}")
+
+
 def cmd_crisis(args: argparse.Namespace) -> None:
     from smm.crisis_management import (
         crisis_summary,
@@ -1679,6 +1702,11 @@ def build_parser() -> argparse.ArgumentParser:
         "crisis", help="Crisis management (incident response protocols)"
     )
     p_crisis.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_partner = sub.add_parser(
+        "partnership", help="Partnership program (affiliate, commissions, promo)"
+    )
+    p_partner.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

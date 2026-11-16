@@ -142,6 +142,7 @@ ignore = [
 "smm/notification_system.py" = ["RUF001"]
 "smm/content_approval.py" = ["RUF001"]
 "smm/crisis_management.py" = ["RUF001"]
+"smm/partnership_program.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]
