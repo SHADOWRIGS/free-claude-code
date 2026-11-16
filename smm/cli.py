@@ -430,6 +430,29 @@ def cmd_tg_bot(args: argparse.Namespace) -> None:
         print(f"TXT: {tg_dir / 'bot_config.txt'}")
 
 
+def cmd_auto_poster(args: argparse.Namespace) -> None:
+    from smm.auto_poster import (
+        auto_poster_summary,
+        export_auto_poster_json,
+        export_auto_poster_txt,
+        generate_auto_poster_config,
+    )
+
+    _ensure_data_dir()
+    config = generate_auto_poster_config()
+    print(auto_poster_summary(config))
+
+    ap_dir = DATA_DIR / "auto_poster"
+    ap_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_auto_poster_json(config, ap_dir / "auto_poster.json")
+        print(f"\nJSON: {ap_dir / 'auto_poster.json'}")
+    if args.format in ("txt", "all"):
+        export_auto_poster_txt(config, ap_dir / "auto_poster.txt")
+        print(f"TXT: {ap_dir / 'auto_poster.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1375,6 +1398,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_tg = sub.add_parser("tg-bot", help="Telegram bot config and message templates")
     p_tg.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ap = sub.add_parser(
+        "auto-poster", help="Auto-posting config (API profiles, slots, retry)"
+    )
+    p_ap.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

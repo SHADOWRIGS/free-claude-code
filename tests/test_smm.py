@@ -3622,3 +3622,82 @@ class TestTelegramBotConfig:
         assert "4 курсов" in summary
         assert "6 FAQ" in summary
         assert "3 уведомлений" in summary
+
+
+class TestAutoPoster:
+    def test_generate_config(self) -> None:
+        from smm.auto_poster import generate_auto_poster_config
+
+        config = generate_auto_poster_config()
+        assert len(config.profiles) == 5
+        assert len(config.slots) == 9
+        assert config.queue_size == 63
+
+    def test_posting_slots_cover_platforms(self) -> None:
+        from smm.auto_poster import generate_posting_slots
+
+        slots = generate_posting_slots()
+        platforms = {s.platform for s in slots}
+        assert platforms == {"instagram", "tiktok", "youtube"}
+        assert all(s.post_time is not None for s in slots)
+
+    def test_api_profiles_fields(self) -> None:
+        from smm.auto_poster import APIProfile, generate_api_profiles
+
+        profiles = generate_api_profiles()
+        for p in profiles:
+            assert isinstance(p, APIProfile)
+            assert p.api_base.startswith("https://")
+            assert len(p.env_var) > 0
+
+    def test_rate_limits(self) -> None:
+        from smm.auto_poster import generate_auto_poster_config
+
+        config = generate_auto_poster_config()
+        assert "instagram" in config.rate_limits
+        assert "tiktok" in config.rate_limits
+        assert "youtube" in config.rate_limits
+
+    def test_retry_policy(self) -> None:
+        from smm.auto_poster import generate_auto_poster_config
+
+        config = generate_auto_poster_config()
+        assert config.retry_policy["max_retries"] == 3
+        assert config.retry_policy["backoff_multiplier"] == 2.0
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.auto_poster import export_auto_poster_json, generate_auto_poster_config
+
+        config = generate_auto_poster_config()
+        p = export_auto_poster_json(config, tmp_path / "ap.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["profiles"]) == 5
+        assert len(data["posting_slots"]) == 9
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.auto_poster import export_auto_poster_txt, generate_auto_poster_config
+
+        config = generate_auto_poster_config()
+        p = export_auto_poster_txt(config, tmp_path / "ap.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "АВТО-ПОСТИНГ" in text
+        assert "Buffer" in text
+
+    def test_summary(self) -> None:
+        from smm.auto_poster import auto_poster_summary, generate_auto_poster_config
+
+        config = generate_auto_poster_config()
+        summary = auto_poster_summary(config)
+        assert "5 API-профилей" in summary
+        assert "9 слотов" in summary
+        assert "63 постов" in summary
+
+    def test_three_slots_per_platform(self) -> None:
+        from smm.auto_poster import generate_posting_slots
+
+        slots = generate_posting_slots()
+        for platform in ("instagram", "tiktok", "youtube"):
+            count = sum(1 for s in slots if s.platform == platform)
+            assert count == 3
