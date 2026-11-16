@@ -614,6 +614,29 @@ def cmd_brand_kit(args: argparse.Namespace) -> None:
         print(f"TXT: {kit_dir / 'brand_kit.txt'}")
 
 
+def cmd_media_library(args: argparse.Namespace) -> None:
+    from smm.media_library import (
+        export_media_json,
+        export_media_txt,
+        generate_media_library,
+        media_library_summary,
+    )
+
+    _ensure_data_dir()
+    ml = generate_media_library()
+    print(media_library_summary(ml))
+
+    ml_dir = DATA_DIR / "media_library"
+    ml_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_media_json(ml, ml_dir / "media_library.json")
+        print(f"\nJSON: {ml_dir / 'media_library.json'}")
+    if args.format in ("txt", "all"):
+        export_media_txt(ml, ml_dir / "media_library.txt")
+        print(f"TXT: {ml_dir / 'media_library.txt'}")
+
+
 def cmd_localization(args: argparse.Namespace) -> None:
     from smm.localization import (
         export_localization_json,
@@ -1735,6 +1758,11 @@ def build_parser() -> argparse.ArgumentParser:
         "localization", help="Localization (glossary, CTA translations, rules)"
     )
     p_loc.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ml = sub.add_parser(
+        "media-library", help="Media library (image/video specs, templates, stocks)"
+    )
+    p_ml.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

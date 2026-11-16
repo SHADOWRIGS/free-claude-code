@@ -4617,3 +4617,74 @@ class TestLocalization:
         s = localization_summary(lp)
         assert "20 терминов" in s
         assert "8 CTA" in s
+
+
+class TestMediaLibrary:
+    def test_generate(self) -> None:
+        from smm.media_library import generate_media_library
+
+        ml = generate_media_library()
+        assert len(ml.image_specs) == 8
+        assert len(ml.video_specs) == 4
+        assert len(ml.canvas_templates) == 6
+        assert len(ml.stock_sources) == 5
+
+    def test_image_specs_dimensions(self) -> None:
+        from smm.media_library import generate_media_library
+
+        ml = generate_media_library()
+        for s in ml.image_specs:
+            assert s.width > 0
+            assert s.height > 0
+            assert ":" in s.aspect
+
+    def test_video_specs_have_fps(self) -> None:
+        from smm.media_library import generate_media_library
+
+        ml = generate_media_library()
+        for s in ml.video_specs:
+            assert s.fps >= 24
+            assert s.max_duration_sec > 0
+
+    def test_canvas_templates_have_elements(self) -> None:
+        from smm.media_library import generate_media_library
+
+        ml = generate_media_library()
+        for t in ml.canvas_templates:
+            assert len(t.elements) > 0
+            assert "x" in t.size
+
+    def test_naming_pattern(self) -> None:
+        from smm.media_library import generate_media_library
+
+        ml = generate_media_library()
+        assert "{platform}" in ml.naming_pattern
+        assert ".png" in ml.naming_example or ".jpg" in ml.naming_example
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.media_library import export_media_json, generate_media_library
+
+        ml = generate_media_library()
+        p = export_media_json(ml, tmp_path / "media.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["image_specs"]) == 8
+        assert "naming" in data
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.media_library import export_media_txt, generate_media_library
+
+        ml = generate_media_library()
+        p = export_media_txt(ml, tmp_path / "media.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "МЕДИА-БИБЛИОТЕКА" in text
+        assert "ШАБЛОНЫ КАНВАСОВ" in text
+
+    def test_summary(self) -> None:
+        from smm.media_library import generate_media_library, media_library_summary
+
+        ml = generate_media_library()
+        s = media_library_summary(ml)
+        assert "8 спеков изображений" in s
+        assert "4 спеков видео" in s
