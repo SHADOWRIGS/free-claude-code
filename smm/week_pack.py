@@ -23,6 +23,11 @@ from smm.audience_personas import (
     export_personas_txt,
     generate_personas,
 )
+from smm.auto_poster import (
+    export_auto_poster_json,
+    export_auto_poster_txt,
+    generate_auto_poster_config,
+)
 from smm.biolink import generate_biolink_file
 from smm.caption_validator import validate_posts
 from smm.carousel_generator import (
@@ -96,6 +101,11 @@ from smm.story_generator import (
     export_story_packs_json,
     export_story_packs_txt,
     generate_story_packs,
+)
+from smm.telegram_bot_config import (
+    export_bot_config_json,
+    export_bot_config_txt,
+    generate_bot_config,
 )
 from smm.topic_ab_test import (
     export_ab_topics_json,
@@ -271,6 +281,24 @@ def generate_week_pack(
     wb_messages = generate_webinar_funnel()
     paths["webinar_json"] = export_webinar_json(wb_messages, wb_dir / "webinar.json")
     paths["webinar_txt"] = export_webinar_txt(wb_messages, wb_dir / "webinar.txt")
+
+    tg_dir = out_dir / "telegram_bot"
+    tg_dir.mkdir(exist_ok=True)
+    bot_config = generate_bot_config()
+    paths["tg_bot_json"] = export_bot_config_json(
+        bot_config, tg_dir / "bot_config.json"
+    )
+    paths["tg_bot_txt"] = export_bot_config_txt(bot_config, tg_dir / "bot_config.txt")
+
+    ap_dir = out_dir / "auto_poster"
+    ap_dir.mkdir(exist_ok=True)
+    ap_config = generate_auto_poster_config()
+    paths["auto_poster_json"] = export_auto_poster_json(
+        ap_config, ap_dir / "auto_poster.json"
+    )
+    paths["auto_poster_txt"] = export_auto_poster_txt(
+        ap_config, ap_dir / "auto_poster.txt"
+    )
 
     tab_dir = out_dir / "topic_ab"
     tab_dir.mkdir(exist_ok=True)
