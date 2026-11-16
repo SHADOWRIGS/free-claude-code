@@ -4543,3 +4543,77 @@ class TestPartnershipProgram:
         assert "4 уровней" in s
         assert "5 типов" in s
         assert "6 промо" in s
+
+
+class TestLocalization:
+    def test_generate(self) -> None:
+        from smm.localization import generate_localization
+
+        lp = generate_localization()
+        assert len(lp.glossary) == 20
+        assert len(lp.templates) == 5
+        assert len(lp.cta_translations) == 8
+        assert len(lp.platform_rules) == 3
+        assert len(lp.cultural_notes) == 5
+        assert lp.primary_language == "ru"
+
+    def test_glossary_bilingual(self) -> None:
+        from smm.localization import generate_localization
+
+        lp = generate_localization()
+        for g in lp.glossary:
+            assert len(g.ru) > 0
+            assert len(g.en) > 0
+
+    def test_cta_translations_paired(self) -> None:
+        from smm.localization import generate_localization
+
+        lp = generate_localization()
+        for c in lp.cta_translations:
+            assert len(c.ru) > 0
+            assert len(c.en) > 0
+
+    def test_platform_rules_cover_main(self) -> None:
+        from smm.localization import generate_localization
+
+        lp = generate_localization()
+        platforms = {r.platform for r in lp.platform_rules}
+        assert "Instagram" in platforms
+        assert "TikTok" in platforms
+        assert "YouTube" in platforms
+
+    def test_cultural_notes_have_both_langs(self) -> None:
+        from smm.localization import generate_localization
+
+        lp = generate_localization()
+        for n in lp.cultural_notes:
+            assert len(n.ru) > 0
+            assert len(n.en) > 0
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.localization import export_localization_json, generate_localization
+
+        lp = generate_localization()
+        p = export_localization_json(lp, tmp_path / "loc.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["glossary"]) == 20
+        assert data["primary_language"] == "ru"
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.localization import export_localization_txt, generate_localization
+
+        lp = generate_localization()
+        p = export_localization_txt(lp, tmp_path / "loc.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ЛОКАЛИЗАЦИЯ" in text
+        assert "ГЛОССАРИЙ" in text
+
+    def test_summary(self) -> None:
+        from smm.localization import generate_localization, localization_summary
+
+        lp = generate_localization()
+        s = localization_summary(lp)
+        assert "20 терминов" in s
+        assert "8 CTA" in s

@@ -614,6 +614,29 @@ def cmd_brand_kit(args: argparse.Namespace) -> None:
         print(f"TXT: {kit_dir / 'brand_kit.txt'}")
 
 
+def cmd_localization(args: argparse.Namespace) -> None:
+    from smm.localization import (
+        export_localization_json,
+        export_localization_txt,
+        generate_localization,
+        localization_summary,
+    )
+
+    _ensure_data_dir()
+    lp = generate_localization()
+    print(localization_summary(lp))
+
+    lp_dir = DATA_DIR / "localization"
+    lp_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_localization_json(lp, lp_dir / "localization.json")
+        print(f"\nJSON: {lp_dir / 'localization.json'}")
+    if args.format in ("txt", "all"):
+        export_localization_txt(lp, lp_dir / "localization.txt")
+        print(f"TXT: {lp_dir / 'localization.txt'}")
+
+
 def cmd_partnership(args: argparse.Namespace) -> None:
     from smm.partnership_program import (
         export_partnership_json,
@@ -1707,6 +1730,11 @@ def build_parser() -> argparse.ArgumentParser:
         "partnership", help="Partnership program (affiliate, commissions, promo)"
     )
     p_partner.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_loc = sub.add_parser(
+        "localization", help="Localization (glossary, CTA translations, rules)"
+    )
+    p_loc.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
