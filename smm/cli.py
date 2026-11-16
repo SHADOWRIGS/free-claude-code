@@ -499,6 +499,29 @@ def cmd_influencer(args: argparse.Namespace) -> None:
         print(f"TXT: {inf_dir / 'outreach.txt'}")
 
 
+def cmd_community(args: argparse.Namespace) -> None:
+    from smm.community_manager import (
+        community_summary,
+        export_community_json,
+        export_community_txt,
+        generate_community_config,
+    )
+
+    _ensure_data_dir()
+    config = generate_community_config()
+    print(community_summary(config))
+
+    cm_dir = DATA_DIR / "community"
+    cm_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_community_json(config, cm_dir / "community.json")
+        print(f"\nJSON: {cm_dir / 'community.json'}")
+    if args.format in ("txt", "all"):
+        export_community_txt(config, cm_dir / "community.txt")
+        print(f"TXT: {cm_dir / 'community.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1460,6 +1483,9 @@ def build_parser() -> argparse.ArgumentParser:
         "influencer", help="Influencer outreach templates and criteria"
     )
     p_inf.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_cm = sub.add_parser("community", help="Community management templates and rules")
+    p_cm.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

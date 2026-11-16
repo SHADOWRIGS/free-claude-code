@@ -3867,3 +3867,83 @@ class TestInfluencerOutreach:
         assert "3 шаблонов" in s
         assert "5 профилей" in s
         assert "5 форматов" in s
+
+
+class TestCommunityManager:
+    def test_generate_config(self) -> None:
+        from smm.community_manager import generate_community_config
+
+        config = generate_community_config()
+        assert len(config.reply_templates) == 5
+        assert len(config.dm_responses) == 4
+        assert len(config.live_scripts) == 3
+        assert len(config.moderation_rules) == 5
+
+    def test_reply_categories(self) -> None:
+        from smm.community_manager import generate_community_config
+
+        config = generate_community_config()
+        cats = {r.category for r in config.reply_templates}
+        assert "positive" in cats
+        assert "negative" in cats
+        assert "spam" in cats
+
+    def test_dm_responses(self) -> None:
+        from smm.community_manager import generate_community_config
+
+        config = generate_community_config()
+        triggers = {d.trigger for d in config.dm_responses}
+        assert "greeting" in triggers
+        assert "courses" in triggers
+
+    def test_live_scripts(self) -> None:
+        from smm.community_manager import generate_community_config
+
+        config = generate_community_config()
+        moments = [s.moment for s in config.live_scripts]
+        assert any("Начало" in m for m in moments)
+        assert any("Конец" in m for m in moments)
+
+    def test_moderation_rules(self) -> None:
+        from smm.community_manager import generate_community_config
+
+        config = generate_community_config()
+        rules = [m.rule for m in config.moderation_rules]
+        assert any("Спам" in r for r in rules)
+        assert any("Фишинг" in r for r in rules)
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.community_manager import (
+            export_community_json,
+            generate_community_config,
+        )
+
+        config = generate_community_config()
+        p = export_community_json(config, tmp_path / "community.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["reply_templates"]) == 5
+        assert len(data["dm_responses"]) == 4
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.community_manager import (
+            export_community_txt,
+            generate_community_config,
+        )
+
+        config = generate_community_config()
+        p = export_community_txt(config, tmp_path / "community.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "КОММЬЮНИТИ" in text
+        assert "МОДЕРАЦИИ" in text
+
+    def test_summary(self) -> None:
+        from smm.community_manager import community_summary, generate_community_config
+
+        config = generate_community_config()
+        s = community_summary(config)
+        assert "5 категорий" in s
+        assert "4 авто-ответов" in s
+        assert "3 скриптов" in s
+        assert "5 правил" in s
