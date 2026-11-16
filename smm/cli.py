@@ -591,6 +591,29 @@ def cmd_ad_creative(args: argparse.Namespace) -> None:
         print(f"TXT: {ad_dir / 'ad_creatives.txt'}")
 
 
+def cmd_brand_kit(args: argparse.Namespace) -> None:
+    from smm.brand_kit import (
+        brand_kit_summary,
+        export_brand_kit_json,
+        export_brand_kit_txt,
+        generate_brand_kit,
+    )
+
+    _ensure_data_dir()
+    kit = generate_brand_kit()
+    print(brand_kit_summary(kit))
+
+    kit_dir = DATA_DIR / "brand_kit"
+    kit_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_brand_kit_json(kit, kit_dir / "brand_kit.json")
+        print(f"\nJSON: {kit_dir / 'brand_kit.json'}")
+    if args.format in ("txt", "all"):
+        export_brand_kit_txt(kit, kit_dir / "brand_kit.txt")
+        print(f"TXT: {kit_dir / 'brand_kit.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1566,6 +1589,11 @@ def build_parser() -> argparse.ArgumentParser:
         "ad-creative", help="Ad creatives (copies, audiences, budgets)"
     )
     p_adc.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_bk = sub.add_parser(
+        "brand-kit", help="Brand kit (colors, typography, tone of voice)"
+    )
+    p_bk.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

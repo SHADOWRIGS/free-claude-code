@@ -4154,3 +4154,79 @@ class TestAdCreative:
         for a in pack.ads:
             assert len(a.cta) > 0
             assert len(a.headline) > 0
+
+
+class TestBrandKit:
+    def test_generate(self) -> None:
+        from smm.brand_kit import generate_brand_kit
+
+        kit = generate_brand_kit()
+        assert len(kit.colors) == 6
+        assert len(kit.typography) == 3
+        assert len(kit.logo_rules) == 5
+        assert len(kit.tone_of_voice) == 4
+        assert len(kit.visual_styles) == 4
+        assert kit.brand_name == "ShadowRigs"
+
+    def test_colors_have_hex(self) -> None:
+        from smm.brand_kit import generate_brand_kit
+
+        kit = generate_brand_kit()
+        for c in kit.colors:
+            assert c.hex.startswith("#")
+            assert len(c.hex) == 7
+
+    def test_typography_roles(self) -> None:
+        from smm.brand_kit import generate_brand_kit
+
+        kit = generate_brand_kit()
+        roles = {t.role for t in kit.typography}
+        assert "heading" in roles
+        assert "body" in roles
+        assert "code" in roles
+
+    def test_tone_of_voice_platforms(self) -> None:
+        from smm.brand_kit import generate_brand_kit
+
+        kit = generate_brand_kit()
+        platforms = {v.platform for v in kit.tone_of_voice}
+        assert "Instagram" in platforms
+        assert "TikTok" in platforms
+        assert "YouTube" in platforms
+
+    def test_visual_styles_have_colors(self) -> None:
+        from smm.brand_kit import generate_brand_kit
+
+        kit = generate_brand_kit()
+        for s in kit.visual_styles:
+            assert s.bg.startswith("#")
+            assert s.text.startswith("#")
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.brand_kit import export_brand_kit_json, generate_brand_kit
+
+        kit = generate_brand_kit()
+        p = export_brand_kit_json(kit, tmp_path / "brand.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert data["brand_name"] == "ShadowRigs"
+        assert len(data["colors"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.brand_kit import export_brand_kit_txt, generate_brand_kit
+
+        kit = generate_brand_kit()
+        p = export_brand_kit_txt(kit, tmp_path / "brand.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "БРЕНД-КИТ" in text
+        assert "ЦВЕТОВАЯ ПАЛИТРА" in text
+
+    def test_summary(self) -> None:
+        from smm.brand_kit import brand_kit_summary, generate_brand_kit
+
+        kit = generate_brand_kit()
+        s = brand_kit_summary(kit)
+        assert "ShadowRigs" in s
+        assert "6 цветов" in s
+        assert "4 визуальных" in s
