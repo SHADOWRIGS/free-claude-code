@@ -568,6 +568,29 @@ def cmd_launch_check(args: argparse.Namespace) -> None:
         print(f"TXT: {lc_dir / 'checklist.txt'}")
 
 
+def cmd_ad_creative(args: argparse.Namespace) -> None:
+    from smm.ad_creative import (
+        ad_creative_summary,
+        export_ad_json,
+        export_ad_txt,
+        generate_ad_creatives,
+    )
+
+    _ensure_data_dir()
+    pack = generate_ad_creatives()
+    print(ad_creative_summary(pack))
+
+    ad_dir = DATA_DIR / "ad_creatives"
+    ad_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_ad_json(pack, ad_dir / "ad_creatives.json")
+        print(f"\nJSON: {ad_dir / 'ad_creatives.json'}")
+    if args.format in ("txt", "all"):
+        export_ad_txt(pack, ad_dir / "ad_creatives.txt")
+        print(f"TXT: {ad_dir / 'ad_creatives.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1538,6 +1561,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_lc = sub.add_parser("launch-check", help="Launch checklist — go-live readiness")
     p_lc.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_adc = sub.add_parser(
+        "ad-creative", help="Ad creatives (copies, audiences, budgets)"
+    )
+    p_adc.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

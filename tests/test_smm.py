@@ -4084,3 +4084,73 @@ class TestLaunchChecklist:
         s = checklist_summary(cl)
         assert "готово" in s
         assert "ожидает" in s
+
+
+class TestAdCreative:
+    def test_generate_ad_creatives(self) -> None:
+        from smm.ad_creative import generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        assert len(pack.ads) == 8
+        assert len(pack.audiences) == 4
+        assert len(pack.budgets) == 3
+        assert len(pack.objectives) == 5
+
+    def test_ads_cover_platforms(self) -> None:
+        from smm.ad_creative import generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        platforms = {a.platform for a in pack.ads}
+        assert platforms == {"meta", "tiktok", "youtube"}
+
+    def test_audiences_have_interests(self) -> None:
+        from smm.ad_creative import generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        for t in pack.audiences:
+            assert len(t.interests) >= 2
+            assert len(t.age_range) > 0
+
+    def test_budget_tiers_ascending(self) -> None:
+        from smm.ad_creative import generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        dailies = [b.daily_usd for b in pack.budgets]
+        assert dailies == sorted(dailies)
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.ad_creative import export_ad_json, generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        p = export_ad_json(pack, tmp_path / "ads.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["ads"]) == 8
+        assert len(data["audiences"]) == 4
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.ad_creative import export_ad_txt, generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        p = export_ad_txt(pack, tmp_path / "ads.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "РЕКЛАМНЫЕ КРЕАТИВЫ" in text
+        assert "ЦЕЛЕВЫЕ АУДИТОРИИ" in text
+
+    def test_summary(self) -> None:
+        from smm.ad_creative import ad_creative_summary, generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        s = ad_creative_summary(pack)
+        assert "8 объявлений" in s
+        assert "4 аудиторий" in s
+        assert "3 бюджетных" in s
+
+    def test_ad_copies_have_cta(self) -> None:
+        from smm.ad_creative import generate_ad_creatives
+
+        pack = generate_ad_creatives()
+        for a in pack.ads:
+            assert len(a.cta) > 0
+            assert len(a.headline) > 0
