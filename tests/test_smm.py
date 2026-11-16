@@ -3947,3 +3947,70 @@ class TestCommunityManager:
         assert "4 авто-ответов" in s
         assert "3 скриптов" in s
         assert "5 правил" in s
+
+
+class TestSEOOptimizer:
+    def test_generate_seo_pack(self) -> None:
+        from smm.seo_optimizer import generate_seo_pack
+
+        pack = generate_seo_pack()
+        assert len(pack.keyword_clusters) == 5
+        assert len(pack.yt_title_templates) == 5
+        assert len(pack.meta_descriptions) == 5
+        assert len(pack.alt_text_templates) == 5
+
+    def test_keyword_clusters_per_pillar(self) -> None:
+        from smm.seo_optimizer import generate_seo_pack
+
+        pack = generate_seo_pack()
+        for c in pack.keyword_clusters:
+            assert len(c.keywords) == 10
+
+    def test_meta_descriptions_nonempty(self) -> None:
+        from smm.seo_optimizer import generate_seo_pack
+
+        pack = generate_seo_pack()
+        for m in pack.meta_descriptions:
+            assert len(m.description) > 50
+
+    def test_yt_templates_have_placeholders(self) -> None:
+        from smm.seo_optimizer import generate_seo_pack
+
+        pack = generate_seo_pack()
+        for t in pack.yt_title_templates:
+            assert "{" in t.template
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.seo_optimizer import export_seo_json, generate_seo_pack
+
+        pack = generate_seo_pack()
+        p = export_seo_json(pack, tmp_path / "seo.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["keyword_clusters"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.seo_optimizer import export_seo_txt, generate_seo_pack
+
+        pack = generate_seo_pack()
+        p = export_seo_txt(pack, tmp_path / "seo.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "SEO-ОПТИМИЗАЦИЯ" in text
+        assert "YOUTUBE" in text
+
+    def test_summary(self) -> None:
+        from smm.seo_optimizer import generate_seo_pack, seo_summary
+
+        pack = generate_seo_pack()
+        s = seo_summary(pack)
+        assert "5 кластеров" in s
+        assert "50 ключевых" in s
+        assert "5 шаблонов YT" in s
+
+    def test_alt_text_templates(self) -> None:
+        from smm.seo_optimizer import generate_seo_pack
+
+        pack = generate_seo_pack()
+        for alt in pack.alt_text_templates:
+            assert "{" in alt

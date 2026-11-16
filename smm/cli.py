@@ -522,6 +522,29 @@ def cmd_community(args: argparse.Namespace) -> None:
         print(f"TXT: {cm_dir / 'community.txt'}")
 
 
+def cmd_seo(args: argparse.Namespace) -> None:
+    from smm.seo_optimizer import (
+        export_seo_json,
+        export_seo_txt,
+        generate_seo_pack,
+        seo_summary,
+    )
+
+    _ensure_data_dir()
+    pack = generate_seo_pack()
+    print(seo_summary(pack))
+
+    seo_dir = DATA_DIR / "seo"
+    seo_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_seo_json(pack, seo_dir / "seo.json")
+        print(f"\nJSON: {seo_dir / 'seo.json'}")
+    if args.format in ("txt", "all"):
+        export_seo_txt(pack, seo_dir / "seo.txt")
+        print(f"TXT: {seo_dir / 'seo.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1486,6 +1509,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_cm = sub.add_parser("community", help="Community management templates and rules")
     p_cm.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_seo = sub.add_parser("seo", help="SEO pack (keywords, YT titles, meta, alt)")
+    p_seo.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
