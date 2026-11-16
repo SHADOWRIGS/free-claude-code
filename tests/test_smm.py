@@ -4388,3 +4388,80 @@ class TestContentApproval:
         assert "5 этапов" in s
         assert "3 ролей" in s
         assert "4 чеклистов" in s
+
+
+class TestCrisisManagement:
+    def test_generate(self) -> None:
+        from smm.crisis_management import generate_crisis_management
+
+        cm = generate_crisis_management()
+        assert len(cm.crisis_types) == 6
+        assert len(cm.response_templates) == 6
+        assert len(cm.protocols) == 4
+        assert len(cm.recovery_actions) == 5
+
+    def test_severity_levels(self) -> None:
+        from smm.crisis_management import generate_crisis_management
+
+        cm = generate_crisis_management()
+        severities = {c.severity for c in cm.crisis_types}
+        assert "critical" in severities
+        assert "high" in severities
+        assert "medium" in severities
+
+    def test_response_templates_have_placeholders(self) -> None:
+        from smm.crisis_management import generate_crisis_management
+
+        cm = generate_crisis_management()
+        has_placeholder = any("{" in r.template for r in cm.response_templates)
+        assert has_placeholder
+
+    def test_protocols_have_steps(self) -> None:
+        from smm.crisis_management import generate_crisis_management
+
+        cm = generate_crisis_management()
+        for p in cm.protocols:
+            assert len(p.steps) >= 4
+
+    def test_recovery_timeline(self) -> None:
+        from smm.crisis_management import generate_crisis_management
+
+        cm = generate_crisis_management()
+        days = [a.timeline_days for a in cm.recovery_actions]
+        assert days == sorted(days)
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.crisis_management import (
+            export_crisis_json,
+            generate_crisis_management,
+        )
+
+        cm = generate_crisis_management()
+        p = export_crisis_json(cm, tmp_path / "crisis.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["crisis_types"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.crisis_management import (
+            export_crisis_txt,
+            generate_crisis_management,
+        )
+
+        cm = generate_crisis_management()
+        p = export_crisis_txt(cm, tmp_path / "crisis.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "АНТИКРИЗИСНОЕ УПРАВЛЕНИЕ" in text
+        assert "ПЛАН ВОССТАНОВЛЕНИЯ" in text
+
+    def test_summary(self) -> None:
+        from smm.crisis_management import (
+            crisis_summary,
+            generate_crisis_management,
+        )
+
+        cm = generate_crisis_management()
+        s = crisis_summary(cm)
+        assert "6 типов" in s
+        assert "4 протоколов" in s

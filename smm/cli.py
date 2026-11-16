@@ -614,6 +614,29 @@ def cmd_brand_kit(args: argparse.Namespace) -> None:
         print(f"TXT: {kit_dir / 'brand_kit.txt'}")
 
 
+def cmd_crisis(args: argparse.Namespace) -> None:
+    from smm.crisis_management import (
+        crisis_summary,
+        export_crisis_json,
+        export_crisis_txt,
+        generate_crisis_management,
+    )
+
+    _ensure_data_dir()
+    cm = generate_crisis_management()
+    print(crisis_summary(cm))
+
+    cm_dir = DATA_DIR / "crisis"
+    cm_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_crisis_json(cm, cm_dir / "crisis_management.json")
+        print(f"\nJSON: {cm_dir / 'crisis_management.json'}")
+    if args.format in ("txt", "all"):
+        export_crisis_txt(cm, cm_dir / "crisis_management.txt")
+        print(f"TXT: {cm_dir / 'crisis_management.txt'}")
+
+
 def cmd_content_approval(args: argparse.Namespace) -> None:
     from smm.content_approval import (
         approval_summary,
@@ -1651,6 +1674,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Content approval workflow (stages, roles, checklists)",
     )
     p_ca.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_crisis = sub.add_parser(
+        "crisis", help="Crisis management (incident response protocols)"
+    )
+    p_crisis.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
