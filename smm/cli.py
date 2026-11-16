@@ -614,6 +614,29 @@ def cmd_brand_kit(args: argparse.Namespace) -> None:
         print(f"TXT: {kit_dir / 'brand_kit.txt'}")
 
 
+def cmd_content_approval(args: argparse.Namespace) -> None:
+    from smm.content_approval import (
+        approval_summary,
+        export_approval_json,
+        export_approval_txt,
+        generate_approval_workflow,
+    )
+
+    _ensure_data_dir()
+    wf = generate_approval_workflow()
+    print(approval_summary(wf))
+
+    wf_dir = DATA_DIR / "content_approval"
+    wf_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_approval_json(wf, wf_dir / "approval_workflow.json")
+        print(f"\nJSON: {wf_dir / 'approval_workflow.json'}")
+    if args.format in ("txt", "all"):
+        export_approval_txt(wf, wf_dir / "approval_workflow.txt")
+        print(f"TXT: {wf_dir / 'approval_workflow.txt'}")
+
+
 def cmd_notifications(args: argparse.Namespace) -> None:
     from smm.notification_system import (
         export_notifications_json,
@@ -1622,6 +1645,12 @@ def build_parser() -> argparse.ArgumentParser:
         "notifications", help="Notification system (alerts, milestones, deadlines)"
     )
     p_ntf.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ca = sub.add_parser(
+        "content-approval",
+        help="Content approval workflow (stages, roles, checklists)",
+    )
+    p_ca.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

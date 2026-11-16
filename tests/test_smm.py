@@ -4311,3 +4311,80 @@ class TestNotificationSystem:
         assert "6 алертов" in s
         assert "3 каналов" in s
         assert "6 вех" in s
+
+
+class TestContentApproval:
+    def test_generate(self) -> None:
+        from smm.content_approval import generate_approval_workflow
+
+        wf = generate_approval_workflow()
+        assert len(wf.stages) == 5
+        assert len(wf.roles) == 3
+        assert len(wf.checklists) == 4
+        assert len(wf.rejection_reasons) == 6
+
+    def test_stage_flow(self) -> None:
+        from smm.content_approval import generate_approval_workflow
+
+        wf = generate_approval_workflow()
+        assert wf.stages[0].stage == "draft"
+        assert wf.stages[-1].next == "done"
+
+    def test_roles_have_permissions(self) -> None:
+        from smm.content_approval import generate_approval_workflow
+
+        wf = generate_approval_workflow()
+        for r in wf.roles:
+            assert len(r.permissions) >= 3
+
+    def test_checklists_have_items(self) -> None:
+        from smm.content_approval import generate_approval_workflow
+
+        wf = generate_approval_workflow()
+        for c in wf.checklists:
+            assert len(c.items) >= 5
+
+    def test_rejection_reasons_have_templates(self) -> None:
+        from smm.content_approval import generate_approval_workflow
+
+        wf = generate_approval_workflow()
+        for r in wf.rejection_reasons:
+            assert "{" in r.template
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.content_approval import (
+            export_approval_json,
+            generate_approval_workflow,
+        )
+
+        wf = generate_approval_workflow()
+        p = export_approval_json(wf, tmp_path / "approval.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["stages"]) == 5
+        assert len(data["roles"]) == 3
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.content_approval import (
+            export_approval_txt,
+            generate_approval_workflow,
+        )
+
+        wf = generate_approval_workflow()
+        p = export_approval_txt(wf, tmp_path / "approval.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "КОНТЕНТ-ВОРКФЛОУ" in text
+        assert "ПРИЧИНЫ ОТКЛОНЕНИЯ" in text
+
+    def test_summary(self) -> None:
+        from smm.content_approval import (
+            approval_summary,
+            generate_approval_workflow,
+        )
+
+        wf = generate_approval_workflow()
+        s = approval_summary(wf)
+        assert "5 этапов" in s
+        assert "3 ролей" in s
+        assert "4 чеклистов" in s
