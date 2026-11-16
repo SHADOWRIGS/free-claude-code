@@ -614,6 +614,29 @@ def cmd_brand_kit(args: argparse.Namespace) -> None:
         print(f"TXT: {kit_dir / 'brand_kit.txt'}")
 
 
+def cmd_utm_builder(args: argparse.Namespace) -> None:
+    from smm.utm_builder import (
+        export_utm_json,
+        export_utm_txt,
+        generate_utm_builder,
+        utm_summary,
+    )
+
+    _ensure_data_dir()
+    ub = generate_utm_builder()
+    print(utm_summary(ub))
+
+    ub_dir = DATA_DIR / "utm"
+    ub_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_utm_json(ub, ub_dir / "utm_links.json")
+        print(f"\nJSON: {ub_dir / 'utm_links.json'}")
+    if args.format in ("txt", "all"):
+        export_utm_txt(ub, ub_dir / "utm_links.txt")
+        print(f"TXT: {ub_dir / 'utm_links.txt'}")
+
+
 def cmd_media_library(args: argparse.Namespace) -> None:
     from smm.media_library import (
         export_media_json,
@@ -1763,6 +1786,11 @@ def build_parser() -> argparse.ArgumentParser:
         "media-library", help="Media library (image/video specs, templates, stocks)"
     )
     p_ml.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_utm = sub.add_parser(
+        "utm-builder", help="UTM builder (campaign links, naming rules)"
+    )
+    p_utm.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

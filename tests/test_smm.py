@@ -4688,3 +4688,75 @@ class TestMediaLibrary:
         s = media_library_summary(ml)
         assert "8 спеков изображений" in s
         assert "4 спеков видео" in s
+
+
+class TestUTMBuilder:
+    def test_generate(self) -> None:
+        from smm.utm_builder import generate_utm_builder
+
+        ub = generate_utm_builder()
+        assert len(ub.base_urls) == 5
+        assert len(ub.campaign_types) == 5
+        assert len(ub.platforms) == 5
+        assert ub.total_combinations == 125
+
+    def test_sample_links_have_utm(self) -> None:
+        from smm.utm_builder import generate_utm_builder
+
+        ub = generate_utm_builder()
+        assert len(ub.sample_links) == 30
+        for link in ub.sample_links:
+            assert "utm_source=" in link.full_url
+            assert "utm_medium=" in link.full_url
+            assert "utm_campaign=" in link.full_url
+
+    def test_base_urls_have_aliases(self) -> None:
+        from smm.utm_builder import generate_utm_builder
+
+        ub = generate_utm_builder()
+        aliases = {b.short_alias for b in ub.base_urls}
+        assert "cyber" in aliases
+        assert "ml" in aliases
+
+    def test_campaign_types_unique(self) -> None:
+        from smm.utm_builder import generate_utm_builder
+
+        ub = generate_utm_builder()
+        types = [c.type for c in ub.campaign_types]
+        assert len(types) == len(set(types))
+
+    def test_naming_rules_complete(self) -> None:
+        from smm.utm_builder import generate_utm_builder
+
+        ub = generate_utm_builder()
+        assert "utm_source" in ub.naming_rules
+        assert "utm_medium" in ub.naming_rules
+        assert "utm_campaign" in ub.naming_rules
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.utm_builder import export_utm_json, generate_utm_builder
+
+        ub = generate_utm_builder()
+        p = export_utm_json(ub, tmp_path / "utm.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["sample_links"]) == 30
+        assert data["total_combinations"] == 125
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.utm_builder import export_utm_txt, generate_utm_builder
+
+        ub = generate_utm_builder()
+        p = export_utm_txt(ub, tmp_path / "utm.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "UTM-БИЛДЕР" in text
+        assert "ПРАВИЛА ИМЕНОВАНИЯ" in text
+
+    def test_summary(self) -> None:
+        from smm.utm_builder import generate_utm_builder, utm_summary
+
+        ub = generate_utm_builder()
+        s = utm_summary(ub)
+        assert "5 базовых" in s
+        assert "125 комбинаций" in s
