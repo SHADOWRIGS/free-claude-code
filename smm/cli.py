@@ -614,6 +614,29 @@ def cmd_brand_kit(args: argparse.Namespace) -> None:
         print(f"TXT: {kit_dir / 'brand_kit.txt'}")
 
 
+def cmd_notifications(args: argparse.Namespace) -> None:
+    from smm.notification_system import (
+        export_notifications_json,
+        export_notifications_txt,
+        generate_notification_system,
+        notification_summary,
+    )
+
+    _ensure_data_dir()
+    ns = generate_notification_system()
+    print(notification_summary(ns))
+
+    ns_dir = DATA_DIR / "notifications"
+    ns_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_notifications_json(ns, ns_dir / "notifications.json")
+        print(f"\nJSON: {ns_dir / 'notifications.json'}")
+    if args.format in ("txt", "all"):
+        export_notifications_txt(ns, ns_dir / "notifications.txt")
+        print(f"TXT: {ns_dir / 'notifications.txt'}")
+
+
 def cmd_webinar(args: argparse.Namespace) -> None:
     from smm.webinar_funnel import (
         export_webinar_json,
@@ -1594,6 +1617,11 @@ def build_parser() -> argparse.ArgumentParser:
         "brand-kit", help="Brand kit (colors, typography, tone of voice)"
     )
     p_bk.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ntf = sub.add_parser(
+        "notifications", help="Notification system (alerts, milestones, deadlines)"
+    )
+    p_ntf.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

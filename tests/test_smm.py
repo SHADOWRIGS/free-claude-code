@@ -4230,3 +4230,84 @@ class TestBrandKit:
         assert "ShadowRigs" in s
         assert "6 цветов" in s
         assert "4 визуальных" in s
+
+
+class TestNotificationSystem:
+    def test_generate(self) -> None:
+        from smm.notification_system import generate_notification_system
+
+        ns = generate_notification_system()
+        assert len(ns.alert_rules) == 6
+        assert len(ns.channels) == 3
+        assert len(ns.milestones) == 6
+        assert len(ns.deadlines) == 4
+        assert len(ns.escalation) == 4
+
+    def test_alert_severities(self) -> None:
+        from smm.notification_system import generate_notification_system
+
+        ns = generate_notification_system()
+        severities = {r.severity for r in ns.alert_rules}
+        assert "high" in severities
+        assert "critical" in severities
+
+    def test_channels_have_description(self) -> None:
+        from smm.notification_system import generate_notification_system
+
+        ns = generate_notification_system()
+        for c in ns.channels:
+            assert len(c.description) > 0
+            assert len(c.channel) > 0
+
+    def test_milestones_have_targets(self) -> None:
+        from smm.notification_system import generate_notification_system
+
+        ns = generate_notification_system()
+        for m in ns.milestones:
+            assert m.target > 0
+            assert len(m.message) > 0
+
+    def test_escalation_ordering(self) -> None:
+        from smm.notification_system import generate_notification_system
+
+        ns = generate_notification_system()
+        hours = [e.repeat_after_hours for e in ns.escalation]
+        assert hours[-1] > 0
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.notification_system import (
+            export_notifications_json,
+            generate_notification_system,
+        )
+
+        ns = generate_notification_system()
+        p = export_notifications_json(ns, tmp_path / "notif.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["alert_rules"]) == 6
+        assert len(data["milestones"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.notification_system import (
+            export_notifications_txt,
+            generate_notification_system,
+        )
+
+        ns = generate_notification_system()
+        p = export_notifications_txt(ns, tmp_path / "notif.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "СИСТЕМА ОПОВЕЩЕНИЙ" in text
+        assert "ПОЛИТИКА ЭСКАЛАЦИИ" in text
+
+    def test_summary(self) -> None:
+        from smm.notification_system import (
+            generate_notification_system,
+            notification_summary,
+        )
+
+        ns = generate_notification_system()
+        s = notification_summary(ns)
+        assert "6 алертов" in s
+        assert "3 каналов" in s
+        assert "6 вех" in s
