@@ -5267,3 +5267,74 @@ class TestOnboardingFlow:
         text = p.read_text(encoding="utf-8")
         assert "ОНБОРДИНГ" in text
         assert "FAQ" in text
+
+
+class TestABPriceTest:
+    def test_generate(self) -> None:
+        from smm.ab_price_test import generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        assert len(ab.price_variants) == 5
+        assert len(ab.bundles) == 4
+        assert len(ab.discount_strategies) == 5
+        assert len(ab.thresholds) == 4
+
+    def test_price_variants_have_three_options(self) -> None:
+        from smm.ab_price_test import generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        for pv in ab.price_variants:
+            assert pv.variant_a > 0
+            assert pv.variant_b > 0
+            assert pv.variant_c > 0
+            assert pv.currency == "USD"
+
+    def test_bundles_pricing_ascending(self) -> None:
+        from smm.ab_price_test import generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        prices = [b.price_usd for b in ab.bundles]
+        assert prices == sorted(prices)
+
+    def test_discount_strategies_ranges(self) -> None:
+        from smm.ab_price_test import generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        for ds in ab.discount_strategies:
+            assert 1 <= ds.discount_pct <= 50
+            assert ds.duration_days >= 1
+
+    def test_test_rules_keys(self) -> None:
+        from smm.ab_price_test import generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        assert "min_sample_size" in ab.test_rules
+        assert "confidence_level" in ab.test_rules
+        assert ab.test_rules["min_sample_size"] == 100
+
+    def test_thresholds_p_values(self) -> None:
+        from smm.ab_price_test import generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        for t in ab.thresholds:
+            assert 0 < t.p_value <= 0.05
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.ab_price_test import export_ab_price_json, generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        p = export_ab_price_json(ab, tmp_path / "ab.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["price_variants"]) == 5
+        assert len(data["bundles"]) == 4
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.ab_price_test import export_ab_price_txt, generate_ab_price_test
+
+        ab = generate_ab_price_test()
+        p = export_ab_price_txt(ab, tmp_path / "ab.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ТЕСТИРОВАНИЕ" in text
+        assert "БАНДЛЫ" in text

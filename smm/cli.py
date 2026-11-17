@@ -660,6 +660,29 @@ def cmd_onboarding(args: argparse.Namespace) -> None:
         print(f"TXT: {ob_dir / 'onboarding.txt'}")
 
 
+def cmd_ab_price_test(args: argparse.Namespace) -> None:
+    from smm.ab_price_test import (
+        ab_price_summary,
+        export_ab_price_json,
+        export_ab_price_txt,
+        generate_ab_price_test,
+    )
+
+    _ensure_data_dir()
+    ab = generate_ab_price_test()
+    print(ab_price_summary(ab))
+
+    ab_dir = DATA_DIR / "ab_price_test"
+    ab_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_ab_price_json(ab, ab_dir / "ab_price_test.json")
+        print(f"\nJSON: {ab_dir / 'ab_price_test.json'}")
+    if args.format in ("txt", "all"):
+        export_ab_price_txt(ab, ab_dir / "ab_price_test.txt")
+        print(f"TXT: {ab_dir / 'ab_price_test.txt'}")
+
+
 def cmd_compliance(args: argparse.Namespace) -> None:
     from smm.compliance_checker import (
         compliance_summary,
@@ -1994,6 +2017,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Onboarding flow (welcome, milestones, checklists, FAQ)",
     )
     p_ob.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_abp = sub.add_parser(
+        "ab-price-test",
+        help="A/B price testing (price variants, bundles, discounts)",
+    )
+    p_abp.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
