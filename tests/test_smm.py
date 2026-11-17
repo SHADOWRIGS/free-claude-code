@@ -4760,3 +4760,81 @@ class TestUTMBuilder:
         s = utm_summary(ub)
         assert "5 базовых" in s
         assert "125 комбинаций" in s
+
+
+class TestSeasonalCalendar:
+    def test_generate(self) -> None:
+        from smm.seasonal_calendar import generate_seasonal_calendar
+
+        sc = generate_seasonal_calendar()
+        assert len(sc.key_dates) == 12
+        assert len(sc.themes) == 4
+        assert len(sc.campaign_templates) == 4
+
+    def test_key_dates_have_fields(self) -> None:
+        from smm.seasonal_calendar import generate_seasonal_calendar
+
+        sc = generate_seasonal_calendar()
+        for d in sc.key_dates:
+            assert d.date
+            assert d.name
+            assert d.content_angle
+
+    def test_bf_plan(self) -> None:
+        from smm.seasonal_calendar import generate_seasonal_calendar
+
+        sc = generate_seasonal_calendar()
+        assert len(sc.bf_plan) == 8
+        assert any("Black Friday" in d.day for d in sc.bf_plan)
+
+    def test_eleven_plan(self) -> None:
+        from smm.seasonal_calendar import generate_seasonal_calendar
+
+        sc = generate_seasonal_calendar()
+        assert len(sc.eleven_plan) == 4
+        assert any("11.11" in d.day for d in sc.eleven_plan)
+
+    def test_themes_have_colors(self) -> None:
+        from smm.seasonal_calendar import generate_seasonal_calendar
+
+        sc = generate_seasonal_calendar()
+        for t in sc.themes:
+            assert len(t.colors) >= 3
+            assert all(c.startswith("#") for c in t.colors)
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.seasonal_calendar import (
+            export_seasonal_json,
+            generate_seasonal_calendar,
+        )
+
+        sc = generate_seasonal_calendar()
+        p = export_seasonal_json(sc, tmp_path / "seasonal.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["key_dates"]) == 12
+        assert len(data["bf_plan"]) == 8
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.seasonal_calendar import (
+            export_seasonal_txt,
+            generate_seasonal_calendar,
+        )
+
+        sc = generate_seasonal_calendar()
+        p = export_seasonal_txt(sc, tmp_path / "seasonal.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "СЕЗОННЫЙ КАЛЕНДАРЬ" in text
+        assert "BLACK FRIDAY" in text
+
+    def test_summary(self) -> None:
+        from smm.seasonal_calendar import (
+            generate_seasonal_calendar,
+            seasonal_summary,
+        )
+
+        sc = generate_seasonal_calendar()
+        s = seasonal_summary(sc)
+        assert "12 ключевых дат" in s
+        assert "4 сезонных тем" in s

@@ -637,6 +637,29 @@ def cmd_utm_builder(args: argparse.Namespace) -> None:
         print(f"TXT: {ub_dir / 'utm_links.txt'}")
 
 
+def cmd_seasonal_calendar(args: argparse.Namespace) -> None:
+    from smm.seasonal_calendar import (
+        export_seasonal_json,
+        export_seasonal_txt,
+        generate_seasonal_calendar,
+        seasonal_summary,
+    )
+
+    _ensure_data_dir()
+    sc = generate_seasonal_calendar()
+    print(seasonal_summary(sc))
+
+    sc_dir = DATA_DIR / "seasonal"
+    sc_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_seasonal_json(sc, sc_dir / "seasonal_calendar.json")
+        print(f"\nJSON: {sc_dir / 'seasonal_calendar.json'}")
+    if args.format in ("txt", "all"):
+        export_seasonal_txt(sc, sc_dir / "seasonal_calendar.txt")
+        print(f"TXT: {sc_dir / 'seasonal_calendar.txt'}")
+
+
 def cmd_media_library(args: argparse.Namespace) -> None:
     from smm.media_library import (
         export_media_json,
@@ -1791,6 +1814,12 @@ def build_parser() -> argparse.ArgumentParser:
         "utm-builder", help="UTM builder (campaign links, naming rules)"
     )
     p_utm.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_sc = sub.add_parser(
+        "seasonal-calendar",
+        help="Seasonal calendar (holidays, campaigns, BF/CM plan)",
+    )
+    p_sc.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
