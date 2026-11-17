@@ -5122,3 +5122,73 @@ class TestROITracker:
         text = p.read_text(encoding="utf-8")
         assert "ROI-ТРЕКЕР" in text
         assert "ФОРМУЛЫ" in text
+
+
+class TestComplianceChecker:
+    def test_generate(self) -> None:
+        from smm.compliance_checker import generate_compliance_checker
+
+        cc = generate_compliance_checker()
+        assert len(cc.platform_policies) == 3
+        assert len(cc.prohibited) == 5
+        assert len(cc.disclosures) == 4
+
+    def test_platforms_have_forbidden(self) -> None:
+        from smm.compliance_checker import generate_compliance_checker
+
+        cc = generate_compliance_checker()
+        for p in cc.platform_policies:
+            assert len(p.forbidden) >= 4
+
+    def test_prohibited_have_alternatives(self) -> None:
+        from smm.compliance_checker import generate_compliance_checker
+
+        cc = generate_compliance_checker()
+        for c in cc.prohibited:
+            assert c.alternative
+            assert c.risk
+
+    def test_disclosure_types(self) -> None:
+        from smm.compliance_checker import generate_compliance_checker
+
+        cc = generate_compliance_checker()
+        types = {d.type for d in cc.disclosures}
+        assert len(types) == 4
+
+    def test_copyright_rules(self) -> None:
+        from smm.compliance_checker import generate_compliance_checker
+
+        cc = generate_compliance_checker()
+        assert len(cc.copyright_rules) == 5
+
+    def test_age_restrictions(self) -> None:
+        from smm.compliance_checker import generate_compliance_checker
+
+        cc = generate_compliance_checker()
+        assert len(cc.age_restrictions) == 3
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.compliance_checker import (
+            export_compliance_json,
+            generate_compliance_checker,
+        )
+
+        cc = generate_compliance_checker()
+        p = export_compliance_json(cc, tmp_path / "comp.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["platform_policies"]) == 3
+        assert len(data["prohibited"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.compliance_checker import (
+            export_compliance_txt,
+            generate_compliance_checker,
+        )
+
+        cc = generate_compliance_checker()
+        p = export_compliance_txt(cc, tmp_path / "comp.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "КОМПЛАЕНС" in text
+        assert "АВТОРСКИЕ ПРАВА" in text

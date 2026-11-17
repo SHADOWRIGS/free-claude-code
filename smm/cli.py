@@ -637,6 +637,29 @@ def cmd_utm_builder(args: argparse.Namespace) -> None:
         print(f"TXT: {ub_dir / 'utm_links.txt'}")
 
 
+def cmd_compliance(args: argparse.Namespace) -> None:
+    from smm.compliance_checker import (
+        compliance_summary,
+        export_compliance_json,
+        export_compliance_txt,
+        generate_compliance_checker,
+    )
+
+    _ensure_data_dir()
+    cc = generate_compliance_checker()
+    print(compliance_summary(cc))
+
+    cc_dir = DATA_DIR / "compliance"
+    cc_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_compliance_json(cc, cc_dir / "compliance.json")
+        print(f"\nJSON: {cc_dir / 'compliance.json'}")
+    if args.format in ("txt", "all"):
+        export_compliance_txt(cc, cc_dir / "compliance.txt")
+        print(f"TXT: {cc_dir / 'compliance.txt'}")
+
+
 def cmd_roi_tracker(args: argparse.Namespace) -> None:
     from smm.roi_tracker import (
         export_roi_json,
@@ -1936,6 +1959,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="ROI tracker (revenue, costs, channels, projections)",
     )
     p_roi.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_comp = sub.add_parser(
+        "compliance",
+        help="Compliance checker (platform rules, disclosures, copyright)",
+    )
+    p_comp.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
