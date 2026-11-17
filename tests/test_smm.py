@@ -5338,3 +5338,73 @@ class TestABPriceTest:
         text = p.read_text(encoding="utf-8")
         assert "ТЕСТИРОВАНИЕ" in text
         assert "БАНДЛЫ" in text
+
+
+class TestContentAudit:
+    def test_generate(self) -> None:
+        from smm.content_audit import generate_content_audit
+
+        audit = generate_content_audit()
+        assert len(audit.quality_criteria) == 5
+        assert len(audit.gap_analysis) == 6
+        assert len(audit.checklist) == 8
+        assert len(audit.benchmarks) == 5
+        assert len(audit.recommendations) == 5
+
+    def test_quality_weights_sum_100(self) -> None:
+        from smm.content_audit import generate_content_audit
+
+        audit = generate_content_audit()
+        total = sum(q.weight for q in audit.quality_criteria)
+        assert total == 100
+
+    def test_gap_dimensions_have_fix(self) -> None:
+        from smm.content_audit import generate_content_audit
+
+        audit = generate_content_audit()
+        for g in audit.gap_analysis:
+            assert g.fix
+            assert g.ideal
+
+    def test_checklist_priorities(self) -> None:
+        from smm.content_audit import generate_content_audit
+
+        audit = generate_content_audit()
+        priorities = {c.priority for c in audit.checklist}
+        assert "high" in priorities
+        assert "medium" in priorities
+
+    def test_benchmarks_ascending(self) -> None:
+        from smm.content_audit import generate_content_audit
+
+        audit = generate_content_audit()
+        for b in audit.benchmarks:
+            assert b.target < b.good < b.excellent
+
+    def test_recommendations_have_tools(self) -> None:
+        from smm.content_audit import generate_content_audit
+
+        audit = generate_content_audit()
+        for r in audit.recommendations:
+            assert r.tools
+            assert r.expected_impact
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.content_audit import export_audit_json, generate_content_audit
+
+        audit = generate_content_audit()
+        p = export_audit_json(audit, tmp_path / "audit.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["quality_criteria"]) == 5
+        assert len(data["checklist"]) == 8
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.content_audit import export_audit_txt, generate_content_audit
+
+        audit = generate_content_audit()
+        p = export_audit_txt(audit, tmp_path / "audit.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "АУДИТ" in text
+        assert "БЕНЧМАРКИ" in text

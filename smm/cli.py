@@ -660,6 +660,29 @@ def cmd_onboarding(args: argparse.Namespace) -> None:
         print(f"TXT: {ob_dir / 'onboarding.txt'}")
 
 
+def cmd_content_audit(args: argparse.Namespace) -> None:
+    from smm.content_audit import (
+        audit_summary,
+        export_audit_json,
+        export_audit_txt,
+        generate_content_audit,
+    )
+
+    _ensure_data_dir()
+    audit = generate_content_audit()
+    print(audit_summary(audit))
+
+    audit_dir = DATA_DIR / "content_audit"
+    audit_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_audit_json(audit, audit_dir / "content_audit.json")
+        print(f"\nJSON: {audit_dir / 'content_audit.json'}")
+    if args.format in ("txt", "all"):
+        export_audit_txt(audit, audit_dir / "content_audit.txt")
+        print(f"TXT: {audit_dir / 'content_audit.txt'}")
+
+
 def cmd_ab_price_test(args: argparse.Namespace) -> None:
     from smm.ab_price_test import (
         ab_price_summary,
@@ -2023,6 +2046,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="A/B price testing (price variants, bundles, discounts)",
     )
     p_abp.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_audit = sub.add_parser(
+        "content-audit",
+        help="Content audit (quality, gaps, checklist, benchmarks)",
+    )
+    p_audit.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
