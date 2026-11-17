@@ -5484,3 +5484,79 @@ class TestSocialListening:
         text = p.read_text(encoding="utf-8")
         assert "МОНИТОРИНГ" in text
         assert "КОНКУРЕНТОВ" in text
+
+
+class TestAffiliateDashboard:
+    def test_generate(self) -> None:
+        from smm.affiliate_dashboard import generate_affiliate_dashboard
+
+        ad = generate_affiliate_dashboard()
+        assert len(ad.tiers) == 4
+        assert len(ad.kpis) == 6
+        assert len(ad.payout_rules) == 5
+        assert len(ad.promo_materials) == 5
+        assert len(ad.widgets) == 6
+
+    def test_tiers_ascending_commission(self) -> None:
+        from smm.affiliate_dashboard import generate_affiliate_dashboard
+
+        ad = generate_affiliate_dashboard()
+        commissions = [t.commission_pct for t in ad.tiers]
+        assert commissions == sorted(commissions)
+
+    def test_tiers_ascending_referrals(self) -> None:
+        from smm.affiliate_dashboard import generate_affiliate_dashboard
+
+        ad = generate_affiliate_dashboard()
+        refs = [t.min_referrals for t in ad.tiers]
+        assert refs == sorted(refs)
+
+    def test_kpis_have_formulas(self) -> None:
+        from smm.affiliate_dashboard import generate_affiliate_dashboard
+
+        ad = generate_affiliate_dashboard()
+        for k in ad.kpis:
+            assert k.formula
+            assert k.target_monthly
+
+    def test_promo_materials_counts(self) -> None:
+        from smm.affiliate_dashboard import generate_affiliate_dashboard
+
+        ad = generate_affiliate_dashboard()
+        for pm in ad.promo_materials:
+            assert pm.count > 0
+            assert pm.formats
+
+    def test_widgets_types(self) -> None:
+        from smm.affiliate_dashboard import generate_affiliate_dashboard
+
+        ad = generate_affiliate_dashboard()
+        types = {dw.type for dw in ad.widgets}
+        assert "table" in types
+        assert "line_chart" in types
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.affiliate_dashboard import (
+            export_affiliate_json,
+            generate_affiliate_dashboard,
+        )
+
+        ad = generate_affiliate_dashboard()
+        p = export_affiliate_json(ad, tmp_path / "aff.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["tiers"]) == 4
+        assert len(data["widgets"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.affiliate_dashboard import (
+            export_affiliate_txt,
+            generate_affiliate_dashboard,
+        )
+
+        ad = generate_affiliate_dashboard()
+        p = export_affiliate_txt(ad, tmp_path / "aff.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ПАРТНЁРСКОЙ" in text
+        assert "ВЫПЛАТ" in text

@@ -660,6 +660,29 @@ def cmd_onboarding(args: argparse.Namespace) -> None:
         print(f"TXT: {ob_dir / 'onboarding.txt'}")
 
 
+def cmd_affiliate_dashboard(args: argparse.Namespace) -> None:
+    from smm.affiliate_dashboard import (
+        affiliate_summary,
+        export_affiliate_json,
+        export_affiliate_txt,
+        generate_affiliate_dashboard,
+    )
+
+    _ensure_data_dir()
+    ad = generate_affiliate_dashboard()
+    print(affiliate_summary(ad))
+
+    ad_dir = DATA_DIR / "affiliate_dashboard"
+    ad_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_affiliate_json(ad, ad_dir / "affiliate_dashboard.json")
+        print(f"\nJSON: {ad_dir / 'affiliate_dashboard.json'}")
+    if args.format in ("txt", "all"):
+        export_affiliate_txt(ad, ad_dir / "affiliate_dashboard.txt")
+        print(f"TXT: {ad_dir / 'affiliate_dashboard.txt'}")
+
+
 def cmd_social_listening(args: argparse.Namespace) -> None:
     from smm.social_listening import (
         export_listening_json,
@@ -2081,6 +2104,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Social listening (keywords, sentiment, alerts, competitors)",
     )
     p_listen.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_aff = sub.add_parser(
+        "affiliate-dashboard",
+        help="Affiliate dashboard (tiers, KPIs, payouts, promo)",
+    )
+    p_aff.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
