@@ -683,6 +683,29 @@ def cmd_retention_strategy(args: argparse.Namespace) -> None:
         print(f"TXT: {rs_dir / 'retention_strategy.txt'}")
 
 
+def cmd_testimonials(args: argparse.Namespace) -> None:
+    from smm.testimonial_collector import (
+        export_testimonial_json,
+        export_testimonial_txt,
+        generate_testimonial_collector,
+        testimonial_summary,
+    )
+
+    _ensure_data_dir()
+    tc = generate_testimonial_collector()
+    print(testimonial_summary(tc))
+
+    tc_dir = DATA_DIR / "testimonials"
+    tc_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_testimonial_json(tc, tc_dir / "testimonials.json")
+        print(f"\nJSON: {tc_dir / 'testimonials.json'}")
+    if args.format in ("txt", "all"):
+        export_testimonial_txt(tc, tc_dir / "testimonials.txt")
+        print(f"TXT: {tc_dir / 'testimonials.txt'}")
+
+
 def cmd_upsell_engine(args: argparse.Namespace) -> None:
     from smm.upsell_engine import (
         export_upsell_json,
@@ -2255,6 +2278,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Upsell engine (upgrades, bundles, triggers, projections)",
     )
     p_upsell.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_testi = sub.add_parser(
+        "testimonials",
+        help="Testimonial collector (requests, categories, display, incentives)",
+    )
+    p_testi.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

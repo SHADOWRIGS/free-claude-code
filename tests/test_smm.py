@@ -5937,3 +5937,81 @@ class TestUpsellEngine:
         text = p.read_text(encoding="utf-8")
         assert "АПСЕЙЛ" in text
         assert "БАНДЛЫ" in text
+
+
+class TestTestimonialCollector:
+    def test_generate(self) -> None:
+        from smm.testimonial_collector import generate_testimonial_collector
+
+        tc = generate_testimonial_collector()
+        assert len(tc.request_templates) == 5
+        assert len(tc.categories) == 6
+        assert len(tc.display_formats) == 5
+        assert len(tc.incentive_programs) == 5
+        assert len(tc.moderation_rules) == 5
+
+    def test_request_channels(self) -> None:
+        from smm.testimonial_collector import generate_testimonial_collector
+
+        tc = generate_testimonial_collector()
+        channels = {rt.channel for rt in tc.request_templates}
+        assert len(channels) >= 3
+
+    def test_category_priorities(self) -> None:
+        from smm.testimonial_collector import generate_testimonial_collector
+
+        tc = generate_testimonial_collector()
+        priorities = {cat.display_priority for cat in tc.categories}
+        assert "high" in priorities
+        assert "medium" in priorities
+
+    def test_incentive_costs(self) -> None:
+        from smm.testimonial_collector import generate_testimonial_collector
+
+        tc = generate_testimonial_collector()
+        free_count = sum(1 for ip in tc.incentive_programs if ip.cost == 0)
+        assert free_count >= 4
+
+    def test_moderation_rules_have_actions(self) -> None:
+        from smm.testimonial_collector import generate_testimonial_collector
+
+        tc = generate_testimonial_collector()
+        for mr in tc.moderation_rules:
+            assert len(mr.action) > 0
+
+    def test_summary(self) -> None:
+        from smm.testimonial_collector import (
+            generate_testimonial_collector,
+            testimonial_summary,
+        )
+
+        tc = generate_testimonial_collector()
+        s = testimonial_summary(tc)
+        assert "5 шаблонов" in s
+        assert "6 категорий" in s
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.testimonial_collector import (
+            export_testimonial_json,
+            generate_testimonial_collector,
+        )
+
+        tc = generate_testimonial_collector()
+        p = export_testimonial_json(tc, tmp_path / "test.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["categories"]) == 6
+        assert len(data["moderation_rules"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.testimonial_collector import (
+            export_testimonial_txt,
+            generate_testimonial_collector,
+        )
+
+        tc = generate_testimonial_collector()
+        p = export_testimonial_txt(tc, tmp_path / "test.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ОТЗЫВ" in text
+        assert "МОДЕРАЦ" in text
