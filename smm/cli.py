@@ -683,6 +683,29 @@ def cmd_retention_strategy(args: argparse.Namespace) -> None:
         print(f"TXT: {rs_dir / 'retention_strategy.txt'}")
 
 
+def cmd_calendar_gen(args: argparse.Namespace) -> None:
+    from smm.content_calendar_gen import (
+        calendar_gen_summary,
+        export_calendar_gen_json,
+        export_calendar_gen_txt,
+        generate_content_calendar_gen,
+    )
+
+    _ensure_data_dir()
+    cg = generate_content_calendar_gen()
+    print(calendar_gen_summary(cg))
+
+    cg_dir = DATA_DIR / "calendar_gen"
+    cg_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_calendar_gen_json(cg, cg_dir / "calendar_gen.json")
+        print(f"\nJSON: {cg_dir / 'calendar_gen.json'}")
+    if args.format in ("txt", "all"):
+        export_calendar_gen_txt(cg, cg_dir / "calendar_gen.txt")
+        print(f"TXT: {cg_dir / 'calendar_gen.txt'}")
+
+
 def cmd_email_analytics(args: argparse.Namespace) -> None:
     from smm.email_analytics import (
         email_analytics_summary,
@@ -2197,6 +2220,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Retention strategy (churn signals, tactics, winback, loyalty)",
     )
     p_ret.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_calgen = sub.add_parser(
+        "calendar-gen",
+        help="Content calendar generator (slots, rotation, weights, holidays)",
+    )
+    p_calgen.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

@@ -5793,3 +5793,79 @@ class TestRetentionStrategy:
         text = p.read_text(encoding="utf-8")
         assert "УДЕРЖАНИЯ" in text
         assert "ЛОЯЛЬНОСТИ" in text
+
+
+class TestContentCalendarGen:
+    def test_generate(self) -> None:
+        from smm.content_calendar_gen import generate_content_calendar_gen
+
+        cg = generate_content_calendar_gen()
+        assert len(cg.daily_slots) == 3
+        assert len(cg.rotation_rules) == 7
+        assert len(cg.pillar_weights) == 5
+        assert len(cg.holiday_overlays) == 6
+
+    def test_daily_slots_platforms(self) -> None:
+        from smm.content_calendar_gen import generate_content_calendar_gen
+
+        cg = generate_content_calendar_gen()
+        platforms = {ds.platform for ds in cg.daily_slots}
+        assert platforms == {"Instagram", "TikTok", "YouTube"}
+
+    def test_rotation_covers_week(self) -> None:
+        from smm.content_calendar_gen import generate_content_calendar_gen
+
+        cg = generate_content_calendar_gen()
+        day_nums = {rr.day_num for rr in cg.rotation_rules}
+        assert day_nums == {1, 2, 3, 4, 5, 6, 7}
+
+    def test_pillar_weights_sum(self) -> None:
+        from smm.content_calendar_gen import generate_content_calendar_gen
+
+        cg = generate_content_calendar_gen()
+        total = sum(pw.weight_pct for pw in cg.pillar_weights)
+        assert total == 100.0
+
+    def test_batch_settings(self) -> None:
+        from smm.content_calendar_gen import generate_content_calendar_gen
+
+        cg = generate_content_calendar_gen()
+        assert cg.batch_settings["total_weekly_posts"] == 63
+        assert cg.batch_settings["total_platforms"] == 3
+
+    def test_summary(self) -> None:
+        from smm.content_calendar_gen import (
+            calendar_gen_summary,
+            generate_content_calendar_gen,
+        )
+
+        cg = generate_content_calendar_gen()
+        s = calendar_gen_summary(cg)
+        assert "3 платформ" in s
+        assert "7 дней" in s
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.content_calendar_gen import (
+            export_calendar_gen_json,
+            generate_content_calendar_gen,
+        )
+
+        cg = generate_content_calendar_gen()
+        p = export_calendar_gen_json(cg, tmp_path / "cal.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["daily_slots"]) == 3
+        assert len(data["rotation_rules"]) == 7
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.content_calendar_gen import (
+            export_calendar_gen_txt,
+            generate_content_calendar_gen,
+        )
+
+        cg = generate_content_calendar_gen()
+        p = export_calendar_gen_txt(cg, tmp_path / "cal.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "КАЛЕНДАР" in text
+        assert "РОТАЦИЯ" in text
