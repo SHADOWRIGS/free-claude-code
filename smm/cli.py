@@ -660,6 +660,29 @@ def cmd_onboarding(args: argparse.Namespace) -> None:
         print(f"TXT: {ob_dir / 'onboarding.txt'}")
 
 
+def cmd_email_analytics(args: argparse.Namespace) -> None:
+    from smm.email_analytics import (
+        email_analytics_summary,
+        export_email_analytics_json,
+        export_email_analytics_txt,
+        generate_email_analytics,
+    )
+
+    _ensure_data_dir()
+    ea = generate_email_analytics()
+    print(email_analytics_summary(ea))
+
+    ea_dir = DATA_DIR / "email_analytics"
+    ea_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_email_analytics_json(ea, ea_dir / "email_analytics.json")
+        print(f"\nJSON: {ea_dir / 'email_analytics.json'}")
+    if args.format in ("txt", "all"):
+        export_email_analytics_txt(ea, ea_dir / "email_analytics.txt")
+        print(f"TXT: {ea_dir / 'email_analytics.txt'}")
+
+
 def cmd_customer_journey(args: argparse.Namespace) -> None:
     from smm.customer_journey import (
         export_journey_json,
@@ -2139,6 +2162,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Customer journey map (stages, touchpoints, pain points)",
     )
     p_cj.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ea = sub.add_parser(
+        "email-analytics",
+        help="Email analytics (campaigns, deliverability, segments, triggers)",
+    )
+    p_ea.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

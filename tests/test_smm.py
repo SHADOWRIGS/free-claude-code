@@ -5638,3 +5638,82 @@ class TestCustomerJourney:
         text = p.read_text(encoding="utf-8")
         assert "КЛИЕНТСКОГО" in text
         assert "БОЛЕВЫЕ" in text
+
+
+class TestEmailAnalytics:
+    def test_generate(self) -> None:
+        from smm.email_analytics import generate_email_analytics
+
+        ea = generate_email_analytics()
+        assert len(ea.campaign_types) == 6
+        assert len(ea.benchmarks) == 6
+        assert len(ea.segments) == 5
+        assert len(ea.ab_tests) == 5
+        assert len(ea.auto_triggers) == 6
+
+    def test_campaign_rates_positive(self) -> None:
+        from smm.email_analytics import generate_email_analytics
+
+        ea = generate_email_analytics()
+        for ct in ea.campaign_types:
+            assert ct.expected_open_rate > 0
+            assert ct.expected_click_rate > 0
+
+    def test_benchmarks_thresholds(self) -> None:
+        from smm.email_analytics import generate_email_analytics
+
+        ea = generate_email_analytics()
+        for db in ea.benchmarks:
+            assert db.fix
+            assert db.unit == "%"
+
+    def test_segments_have_criteria(self) -> None:
+        from smm.email_analytics import generate_email_analytics
+
+        ea = generate_email_analytics()
+        for sr in ea.segments:
+            assert sr.criteria
+            assert sr.content
+
+    def test_ab_tests_have_variants(self) -> None:
+        from smm.email_analytics import generate_email_analytics
+
+        ea = generate_email_analytics()
+        for ab in ea.ab_tests:
+            assert ab.variant_a
+            assert ab.variant_b
+            assert ab.metric
+
+    def test_auto_triggers_sequences(self) -> None:
+        from smm.email_analytics import generate_email_analytics
+
+        ea = generate_email_analytics()
+        sequences = {at.sequence for at in ea.auto_triggers}
+        assert "welcome_series" in sequences
+        assert "abandoned_cart" in sequences
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.email_analytics import (
+            export_email_analytics_json,
+            generate_email_analytics,
+        )
+
+        ea = generate_email_analytics()
+        p = export_email_analytics_json(ea, tmp_path / "ea.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["campaign_types"]) == 6
+        assert len(data["auto_triggers"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.email_analytics import (
+            export_email_analytics_txt,
+            generate_email_analytics,
+        )
+
+        ea = generate_email_analytics()
+        p = export_email_analytics_txt(ea, tmp_path / "ea.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "EMAIL" in text
+        assert "СЕГМЕНТАЦИЯ" in text
