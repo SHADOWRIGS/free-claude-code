@@ -4980,3 +4980,79 @@ class TestFunnelAutomation:
         text = p.read_text(encoding="utf-8")
         assert "АВТОМАТИЗАЦИЯ ВОРОНКИ" in text
         assert "СЕГМЕНТЫ" in text
+
+
+class TestContentRecycler:
+    def test_generate(self) -> None:
+        from smm.content_recycler import generate_content_recycler
+
+        cr = generate_content_recycler()
+        assert len(cr.evergreen_rules) == 5
+        assert len(cr.refresh_strategies) == 5
+        assert len(cr.schedule) == 5
+
+    def test_evergreen_have_shelf_life(self) -> None:
+        from smm.content_recycler import generate_content_recycler
+
+        cr = generate_content_recycler()
+        for r in cr.evergreen_rules:
+            assert "месяц" in r.shelf_life
+            assert r.example
+
+    def test_refresh_effort_valid(self) -> None:
+        from smm.content_recycler import generate_content_recycler
+
+        cr = generate_content_recycler()
+        valid = {"Низкий", "Средний", "Высокий"}
+        for s in cr.refresh_strategies:
+            assert s.effort in valid
+
+    def test_schedule_intervals(self) -> None:
+        from smm.content_recycler import generate_content_recycler
+
+        cr = generate_content_recycler()
+        for sl in cr.schedule:
+            assert sl.interval_days > 0
+
+    def test_performance_triggers(self) -> None:
+        from smm.content_recycler import generate_content_recycler
+
+        cr = generate_content_recycler()
+        assert len(cr.performance_triggers) == 5
+        metrics = {t.metric for t in cr.performance_triggers}
+        assert "saves" in metrics
+        assert "conversion" in metrics
+
+    def test_format_transforms(self) -> None:
+        from smm.content_recycler import generate_content_recycler
+
+        cr = generate_content_recycler()
+        assert len(cr.format_transforms) == 6
+        for ft in cr.format_transforms:
+            assert ft.from_format != ft.to_format
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.content_recycler import (
+            export_recycler_json,
+            generate_content_recycler,
+        )
+
+        cr = generate_content_recycler()
+        p = export_recycler_json(cr, tmp_path / "recycler.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["evergreen_rules"]) == 5
+        assert len(data["format_transforms"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.content_recycler import (
+            export_recycler_txt,
+            generate_content_recycler,
+        )
+
+        cr = generate_content_recycler()
+        p = export_recycler_txt(cr, tmp_path / "recycler.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "КОНТЕНТ-РЕЦИКЛЕР" in text
+        assert "ТРАНСФОРМАЦИЯ ФОРМАТОВ" in text

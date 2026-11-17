@@ -637,6 +637,29 @@ def cmd_utm_builder(args: argparse.Namespace) -> None:
         print(f"TXT: {ub_dir / 'utm_links.txt'}")
 
 
+def cmd_content_recycle(args: argparse.Namespace) -> None:
+    from smm.content_recycler import (
+        export_recycler_json,
+        export_recycler_txt,
+        generate_content_recycler,
+        recycler_summary,
+    )
+
+    _ensure_data_dir()
+    cr = generate_content_recycler()
+    print(recycler_summary(cr))
+
+    cr_dir = DATA_DIR / "recycler"
+    cr_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_recycler_json(cr, cr_dir / "content_recycler.json")
+        print(f"\nJSON: {cr_dir / 'content_recycler.json'}")
+    if args.format in ("txt", "all"):
+        export_recycler_txt(cr, cr_dir / "content_recycler.txt")
+        print(f"TXT: {cr_dir / 'content_recycler.txt'}")
+
+
 def cmd_funnel_auto(args: argparse.Namespace) -> None:
     from smm.funnel_automation import (
         export_funnel_json,
@@ -1878,6 +1901,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Funnel automation (stages, messages, segments, re-engage)",
     )
     p_fa.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_rc = sub.add_parser(
+        "content-recycle",
+        help="Content recycler (evergreen rules, refresh, transforms)",
+    )
+    p_rc.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
