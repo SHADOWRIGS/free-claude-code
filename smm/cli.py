@@ -660,6 +660,29 @@ def cmd_onboarding(args: argparse.Namespace) -> None:
         print(f"TXT: {ob_dir / 'onboarding.txt'}")
 
 
+def cmd_customer_journey(args: argparse.Namespace) -> None:
+    from smm.customer_journey import (
+        export_journey_json,
+        export_journey_txt,
+        generate_customer_journey,
+        journey_summary,
+    )
+
+    _ensure_data_dir()
+    cj = generate_customer_journey()
+    print(journey_summary(cj))
+
+    cj_dir = DATA_DIR / "customer_journey"
+    cj_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_journey_json(cj, cj_dir / "customer_journey.json")
+        print(f"\nJSON: {cj_dir / 'customer_journey.json'}")
+    if args.format in ("txt", "all"):
+        export_journey_txt(cj, cj_dir / "customer_journey.txt")
+        print(f"TXT: {cj_dir / 'customer_journey.txt'}")
+
+
 def cmd_affiliate_dashboard(args: argparse.Namespace) -> None:
     from smm.affiliate_dashboard import (
         affiliate_summary,
@@ -2110,6 +2133,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Affiliate dashboard (tiers, KPIs, payouts, promo)",
     )
     p_aff.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_cj = sub.add_parser(
+        "customer-journey",
+        help="Customer journey map (stages, touchpoints, pain points)",
+    )
+    p_cj.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

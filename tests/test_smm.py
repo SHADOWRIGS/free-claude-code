@@ -5560,3 +5560,81 @@ class TestAffiliateDashboard:
         text = p.read_text(encoding="utf-8")
         assert "ПАРТНЁРСКОЙ" in text
         assert "ВЫПЛАТ" in text
+
+
+class TestCustomerJourney:
+    def test_generate(self) -> None:
+        from smm.customer_journey import generate_customer_journey
+
+        cj = generate_customer_journey()
+        assert len(cj.stages) == 8
+        assert len(cj.touchpoints) == 12
+        assert len(cj.pain_points) == 5
+        assert len(cj.channel_matrix) == 8
+        assert len(cj.stage_metrics) == 8
+
+    def test_stages_have_emotions(self) -> None:
+        from smm.customer_journey import generate_customer_journey
+
+        cj = generate_customer_journey()
+        for s in cj.stages:
+            assert s.emotion
+            assert s.user_thought
+
+    def test_touchpoints_have_channels(self) -> None:
+        from smm.customer_journey import generate_customer_journey
+
+        cj = generate_customer_journey()
+        for tp in cj.touchpoints:
+            assert tp.channel
+            assert tp.content_type
+
+    def test_pain_points_have_opportunities(self) -> None:
+        from smm.customer_journey import generate_customer_journey
+
+        cj = generate_customer_journey()
+        for pp in cj.pain_points:
+            assert pp.pain
+            assert pp.opportunity
+
+    def test_channel_matrix_all_stages(self) -> None:
+        from smm.customer_journey import generate_customer_journey
+
+        cj = generate_customer_journey()
+        cm_stages = {ce.stage for ce in cj.channel_matrix}
+        s_stages = {s.stage for s in cj.stages}
+        assert cm_stages == s_stages
+
+    def test_metrics_all_stages(self) -> None:
+        from smm.customer_journey import generate_customer_journey
+
+        cj = generate_customer_journey()
+        m_stages = {sm.stage for sm in cj.stage_metrics}
+        s_stages = {s.stage for s in cj.stages}
+        assert m_stages == s_stages
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.customer_journey import (
+            export_journey_json,
+            generate_customer_journey,
+        )
+
+        cj = generate_customer_journey()
+        p = export_journey_json(cj, tmp_path / "cj.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["stages"]) == 8
+        assert len(data["touchpoints"]) == 12
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.customer_journey import (
+            export_journey_txt,
+            generate_customer_journey,
+        )
+
+        cj = generate_customer_journey()
+        p = export_journey_txt(cj, tmp_path / "cj.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "КЛИЕНТСКОГО" in text
+        assert "БОЛЕВЫЕ" in text
