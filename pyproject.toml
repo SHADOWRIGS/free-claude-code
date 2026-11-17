@@ -155,6 +155,7 @@ ignore = [
 "smm/onboarding_flow.py" = ["RUF001"]
 "smm/ab_price_test.py" = ["RUF001"]
 "smm/content_audit.py" = ["RUF001"]
+"smm/social_listening.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]

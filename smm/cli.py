@@ -660,6 +660,29 @@ def cmd_onboarding(args: argparse.Namespace) -> None:
         print(f"TXT: {ob_dir / 'onboarding.txt'}")
 
 
+def cmd_social_listening(args: argparse.Namespace) -> None:
+    from smm.social_listening import (
+        export_listening_json,
+        export_listening_txt,
+        generate_social_listening,
+        listening_summary,
+    )
+
+    _ensure_data_dir()
+    sl = generate_social_listening()
+    print(listening_summary(sl))
+
+    sl_dir = DATA_DIR / "social_listening"
+    sl_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_listening_json(sl, sl_dir / "social_listening.json")
+        print(f"\nJSON: {sl_dir / 'social_listening.json'}")
+    if args.format in ("txt", "all"):
+        export_listening_txt(sl, sl_dir / "social_listening.txt")
+        print(f"TXT: {sl_dir / 'social_listening.txt'}")
+
+
 def cmd_content_audit(args: argparse.Namespace) -> None:
     from smm.content_audit import (
         audit_summary,
@@ -2052,6 +2075,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Content audit (quality, gaps, checklist, benchmarks)",
     )
     p_audit.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_listen = sub.add_parser(
+        "social-listening",
+        help="Social listening (keywords, sentiment, alerts, competitors)",
+    )
+    p_listen.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

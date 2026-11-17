@@ -5408,3 +5408,79 @@ class TestContentAudit:
         text = p.read_text(encoding="utf-8")
         assert "АУДИТ" in text
         assert "БЕНЧМАРКИ" in text
+
+
+class TestSocialListening:
+    def test_generate(self) -> None:
+        from smm.social_listening import generate_social_listening
+
+        sl = generate_social_listening()
+        assert len(sl.keyword_tracks) == 5
+        assert len(sl.sentiment_rules) == 4
+        assert len(sl.alert_triggers) == 5
+        assert len(sl.competitor_tracks) == 4
+
+    def test_keyword_tracks_per_pillar(self) -> None:
+        from smm.social_listening import generate_social_listening
+
+        sl = generate_social_listening()
+        for kt in sl.keyword_tracks:
+            assert len(kt.brand_keywords) >= 2
+            assert len(kt.topic_keywords) >= 4
+            assert len(kt.negative_keywords) >= 2
+
+    def test_sentiment_priorities(self) -> None:
+        from smm.social_listening import generate_social_listening
+
+        sl = generate_social_listening()
+        priorities = {sr.priority for sr in sl.sentiment_rules}
+        assert "critical" in priorities
+        assert "high" in priorities
+
+    def test_alert_thresholds_positive(self) -> None:
+        from smm.social_listening import generate_social_listening
+
+        sl = generate_social_listening()
+        for at in sl.alert_triggers:
+            assert at.threshold > 0
+
+    def test_competitor_tracks_have_keywords(self) -> None:
+        from smm.social_listening import generate_social_listening
+
+        sl = generate_social_listening()
+        for ct in sl.competitor_tracks:
+            assert len(ct.keywords) >= 2
+            assert ct.focus
+
+    def test_trend_params(self) -> None:
+        from smm.social_listening import generate_social_listening
+
+        sl = generate_social_listening()
+        assert "scan_frequency" in sl.trend_params
+        assert sl.trend_params["lookback_days"] == 7
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.social_listening import (
+            export_listening_json,
+            generate_social_listening,
+        )
+
+        sl = generate_social_listening()
+        p = export_listening_json(sl, tmp_path / "sl.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["keyword_tracks"]) == 5
+        assert len(data["competitor_tracks"]) == 4
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.social_listening import (
+            export_listening_txt,
+            generate_social_listening,
+        )
+
+        sl = generate_social_listening()
+        p = export_listening_txt(sl, tmp_path / "sl.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "МОНИТОРИНГ" in text
+        assert "КОНКУРЕНТОВ" in text
