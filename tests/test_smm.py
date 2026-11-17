@@ -4906,3 +4906,77 @@ class TestGamification:
         text = p.read_text(encoding="utf-8")
         assert "ГЕЙМИФИКАЦИЯ" in text
         assert "ЧЕЛЛЕНДЖИ" in text
+
+
+class TestFunnelAutomation:
+    def test_generate(self) -> None:
+        from smm.funnel_automation import generate_funnel_automation
+
+        fa = generate_funnel_automation()
+        assert len(fa.stages) == 6
+        assert len(fa.messages) == 10
+        assert len(fa.segments) == 5
+
+    def test_stages_have_duration(self) -> None:
+        from smm.funnel_automation import generate_funnel_automation
+
+        fa = generate_funnel_automation()
+        for s in fa.stages:
+            assert s.duration_days > 0
+            assert s.trigger
+
+    def test_messages_reference_stages(self) -> None:
+        from smm.funnel_automation import generate_funnel_automation
+
+        fa = generate_funnel_automation()
+        stage_ids = {s.id for s in fa.stages}
+        for m in fa.messages:
+            assert m.stage in stage_ids
+
+    def test_segments_unique(self) -> None:
+        from smm.funnel_automation import generate_funnel_automation
+
+        fa = generate_funnel_automation()
+        ids = [sg.id for sg in fa.segments]
+        assert len(ids) == len(set(ids))
+
+    def test_reengagement_rules(self) -> None:
+        from smm.funnel_automation import generate_funnel_automation
+
+        fa = generate_funnel_automation()
+        assert len(fa.reengagement) == 4
+        for r in fa.reengagement:
+            assert r.trigger_days > 0
+
+    def test_checkpoints(self) -> None:
+        from smm.funnel_automation import generate_funnel_automation
+
+        fa = generate_funnel_automation()
+        assert len(fa.checkpoints) == 5
+        assert fa.checkpoints[0].name == "Lead Captured"
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.funnel_automation import (
+            export_funnel_json,
+            generate_funnel_automation,
+        )
+
+        fa = generate_funnel_automation()
+        p = export_funnel_json(fa, tmp_path / "funnel.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["stages"]) == 6
+        assert len(data["messages"]) == 10
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.funnel_automation import (
+            export_funnel_txt,
+            generate_funnel_automation,
+        )
+
+        fa = generate_funnel_automation()
+        p = export_funnel_txt(fa, tmp_path / "funnel.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "АВТОМАТИЗАЦИЯ ВОРОНКИ" in text
+        assert "СЕГМЕНТЫ" in text

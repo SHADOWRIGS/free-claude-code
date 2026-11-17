@@ -637,6 +637,29 @@ def cmd_utm_builder(args: argparse.Namespace) -> None:
         print(f"TXT: {ub_dir / 'utm_links.txt'}")
 
 
+def cmd_funnel_auto(args: argparse.Namespace) -> None:
+    from smm.funnel_automation import (
+        export_funnel_json,
+        export_funnel_txt,
+        funnel_summary,
+        generate_funnel_automation,
+    )
+
+    _ensure_data_dir()
+    fa = generate_funnel_automation()
+    print(funnel_summary(fa))
+
+    fa_dir = DATA_DIR / "funnel"
+    fa_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_funnel_json(fa, fa_dir / "funnel_automation.json")
+        print(f"\nJSON: {fa_dir / 'funnel_automation.json'}")
+    if args.format in ("txt", "all"):
+        export_funnel_txt(fa, fa_dir / "funnel_automation.txt")
+        print(f"TXT: {fa_dir / 'funnel_automation.txt'}")
+
+
 def cmd_gamification(args: argparse.Namespace) -> None:
     from smm.gamification import (
         export_gamification_json,
@@ -1849,6 +1872,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Gamification (badges, levels, challenges, rewards)",
     )
     p_gam.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_fa = sub.add_parser(
+        "funnel-auto",
+        help="Funnel automation (stages, messages, segments, re-engage)",
+    )
+    p_fa.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
