@@ -683,6 +683,29 @@ def cmd_retention_strategy(args: argparse.Namespace) -> None:
         print(f"TXT: {rs_dir / 'retention_strategy.txt'}")
 
 
+def cmd_upsell_engine(args: argparse.Namespace) -> None:
+    from smm.upsell_engine import (
+        export_upsell_json,
+        export_upsell_txt,
+        generate_upsell_engine,
+        upsell_summary,
+    )
+
+    _ensure_data_dir()
+    ue = generate_upsell_engine()
+    print(upsell_summary(ue))
+
+    ue_dir = DATA_DIR / "upsell_engine"
+    ue_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_upsell_json(ue, ue_dir / "upsell_engine.json")
+        print(f"\nJSON: {ue_dir / 'upsell_engine.json'}")
+    if args.format in ("txt", "all"):
+        export_upsell_txt(ue, ue_dir / "upsell_engine.txt")
+        print(f"TXT: {ue_dir / 'upsell_engine.txt'}")
+
+
 def cmd_calendar_gen(args: argparse.Namespace) -> None:
     from smm.content_calendar_gen import (
         calendar_gen_summary,
@@ -2226,6 +2249,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Content calendar generator (slots, rotation, weights, holidays)",
     )
     p_calgen.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_upsell = sub.add_parser(
+        "upsell-engine",
+        help="Upsell engine (upgrades, bundles, triggers, projections)",
+    )
+    p_upsell.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

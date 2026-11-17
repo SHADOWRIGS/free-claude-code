@@ -5869,3 +5869,71 @@ class TestContentCalendarGen:
         text = p.read_text(encoding="utf-8")
         assert "КАЛЕНДАР" in text
         assert "РОТАЦИЯ" in text
+
+
+class TestUpsellEngine:
+    def test_generate(self) -> None:
+        from smm.upsell_engine import generate_upsell_engine
+
+        ue = generate_upsell_engine()
+        assert len(ue.upgrade_paths) == 5
+        assert len(ue.bundle_offers) == 5
+        assert len(ue.trigger_conditions) == 6
+        assert len(ue.message_templates) == 5
+        assert len(ue.revenue_projections) == 4
+
+    def test_upgrade_paths_have_discount(self) -> None:
+        from smm.upsell_engine import generate_upsell_engine
+
+        ue = generate_upsell_engine()
+        for up in ue.upgrade_paths:
+            assert 0 < up.discount_pct <= 50
+
+    def test_bundle_savings(self) -> None:
+        from smm.upsell_engine import generate_upsell_engine
+
+        ue = generate_upsell_engine()
+        for bo in ue.bundle_offers:
+            assert bo.bundle_price < bo.regular_price
+
+    def test_revenue_projections_ascending(self) -> None:
+        from smm.upsell_engine import generate_upsell_engine
+
+        ue = generate_upsell_engine()
+        revenues = [rp.monthly_revenue for rp in ue.revenue_projections]
+        assert revenues == sorted(revenues)
+
+    def test_trigger_priorities(self) -> None:
+        from smm.upsell_engine import generate_upsell_engine
+
+        ue = generate_upsell_engine()
+        priorities = {tc.priority for tc in ue.trigger_conditions}
+        assert len(priorities) >= 3
+
+    def test_summary(self) -> None:
+        from smm.upsell_engine import generate_upsell_engine, upsell_summary
+
+        ue = generate_upsell_engine()
+        s = upsell_summary(ue)
+        assert "5 путей" in s
+        assert "5 бандлов" in s
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.upsell_engine import export_upsell_json, generate_upsell_engine
+
+        ue = generate_upsell_engine()
+        p = export_upsell_json(ue, tmp_path / "upsell.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["upgrade_paths"]) == 5
+        assert len(data["bundle_offers"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.upsell_engine import export_upsell_txt, generate_upsell_engine
+
+        ue = generate_upsell_engine()
+        p = export_upsell_txt(ue, tmp_path / "upsell.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "АПСЕЙЛ" in text
+        assert "БАНДЛЫ" in text
