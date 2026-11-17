@@ -5056,3 +5056,69 @@ class TestContentRecycler:
         text = p.read_text(encoding="utf-8")
         assert "КОНТЕНТ-РЕЦИКЛЕР" in text
         assert "ТРАНСФОРМАЦИЯ ФОРМАТОВ" in text
+
+
+class TestROITracker:
+    def test_generate(self) -> None:
+        from smm.roi_tracker import generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        assert len(rt.revenue_streams) == 6
+        assert len(rt.cost_categories) == 5
+        assert len(rt.channel_roi) == 5
+
+    def test_total_cost(self) -> None:
+        from smm.roi_tracker import generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        assert rt.total_monthly_cost == 1100.0
+
+    def test_break_even(self) -> None:
+        from smm.roi_tracker import generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        assert rt.break_even_sales > 0
+        assert rt.break_even_sales == 6
+
+    def test_formulas(self) -> None:
+        from smm.roi_tracker import generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        assert "ROI" in rt.formulas
+        assert "ROAS" in rt.formulas
+        assert "CAC" in rt.formulas
+
+    def test_projections_growing(self) -> None:
+        from smm.roi_tracker import generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        revenues = [p.revenue_usd for p in rt.projections]
+        assert revenues == sorted(revenues)
+
+    def test_channel_targets(self) -> None:
+        from smm.roi_tracker import generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        for ch in rt.channel_roi:
+            assert ch.target_roas >= 1.0
+            assert ch.avg_cac_usd > 0
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.roi_tracker import export_roi_json, generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        p = export_roi_json(rt, tmp_path / "roi.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["revenue_streams"]) == 6
+        assert data["break_even_sales"] == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.roi_tracker import export_roi_txt, generate_roi_tracker
+
+        rt = generate_roi_tracker()
+        p = export_roi_txt(rt, tmp_path / "roi.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ROI-ТРЕКЕР" in text
+        assert "ФОРМУЛЫ" in text

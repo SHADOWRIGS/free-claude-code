@@ -637,6 +637,29 @@ def cmd_utm_builder(args: argparse.Namespace) -> None:
         print(f"TXT: {ub_dir / 'utm_links.txt'}")
 
 
+def cmd_roi_tracker(args: argparse.Namespace) -> None:
+    from smm.roi_tracker import (
+        export_roi_json,
+        export_roi_txt,
+        generate_roi_tracker,
+        roi_summary,
+    )
+
+    _ensure_data_dir()
+    rt = generate_roi_tracker()
+    print(roi_summary(rt))
+
+    roi_dir = DATA_DIR / "roi"
+    roi_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_roi_json(rt, roi_dir / "roi_tracker.json")
+        print(f"\nJSON: {roi_dir / 'roi_tracker.json'}")
+    if args.format in ("txt", "all"):
+        export_roi_txt(rt, roi_dir / "roi_tracker.txt")
+        print(f"TXT: {roi_dir / 'roi_tracker.txt'}")
+
+
 def cmd_content_recycle(args: argparse.Namespace) -> None:
     from smm.content_recycler import (
         export_recycler_json,
@@ -1907,6 +1930,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Content recycler (evergreen rules, refresh, transforms)",
     )
     p_rc.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_roi = sub.add_parser(
+        "roi-tracker",
+        help="ROI tracker (revenue, costs, channels, projections)",
+    )
+    p_roi.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
