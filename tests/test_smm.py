@@ -4838,3 +4838,71 @@ class TestSeasonalCalendar:
         s = seasonal_summary(sc)
         assert "12 ключевых дат" in s
         assert "4 сезонных тем" in s
+
+
+class TestGamification:
+    def test_generate(self) -> None:
+        from smm.gamification import generate_gamification
+
+        gs = generate_gamification()
+        assert len(gs.badges) == 8
+        assert len(gs.levels) == 5
+        assert len(gs.challenges) == 6
+        assert len(gs.rewards) == 5
+
+    def test_badges_have_points(self) -> None:
+        from smm.gamification import generate_gamification
+
+        gs = generate_gamification()
+        for b in gs.badges:
+            assert b.points > 0
+            assert b.icon
+
+    def test_levels_ascending(self) -> None:
+        from smm.gamification import generate_gamification
+
+        gs = generate_gamification()
+        points = [lv.min_points for lv in gs.levels]
+        assert points == sorted(points)
+
+    def test_challenges_have_pillars(self) -> None:
+        from smm.gamification import generate_gamification
+
+        gs = generate_gamification()
+        for c in gs.challenges:
+            assert c.pillar
+            assert c.reward_points > 0
+
+    def test_rewards_cost_ascending(self) -> None:
+        from smm.gamification import generate_gamification
+
+        gs = generate_gamification()
+        costs = [r.cost_points for r in gs.rewards]
+        assert costs == sorted(costs)
+
+    def test_leaderboard_rules(self) -> None:
+        from smm.gamification import generate_gamification
+
+        gs = generate_gamification()
+        assert "reset" in gs.leaderboard_rules
+        assert "anti_cheat" in gs.leaderboard_rules
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.gamification import export_gamification_json, generate_gamification
+
+        gs = generate_gamification()
+        p = export_gamification_json(gs, tmp_path / "gam.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["badges"]) == 8
+        assert len(data["levels"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.gamification import export_gamification_txt, generate_gamification
+
+        gs = generate_gamification()
+        p = export_gamification_txt(gs, tmp_path / "gam.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ГЕЙМИФИКАЦИЯ" in text
+        assert "ЧЕЛЛЕНДЖИ" in text

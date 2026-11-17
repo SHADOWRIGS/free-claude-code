@@ -637,6 +637,29 @@ def cmd_utm_builder(args: argparse.Namespace) -> None:
         print(f"TXT: {ub_dir / 'utm_links.txt'}")
 
 
+def cmd_gamification(args: argparse.Namespace) -> None:
+    from smm.gamification import (
+        export_gamification_json,
+        export_gamification_txt,
+        gamification_summary,
+        generate_gamification,
+    )
+
+    _ensure_data_dir()
+    gs = generate_gamification()
+    print(gamification_summary(gs))
+
+    gs_dir = DATA_DIR / "gamification"
+    gs_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_gamification_json(gs, gs_dir / "gamification.json")
+        print(f"\nJSON: {gs_dir / 'gamification.json'}")
+    if args.format in ("txt", "all"):
+        export_gamification_txt(gs, gs_dir / "gamification.txt")
+        print(f"TXT: {gs_dir / 'gamification.txt'}")
+
+
 def cmd_seasonal_calendar(args: argparse.Namespace) -> None:
     from smm.seasonal_calendar import (
         export_seasonal_json,
@@ -1820,6 +1843,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Seasonal calendar (holidays, campaigns, BF/CM plan)",
     )
     p_sc.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_gam = sub.add_parser(
+        "gamification",
+        help="Gamification (badges, levels, challenges, rewards)",
+    )
+    p_gam.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

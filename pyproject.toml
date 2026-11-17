@@ -147,6 +147,7 @@ ignore = [
 "smm/media_library.py" = ["RUF001"]
 "smm/utm_builder.py" = ["RUF001"]
 "smm/seasonal_calendar.py" = ["RUF001"]
+"smm/gamification.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]
