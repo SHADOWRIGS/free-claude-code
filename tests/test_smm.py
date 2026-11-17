@@ -5717,3 +5717,79 @@ class TestEmailAnalytics:
         text = p.read_text(encoding="utf-8")
         assert "EMAIL" in text
         assert "СЕГМЕНТАЦИЯ" in text
+
+
+class TestRetentionStrategy:
+    def test_generate(self) -> None:
+        from smm.retention_strategy import generate_retention_strategy
+
+        rs = generate_retention_strategy()
+        assert len(rs.churn_signals) == 6
+        assert len(rs.tactics) == 5
+        assert len(rs.winback_campaigns) == 5
+        assert len(rs.loyalty_tiers) == 5
+        assert len(rs.health_metrics) == 5
+
+    def test_churn_signals_scored(self) -> None:
+        from smm.retention_strategy import generate_retention_strategy
+
+        rs = generate_retention_strategy()
+        for cs in rs.churn_signals:
+            assert 1 <= cs.risk_score <= 100
+            assert cs.action
+
+    def test_tactics_per_stage(self) -> None:
+        from smm.retention_strategy import generate_retention_strategy
+
+        rs = generate_retention_strategy()
+        for rt in rs.tactics:
+            assert rt.implementation
+            assert rt.expected_effect
+
+    def test_winback_ascending_trigger(self) -> None:
+        from smm.retention_strategy import generate_retention_strategy
+
+        rs = generate_retention_strategy()
+        days = [wc.trigger_days_inactive for wc in rs.winback_campaigns]
+        assert days == sorted(days)
+
+    def test_loyalty_ascending_days(self) -> None:
+        from smm.retention_strategy import generate_retention_strategy
+
+        rs = generate_retention_strategy()
+        days = [lt.min_days_active for lt in rs.loyalty_tiers]
+        assert days == sorted(days)
+
+    def test_health_metrics_targets(self) -> None:
+        from smm.retention_strategy import generate_retention_strategy
+
+        rs = generate_retention_strategy()
+        for hm in rs.health_metrics:
+            assert hm.target > 0
+            assert hm.interpretation
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.retention_strategy import (
+            export_retention_json,
+            generate_retention_strategy,
+        )
+
+        rs = generate_retention_strategy()
+        p = export_retention_json(rs, tmp_path / "ret.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["churn_signals"]) == 6
+        assert len(data["loyalty_tiers"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.retention_strategy import (
+            export_retention_txt,
+            generate_retention_strategy,
+        )
+
+        rs = generate_retention_strategy()
+        p = export_retention_txt(rs, tmp_path / "ret.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "УДЕРЖАНИЯ" in text
+        assert "ЛОЯЛЬНОСТИ" in text

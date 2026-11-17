@@ -660,6 +660,29 @@ def cmd_onboarding(args: argparse.Namespace) -> None:
         print(f"TXT: {ob_dir / 'onboarding.txt'}")
 
 
+def cmd_retention_strategy(args: argparse.Namespace) -> None:
+    from smm.retention_strategy import (
+        export_retention_json,
+        export_retention_txt,
+        generate_retention_strategy,
+        retention_summary,
+    )
+
+    _ensure_data_dir()
+    rs = generate_retention_strategy()
+    print(retention_summary(rs))
+
+    rs_dir = DATA_DIR / "retention_strategy"
+    rs_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_retention_json(rs, rs_dir / "retention_strategy.json")
+        print(f"\nJSON: {rs_dir / 'retention_strategy.json'}")
+    if args.format in ("txt", "all"):
+        export_retention_txt(rs, rs_dir / "retention_strategy.txt")
+        print(f"TXT: {rs_dir / 'retention_strategy.txt'}")
+
+
 def cmd_email_analytics(args: argparse.Namespace) -> None:
     from smm.email_analytics import (
         email_analytics_summary,
@@ -2168,6 +2191,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Email analytics (campaigns, deliverability, segments, triggers)",
     )
     p_ea.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ret = sub.add_parser(
+        "retention-strategy",
+        help="Retention strategy (churn signals, tactics, winback, loyalty)",
+    )
+    p_ret.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 
