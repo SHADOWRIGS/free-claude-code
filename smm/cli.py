@@ -683,6 +683,29 @@ def cmd_retention_strategy(args: argparse.Namespace) -> None:
         print(f"TXT: {rs_dir / 'retention_strategy.txt'}")
 
 
+def cmd_analytics_report_gen(args: argparse.Namespace) -> None:
+    from smm.analytics_report_gen import (
+        export_report_gen_json,
+        export_report_gen_txt,
+        generate_analytics_report_gen,
+        report_gen_summary,
+    )
+
+    _ensure_data_dir()
+    ar = generate_analytics_report_gen()
+    print(report_gen_summary(ar))
+
+    ar_dir = DATA_DIR / "analytics_report_gen"
+    ar_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_report_gen_json(ar, ar_dir / "analytics_report_gen.json")
+        print(f"\nJSON: {ar_dir / 'analytics_report_gen.json'}")
+    if args.format in ("txt", "all"):
+        export_report_gen_txt(ar, ar_dir / "analytics_report_gen.txt")
+        print(f"TXT: {ar_dir / 'analytics_report_gen.txt'}")
+
+
 def cmd_testimonials(args: argparse.Namespace) -> None:
     from smm.testimonial_collector import (
         export_testimonial_json,
@@ -2284,6 +2307,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Testimonial collector (requests, categories, display, incentives)",
     )
     p_testi.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_argen = sub.add_parser(
+        "analytics-report-gen",
+        help="Analytics report generator (sections, metrics, charts, insights)",
+    )
+    p_argen.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

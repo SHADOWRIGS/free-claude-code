@@ -6015,3 +6015,80 @@ class TestTestimonialCollector:
         text = p.read_text(encoding="utf-8")
         assert "ОТЗЫВ" in text
         assert "МОДЕРАЦ" in text
+
+
+class TestAnalyticsReportGen:
+    def test_generate(self) -> None:
+        from smm.analytics_report_gen import generate_analytics_report_gen
+
+        ar = generate_analytics_report_gen()
+        assert len(ar.sections) == 7
+        assert len(ar.metric_definitions) == 8
+        assert len(ar.chart_specs) == 6
+        assert len(ar.insight_rules) == 5
+        assert len(ar.distribution_schedule) == 4
+
+    def test_sections_ordered(self) -> None:
+        from smm.analytics_report_gen import generate_analytics_report_gen
+
+        ar = generate_analytics_report_gen()
+        orders = [rs.order for rs in ar.sections]
+        assert orders == sorted(orders)
+
+    def test_metrics_have_targets(self) -> None:
+        from smm.analytics_report_gen import generate_analytics_report_gen
+
+        ar = generate_analytics_report_gen()
+        for md in ar.metric_definitions:
+            assert md.target_weekly > 0
+
+    def test_metric_directions(self) -> None:
+        from smm.analytics_report_gen import generate_analytics_report_gen
+
+        ar = generate_analytics_report_gen()
+        directions = {md.direction for md in ar.metric_definitions}
+        assert directions == {"up", "down"}
+
+    def test_chart_types(self) -> None:
+        from smm.analytics_report_gen import generate_analytics_report_gen
+
+        ar = generate_analytics_report_gen()
+        types = {cs.type for cs in ar.chart_specs}
+        assert len(types) >= 4
+
+    def test_summary(self) -> None:
+        from smm.analytics_report_gen import (
+            generate_analytics_report_gen,
+            report_gen_summary,
+        )
+
+        ar = generate_analytics_report_gen()
+        s = report_gen_summary(ar)
+        assert "7 секций" in s
+        assert "8 метрик" in s
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.analytics_report_gen import (
+            export_report_gen_json,
+            generate_analytics_report_gen,
+        )
+
+        ar = generate_analytics_report_gen()
+        p = export_report_gen_json(ar, tmp_path / "ar.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["sections"]) == 7
+        assert len(data["chart_specs"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.analytics_report_gen import (
+            export_report_gen_txt,
+            generate_analytics_report_gen,
+        )
+
+        ar = generate_analytics_report_gen()
+        p = export_report_gen_txt(ar, tmp_path / "ar.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "АНАЛИТИЧ" in text
+        assert "МЕТРИК" in text
