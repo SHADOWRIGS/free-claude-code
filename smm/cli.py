@@ -637,6 +637,29 @@ def cmd_utm_builder(args: argparse.Namespace) -> None:
         print(f"TXT: {ub_dir / 'utm_links.txt'}")
 
 
+def cmd_onboarding(args: argparse.Namespace) -> None:
+    from smm.onboarding_flow import (
+        export_onboarding_json,
+        export_onboarding_txt,
+        generate_onboarding_flow,
+        onboarding_summary,
+    )
+
+    _ensure_data_dir()
+    ob = generate_onboarding_flow()
+    print(onboarding_summary(ob))
+
+    ob_dir = DATA_DIR / "onboarding"
+    ob_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_onboarding_json(ob, ob_dir / "onboarding.json")
+        print(f"\nJSON: {ob_dir / 'onboarding.json'}")
+    if args.format in ("txt", "all"):
+        export_onboarding_txt(ob, ob_dir / "onboarding.txt")
+        print(f"TXT: {ob_dir / 'onboarding.txt'}")
+
+
 def cmd_compliance(args: argparse.Namespace) -> None:
     from smm.compliance_checker import (
         compliance_summary,
@@ -1965,6 +1988,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Compliance checker (platform rules, disclosures, copyright)",
     )
     p_comp.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_ob = sub.add_parser(
+        "onboarding",
+        help="Onboarding flow (welcome, milestones, checklists, FAQ)",
+    )
+    p_ob.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

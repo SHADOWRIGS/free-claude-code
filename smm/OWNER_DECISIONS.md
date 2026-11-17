@@ -117,8 +117,9 @@
 | Контент-рециклер (evergreen, обновление, трансформации) | Готово | `smm/content_recycler.py` |
 | ROI-трекер (доходы, расходы, каналы, прогнозы) | Готово | `smm/roi_tracker.py` |
 | Комплаенс-чекер (политики, раскрытие, копирайт) | Готово | `smm/compliance_checker.py` |
-| CLI (77 команд) | Готово | `smm/cli.py` |
-| Тесты | 587 passed | `tests/test_smm.py` |
+| Онбординг-флоу (welcome, вехи, чеклисты, FAQ) | Готово | `smm/onboarding_flow.py` |
+| CLI (78 команд) | Готово | `smm/cli.py` |
+| Тесты | 595 passed | `tests/test_smm.py` |
 | Интеграция постинга (API) | Ожидает | — |
 | Реальные URL/ключи | Ожидает | — |
 

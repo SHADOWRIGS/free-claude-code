@@ -5192,3 +5192,78 @@ class TestComplianceChecker:
         text = p.read_text(encoding="utf-8")
         assert "КОМПЛАЕНС" in text
         assert "АВТОРСКИЕ ПРАВА" in text
+
+
+class TestOnboardingFlow:
+    def test_generate(self) -> None:
+        from smm.onboarding_flow import generate_onboarding_flow
+
+        ob = generate_onboarding_flow()
+        assert len(ob.welcome_messages) == 7
+        assert len(ob.milestones) == 5
+        assert len(ob.checklists) == 3
+
+    def test_welcome_messages_ordered(self) -> None:
+        from smm.onboarding_flow import generate_onboarding_flow
+
+        ob = generate_onboarding_flow()
+        days = [m.day for m in ob.welcome_messages]
+        assert days == sorted(days)
+
+    def test_milestones_have_rewards(self) -> None:
+        from smm.onboarding_flow import generate_onboarding_flow
+
+        ob = generate_onboarding_flow()
+        for ml in ob.milestones:
+            assert ml.reward
+            assert ml.target_hours > 0
+
+    def test_checklists_have_steps(self) -> None:
+        from smm.onboarding_flow import generate_onboarding_flow
+
+        ob = generate_onboarding_flow()
+        for cl in ob.checklists:
+            assert len(cl.steps) >= 5
+
+    def test_faq_categories(self) -> None:
+        from smm.onboarding_flow import generate_onboarding_flow
+
+        ob = generate_onboarding_flow()
+        assert len(ob.faq) == 6
+        cats = {f.category for f in ob.faq}
+        assert "access" in cats
+        assert "billing" in cats
+
+    def test_metrics_targets(self) -> None:
+        from smm.onboarding_flow import generate_onboarding_flow
+
+        ob = generate_onboarding_flow()
+        assert len(ob.metrics) == 5
+        for om in ob.metrics:
+            assert om.target_pct > 0
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.onboarding_flow import (
+            export_onboarding_json,
+            generate_onboarding_flow,
+        )
+
+        ob = generate_onboarding_flow()
+        p = export_onboarding_json(ob, tmp_path / "ob.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["welcome_messages"]) == 7
+        assert len(data["faq"]) == 6
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.onboarding_flow import (
+            export_onboarding_txt,
+            generate_onboarding_flow,
+        )
+
+        ob = generate_onboarding_flow()
+        p = export_onboarding_txt(ob, tmp_path / "ob.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ОНБОРДИНГ" in text
+        assert "FAQ" in text
