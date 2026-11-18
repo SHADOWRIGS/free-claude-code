@@ -683,6 +683,29 @@ def cmd_retention_strategy(args: argparse.Namespace) -> None:
         print(f"TXT: {rs_dir / 'retention_strategy.txt'}")
 
 
+def cmd_benchmark(args: argparse.Namespace) -> None:
+    from smm.performance_benchmark import (
+        benchmark_summary,
+        export_benchmark_json,
+        export_benchmark_txt,
+        generate_performance_benchmark,
+    )
+
+    _ensure_data_dir()
+    pb = generate_performance_benchmark()
+    print(benchmark_summary(pb))
+
+    pb_dir = DATA_DIR / "benchmark"
+    pb_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_benchmark_json(pb, pb_dir / "benchmark.json")
+        print(f"\nJSON: {pb_dir / 'benchmark.json'}")
+    if args.format in ("txt", "all"):
+        export_benchmark_txt(pb, pb_dir / "benchmark.txt")
+        print(f"TXT: {pb_dir / 'benchmark.txt'}")
+
+
 def cmd_analytics_report_gen(args: argparse.Namespace) -> None:
     from smm.analytics_report_gen import (
         export_report_gen_json,
@@ -2313,6 +2336,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Analytics report generator (sections, metrics, charts, insights)",
     )
     p_argen.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_bench = sub.add_parser(
+        "benchmark",
+        help="Performance benchmarks (platform, niche, growth, competitive)",
+    )
+    p_bench.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

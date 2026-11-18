@@ -6092,3 +6092,80 @@ class TestAnalyticsReportGen:
         text = p.read_text(encoding="utf-8")
         assert "АНАЛИТИЧ" in text
         assert "МЕТРИК" in text
+
+
+class TestPerformanceBenchmark:
+    def test_generate(self) -> None:
+        from smm.performance_benchmark import generate_performance_benchmark
+
+        pb = generate_performance_benchmark()
+        assert len(pb.platform_benchmarks) == 9
+        assert len(pb.niche_benchmarks) == 6
+        assert len(pb.growth_milestones) == 5
+        assert len(pb.competitive_scores) == 5
+        assert len(pb.grading_rules) == 5
+
+    def test_platform_benchmarks_ascending(self) -> None:
+        from smm.performance_benchmark import generate_performance_benchmark
+
+        pb = generate_performance_benchmark()
+        for b in pb.platform_benchmarks:
+            assert b.poor < b.average < b.good < b.excellent
+
+    def test_niche_above_average(self) -> None:
+        from smm.performance_benchmark import generate_performance_benchmark
+
+        pb = generate_performance_benchmark()
+        for nb in pb.niche_benchmarks:
+            assert nb.value > nb.general_average
+
+    def test_growth_milestones_ascending(self) -> None:
+        from smm.performance_benchmark import generate_performance_benchmark
+
+        pb = generate_performance_benchmark()
+        targets = [gm.followers_target for gm in pb.growth_milestones]
+        assert targets == sorted(targets)
+
+    def test_competitive_scores_max_50(self) -> None:
+        from smm.performance_benchmark import generate_performance_benchmark
+
+        pb = generate_performance_benchmark()
+        for cs in pb.competitive_scores:
+            assert cs.total <= 50
+
+    def test_summary(self) -> None:
+        from smm.performance_benchmark import (
+            benchmark_summary,
+            generate_performance_benchmark,
+        )
+
+        pb = generate_performance_benchmark()
+        s = benchmark_summary(pb)
+        assert "9 платформенных" in s
+        assert "5 вех" in s
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.performance_benchmark import (
+            export_benchmark_json,
+            generate_performance_benchmark,
+        )
+
+        pb = generate_performance_benchmark()
+        p = export_benchmark_json(pb, tmp_path / "bench.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["platform_benchmarks"]) == 9
+        assert len(data["competitive_scores"]) == 5
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.performance_benchmark import (
+            export_benchmark_txt,
+            generate_performance_benchmark,
+        )
+
+        pb = generate_performance_benchmark()
+        p = export_benchmark_txt(pb, tmp_path / "bench.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "БЕНЧМАРК" in text
+        assert "КОНКУРЕНТ" in text
