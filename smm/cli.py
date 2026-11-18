@@ -683,6 +683,29 @@ def cmd_retention_strategy(args: argparse.Namespace) -> None:
         print(f"TXT: {rs_dir / 'retention_strategy.txt'}")
 
 
+def cmd_notify_dispatch(args: argparse.Namespace) -> None:
+    from smm.notification_dispatcher import (
+        dispatcher_summary,
+        export_dispatcher_json,
+        export_dispatcher_txt,
+        generate_notification_dispatcher,
+    )
+
+    _ensure_data_dir()
+    nd = generate_notification_dispatcher()
+    print(dispatcher_summary(nd))
+
+    nd_dir = DATA_DIR / "notify_dispatch"
+    nd_dir.mkdir(exist_ok=True)
+
+    if args.format in ("json", "all"):
+        export_dispatcher_json(nd, nd_dir / "notify_dispatch.json")
+        print(f"\nJSON: {nd_dir / 'notify_dispatch.json'}")
+    if args.format in ("txt", "all"):
+        export_dispatcher_txt(nd, nd_dir / "notify_dispatch.txt")
+        print(f"TXT: {nd_dir / 'notify_dispatch.txt'}")
+
+
 def cmd_benchmark(args: argparse.Namespace) -> None:
     from smm.performance_benchmark import (
         benchmark_summary,
@@ -2342,6 +2365,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Performance benchmarks (platform, niche, growth, competitive)",
     )
     p_bench.add_argument("--format", choices=["json", "txt", "all"], default="all")
+
+    p_notif = sub.add_parser(
+        "notify-dispatch",
+        help="Notification dispatcher (channels, routing, templates, escalation)",
+    )
+    p_notif.add_argument("--format", choices=["json", "txt", "all"], default="all")
 
     return parser
 

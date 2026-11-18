@@ -6169,3 +6169,81 @@ class TestPerformanceBenchmark:
         text = p.read_text(encoding="utf-8")
         assert "БЕНЧМАРК" in text
         assert "КОНКУРЕНТ" in text
+
+
+class TestNotificationDispatcher:
+    def test_generate(self) -> None:
+        from smm.notification_dispatcher import generate_notification_dispatcher
+
+        nd = generate_notification_dispatcher()
+        assert len(nd.channel_configs) == 5
+        assert len(nd.routing_rules) == 8
+        assert len(nd.templates) == 6
+        assert len(nd.rate_limits) == 5
+        assert len(nd.escalation_chain) == 4
+
+    def test_channels_unique(self) -> None:
+        from smm.notification_dispatcher import generate_notification_dispatcher
+
+        nd = generate_notification_dispatcher()
+        channels = [cc.channel for cc in nd.channel_configs]
+        assert len(channels) == len(set(channels))
+
+    def test_routing_priorities(self) -> None:
+        from smm.notification_dispatcher import generate_notification_dispatcher
+
+        nd = generate_notification_dispatcher()
+        priorities = {rr.priority for rr in nd.routing_rules}
+        assert "critical" in priorities
+        assert "low" in priorities
+
+    def test_escalation_levels_ordered(self) -> None:
+        from smm.notification_dispatcher import generate_notification_dispatcher
+
+        nd = generate_notification_dispatcher()
+        levels = [el.level for el in nd.escalation_chain]
+        assert levels == sorted(levels)
+
+    def test_rate_limits_positive(self) -> None:
+        from smm.notification_dispatcher import generate_notification_dispatcher
+
+        nd = generate_notification_dispatcher()
+        for rl in nd.rate_limits:
+            assert rl.max_per_day >= 0
+
+    def test_summary(self) -> None:
+        from smm.notification_dispatcher import (
+            dispatcher_summary,
+            generate_notification_dispatcher,
+        )
+
+        nd = generate_notification_dispatcher()
+        s = dispatcher_summary(nd)
+        assert "5 каналов" in s
+        assert "8 правил" in s
+
+    def test_export_json(self, tmp_path: Path) -> None:
+        from smm.notification_dispatcher import (
+            export_dispatcher_json,
+            generate_notification_dispatcher,
+        )
+
+        nd = generate_notification_dispatcher()
+        p = export_dispatcher_json(nd, tmp_path / "nd.json")
+        assert p.exists()
+        data = json.loads(p.read_text(encoding="utf-8"))
+        assert len(data["channel_configs"]) == 5
+        assert len(data["routing_rules"]) == 8
+
+    def test_export_txt(self, tmp_path: Path) -> None:
+        from smm.notification_dispatcher import (
+            export_dispatcher_txt,
+            generate_notification_dispatcher,
+        )
+
+        nd = generate_notification_dispatcher()
+        p = export_dispatcher_txt(nd, tmp_path / "nd.txt")
+        assert p.exists()
+        text = p.read_text(encoding="utf-8")
+        assert "ДИСПЕТЧЕР" in text
+        assert "ЭСКАЛАЦ" in text

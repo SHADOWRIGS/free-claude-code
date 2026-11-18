@@ -165,6 +165,7 @@ ignore = [
 "smm/testimonial_collector.py" = ["RUF001"]
 "smm/analytics_report_gen.py" = ["RUF001"]
 "smm/performance_benchmark.py" = ["RUF001"]
+"smm/notification_dispatcher.py" = ["RUF001"]
 "tests/test_smm.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]
