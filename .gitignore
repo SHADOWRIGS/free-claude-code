@@ -13,3 +13,4 @@ debug-*.log
 llama_cache
 .smoke-results
 smm_data/
+smm_output/
